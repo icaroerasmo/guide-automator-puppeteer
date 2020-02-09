@@ -30,5 +30,8 @@
   "homepage": "https://github.com/icaroerasmo/guide-automator-cypress#readme",
   "devDependencies": {
     "link-module-alias": "^1.2.0"
+  },
+  "dependencies": {
+    "node-server-screenshot": "^0.2.3"
   }
 }
