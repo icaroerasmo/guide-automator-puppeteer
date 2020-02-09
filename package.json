@@ -1,0 +1,34 @@
+{
+  "name": "guide-automator-cypress",
+  "version": "0.0.1",
+  "description": "Utility that eases process of creating a documentation of a software automating the insertion of images taken from the screen of that software.",
+  "main": "main.js",
+  "scripts": {
+    "postinstall": "link-module-alias",
+    "preinstall": "command -v link-module-alias && link-module-alias clean || true"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/icaroerasmo/guide-automator-cypress.git"
+  },
+  "_moduleAliases": {
+    "@libs": "br/com/guide-automator/libs"
+  },
+  "keywords": [
+    "guide-automator",
+    "guide",
+    "automator",
+    "documentation",
+    "images",
+    "cypress"
+  ],
+  "author": "Ícaro Erasmo Souza Barreiro",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/icaroerasmo/guide-automator-cypress/issues"
+  },
+  "homepage": "https://github.com/icaroerasmo/guide-automator-cypress#readme",
+  "devDependencies": {
+    "link-module-alias": "^1.2.0"
+  }
+}
