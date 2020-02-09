@@ -1,7 +1,7 @@
 {
   "name": "guide-automator-cypress",
   "version": "0.0.1",
-  "description": "Utility that eases process of creating a documentation of a software automating the insertion of images taken from the screen of that software.",
+  "description": "Utility that eases process of creating a documentation of a software, automating the insertion of images taken from the screen of that software.",
   "main": "main.js",
   "scripts": {
     "postinstall": "link-module-alias",
