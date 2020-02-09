@@ -32,6 +32,6 @@
     "link-module-alias": "^1.2.0"
   },
   "dependencies": {
-    "node-server-screenshot": "^0.2.3"
+    "webshot": "^0.18.0"
   }
 }
