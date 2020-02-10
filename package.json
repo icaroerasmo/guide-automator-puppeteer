@@ -12,7 +12,7 @@
     "url": "git+https://github.com/icaroerasmo/guide-automator-cypress.git"
   },
   "_moduleAliases": {
-    "@main": "br/com/guide-automator"
+    "main": "br/com/guide-automator"
   },
   "keywords": [
     "guide-automator",
@@ -32,6 +32,6 @@
     "link-module-alias": "^1.2.0"
   },
   "dependencies": {
-    "webshot": "^0.18.0"
+    "puppeteer": "^2.1.1"
   }
 }

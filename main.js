@@ -1,8 +1,7 @@
 const App = require('@main/libs/FileReader');
 const u = require('@main/libs/Utils');
 
-var app = require("node-server-screenshot");
-u.screenshot('http://www.penta-code.com', '.tr-container', 'test.png', (err)=>{
+u.screenshot('https://jovemnerd.com.br/', '.card-custom', 'test.png', (err)=>{
     if(!err) {
         console.log('took screenshot');
     }
