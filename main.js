@@ -1,5 +1,5 @@
-const App = require('@main/libs/FileReader');
-const u = require('@main/libs/Utils');
+const App = require('main/libs/FileReader');
+const u = require('main/libs/Utils');
 
 u.screenshot('https://jovemnerd.com.br/', '.card-custom', 'test.png', (err)=>{
     if(!err) {
