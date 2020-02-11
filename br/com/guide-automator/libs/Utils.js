@@ -1,4 +1,4 @@
-const Interpreter = require('main/libs/Interpreter');
+const Interpreter = require('main/libs/interpreter/Interpreter');
 module.exports = {
     printsName: (name) => {
         console.log(`My name is ${name}`);

@@ -1,15 +1,15 @@
 const puppeteer = require('puppeteer');
 
-class Interpreter {
+class InterpreterProxy {
 
     browser = null;
     page = null;
 
-    constructor(){
-        
+    constructor() {
+        this.parseFuncs();
     }
 
-    async _init() {
+    async $init() {
         this.browser = await puppeteer.launch({
             headless: true,
             args: [
@@ -22,12 +22,12 @@ class Interpreter {
         return this;
     }
 
-    async _close(){
+    async $close(){
         console.log("closed");
         await this.browser.close();
     }
 
-    async _screenshot(url, selector, path) {  
+    async $screenshot(url, selector, path) {  
         if(url){
             console.log(`URL: ${url}`);
             console.log(`SELECTOR: ${selector}`);
@@ -49,18 +49,6 @@ class Interpreter {
         return this;
     }
 
-    async init() {
-       return await this.proxy('_init', arguments);
-    }
-
-    async screenshot() {
-        return await this.proxy('_screenshot', arguments);
-    }
-
-    async close() {
-        return await this.proxy('_close', arguments);
-    }
-
     async proxy(methodName, args){
         let err;
         let result;
@@ -79,10 +67,18 @@ class Interpreter {
             return result;
         }
     }
-}
 
-module.exports = {
-    instance() {
-        return new Interpreter().init();
+    parseFuncs() {
+        let methods = Object.getOwnPropertyNames(InterpreterProxy.prototype).
+            filter(m => m.startsWith('$'));
+        console.log(`METHODS: ${JSON.stringify(methods)}`);
+        for(let m of methods) {
+            console.log(`SINGLE METHOD: ${m}`);
+            let methodName = m.replace('$', '');
+            InterpreterProxy.prototype[methodName] = async (...args) => {
+                return await this.proxy(m, args)}
+        }
     }
 }
+
+module.exports = InterpreterProxy;
