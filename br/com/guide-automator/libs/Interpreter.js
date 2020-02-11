@@ -71,7 +71,8 @@ class Interpreter {
             console.log(`ERRO: ${e}`);
             err = e;
         } finally {
-            let callback = arguments[arguments.length-1];
+            let callback = args[args.length-1];
+            console.log(`TIPO: ${typeof callback}`);
             if(callback && typeof callback === 'function'){
                 callback(err);
             }
