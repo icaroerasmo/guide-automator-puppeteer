@@ -4,7 +4,7 @@ class InterpreterProxy {
     page = null;
 
     constructor() {
-        this.parseFuncs();
+        this.applyProxy();
     }
 
     async proxy(methodName, args){
@@ -26,14 +26,14 @@ class InterpreterProxy {
         }
     }
 
-    parseFuncs() {
+    applyProxy() {
         let thisPrototype = Object.getPrototypeOf(this);
         let methods = Object.getOwnPropertyNames(thisPrototype).
             filter(m => m !== 'constructor');
         console.log(`METHODS: ${JSON.stringify(methods)}`);
         for(let m of methods) {
             console.log(`SINGLE METHOD: ${m}`);
-            const methodName = '_'+m;
+            const methodName = `_${m}`;
             thisPrototype[methodName] = thisPrototype[m];
             thisPrototype[m] =
              async (...args) => {
