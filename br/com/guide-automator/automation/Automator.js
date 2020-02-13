@@ -1,11 +1,7 @@
-const InterpreterProxy = require('./InterpreterProxy');
+const InterpreterProxy = require('./AutomatorProxy');
 const puppeteer = require('puppeteer');
 
-class Interpreter extends InterpreterProxy {
-    
-    constructor() {
-        super();
-    }
+class Automator extends InterpreterProxy {
 
     async init() {
         this.browser = await puppeteer.launch({
@@ -25,14 +21,15 @@ class Interpreter extends InterpreterProxy {
         await this.browser.close();
     }
 
-    async screenshot(url, selector, path) {  
+    async goToPage(url) {
         if(url){
             console.log(`URL: ${url}`);
-            console.log(`SELECTOR: ${selector}`);
-            console.log(`PATH: ${path}`);
             await this.page.goto(url);
         }
+        return this;
+    }
 
+    async screenshot(selector, path) {  
         if(selector){
             console.log(`SELECTOR: ${selector}`);
             await this.page.evaluate((selector) => {
@@ -46,10 +43,30 @@ class Interpreter extends InterpreterProxy {
         await this.page.screenshot({path: path});
         return this;
     }
+
+    async fillField(selector, content){
+        await this.page.type(selector, content);
+        return this;
+    }
+
+    async submitForm(selector){
+        await this.page.$eval(selector, form => form.submit());
+        return this;
+    }
+
+    async clickButton(selector){
+        await this.page.click(selector);
+        return this;
+    }
+
+    async waitForPageToLoad() {
+        await this.page.waitForNavigation({waitUntil: 'load'});
+        return this;
+    }
 }
 
 module.exports = {
     instance() {
-        return new Interpreter().init();
+        return new Automator().init();
     }
 }

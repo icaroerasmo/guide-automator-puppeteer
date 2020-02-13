@@ -1,4 +1,4 @@
-class InterpreterProxy {
+class AutomatorProxy {
 
     browser = null;
     page = null;
@@ -22,6 +22,9 @@ class InterpreterProxy {
             if(callback && typeof callback === 'function'){
                 callback(err);
             }
+            if(err) {
+                this.browser.close();
+            }
             return result;
         }
     }
@@ -44,4 +47,4 @@ class InterpreterProxy {
     }
 }
 
-module.exports = InterpreterProxy;
+module.exports = AutomatorProxy;

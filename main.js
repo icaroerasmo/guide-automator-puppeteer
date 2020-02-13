@@ -1,13 +1,15 @@
-const App = require('main/libs/FileReader');
-const u = require('main/libs/Utils');
+const Automator = require('main/automation/Automator');
 
-u.screenshot('https://jovemnerd.com.br/', '.card-custom', 'test.png', (err)=>{
-    if(!err) {
-        console.log('took screenshot');
-    }
-})
-
-const a = new App();
-a.itWorks();
-
-u.printsName("Ícaro Erasmo Souza Barreiro");
+(async () => {
+    let instance = await Automator.instance();
+    instance = await instance.goToPage('https://google.com/')
+    instance = await instance.fillField('[name=q]', 'Hello World');
+    instance = await instance.submitForm('#tsf')
+    instance = await instance.waitForPageToLoad();
+    instance = await instance.screenshot(null, 'test.png', (err)=>{
+        if(!err) {
+            console.log('took screenshot');
+        }
+    });
+    instance = await instance.close(); 
+})();
