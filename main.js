@@ -5,7 +5,6 @@ const Automator = require('main/automation/Automator');
     instance = await instance.goToPage('https://google.com/')
     instance = await instance.fillField('[name=q]', 'Hello World');
     instance = await instance.submitForm('#tsf')
-    instance = await instance.waitForPageToLoad();
     instance = await instance.screenshot(null, 'test.png', (err)=>{
         if(!err) {
             console.log('took screenshot');

@@ -17,21 +17,19 @@ class Automator extends AutomatorProxy {
     }
 
     async close(){
-        console.log("closed");
+        console.log("Close browser");
         await this.browser.close();
     }
 
     async goToPage(url) {
-        if(url){
-            console.log(`URL: ${url}`);
-            await this.page.goto(url);
-        }
+        console.log(`Go to page: ${url}`);
+        await this.page.goto(url);
         return this;
     }
 
     async screenshot(selector, path) {  
         if(selector){
-            console.log(`SELECTOR: ${selector}`);
+            console.log(`Take screenshot of: ${selector}`);
             await this.page.evaluate((selector) => {
                 const dom = document.querySelector(selector);
                 if(dom){
@@ -39,28 +37,27 @@ class Automator extends AutomatorProxy {
                 }    
             }, selector);
         }
-        console.log(`PATH: ${path}`);
+        console.log(`Save in: ${path}`);
         await this.page.screenshot({path: path});
         return this;
     }
 
     async fillField(selector, content){
+        console.log(`Fill field: ${selector} = ${content}`)
         await this.page.type(selector, content);
         return this;
     }
 
     async submitForm(selector){
+        console.log(`Submit form: ${selector}`)
         await this.page.$eval(selector, form => form.submit());
+        await this.page.waitForNavigation({waitUntil: 'networkidle2'});
         return this;
     }
 
     async clickButton(selector){
+        console.log(`Click button: ${selector}`)
         await this.page.click(selector);
-        return this;
-    }
-
-    async waitForPageToLoad() {
-        await this.page.waitForNavigation({waitUntil: 'load'});
         return this;
     }
 }
