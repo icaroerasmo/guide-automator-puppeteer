@@ -11,14 +11,12 @@ class AutomatorProxy {
         let err;
         let result;
         try{
-            console.log(`ARGS: ${JSON.stringify(arguments)}`);
             result = await this[methodName].apply(this, args);
         } catch(e) {
-            console.log(`ERRO: ${e}`);
+            console.log(`ERROR: ${e}`);
             err = e;
         } finally {
             let callback = args[args.length-1];
-            console.log(`TIPO: ${typeof callback}`);
             if(callback && typeof callback === 'function'){
                 callback(err);
             }
@@ -33,9 +31,9 @@ class AutomatorProxy {
         let thisPrototype = Object.getPrototypeOf(this);
         let methods = Object.getOwnPropertyNames(thisPrototype).
             filter(m => m !== 'constructor');
-        console.log(`METHODS: ${JSON.stringify(methods)}`);
+        console.log(`IDENTIFIED METHODS: ${JSON.stringify(methods)}`);
         for(let m of methods) {
-            console.log(`SINGLE METHOD: ${m}`);
+            console.log(`PROXY APPLIED TO METHOD: ${m}`);
             const methodName = `_${m}`;
             thisPrototype[methodName] = thisPrototype[m];
             thisPrototype[m] =
