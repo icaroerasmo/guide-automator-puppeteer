@@ -1,7 +1,7 @@
-const InterpreterProxy = require('./AutomatorProxy');
+const AutomatorProxy = require('./AutomatorProxy');
 const puppeteer = require('puppeteer');
 
-class Automator extends InterpreterProxy {
+class Automator extends AutomatorProxy {
 
     async init() {
         this.browser = await puppeteer.launch({
