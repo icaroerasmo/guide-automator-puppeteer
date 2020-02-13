@@ -1,1 +1,1 @@
-# guide-automator-cypress
+# guide-automator-puppeteer
