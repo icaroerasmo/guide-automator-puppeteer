@@ -1,5 +1,6 @@
 const AutomatorProxy = require('./AutomatorProxy');
 const puppeteer = require('puppeteer');
+var md = require('markdown-it')();
 
 class Automator extends AutomatorProxy {
 
@@ -59,6 +60,28 @@ class Automator extends AutomatorProxy {
         console.log(`Click button: ${selector}`)
         await this.page.click(selector);
         return this;
+    }
+
+    async makePDF(content) {
+
+        console.log("Save content as PDF");
+
+        const html = md.render(content);
+
+        console.log('CONTENT:\n')
+        console.log(html)
+
+        await this.page.setViewport({width: 1600, height: 1200, deviceScaleFactor: 2});
+        await this.page.setContent(html, { waitUntil: 'networkidle0' })
+        await this.page.pdf({
+            path: "./test.pdf",
+            format: 'A4',
+            printBackground: true,
+            displayHeaderFooter: true,
+            headerTemplate: "",
+            footerTemplate: "<h1 style='font-size: 12px;width: 100%;margin-left: 5px;'><span class='pageNumber'></span></div>"
+            ,margin: { left: '2cm', top: '3cm', right: '1cm', bottom: '2.5cm' }       
+        });
     }
 }
 

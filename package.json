@@ -1,15 +1,15 @@
 {
-  "name": "guide-automator-cypress",
+  "name": "guide-automator-puppeteer",
   "version": "0.0.1",
   "description": "Utility that eases process of creating a documentation of a software, automating the insertion of images taken from the screen of that software.",
-  "main": "main.mjs",
+  "main": "main.js",
   "scripts": {
     "postinstall": "link-module-alias",
     "preinstall": "command -v link-module-alias && link-module-alias clean || true"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/icaroerasmo/guide-automator-cypress.git"
+    "url": "git+https://github.com/icaroerasmo/guide-automator-puppeteer.git"
   },
   "_moduleAliases": {
     "main": "br/com/guide-automator"
@@ -20,18 +20,19 @@
     "automator",
     "documentation",
     "images",
-    "cypress"
+    "puppeteer"
   ],
   "author": "Ícaro Erasmo Souza Barreiro",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/icaroerasmo/guide-automator-cypress/issues"
+    "url": "https://github.com/icaroerasmo/guide-automator-puppeteer/issues"
   },
-  "homepage": "https://github.com/icaroerasmo/guide-automator-cypress#readme",
+  "homepage": "https://github.com/icaroerasmo/guide-automator-puppeteer#readme",
   "devDependencies": {
     "link-module-alias": "^1.2.0"
   },
   "dependencies": {
+    "markdown-it": "^10.0.0",
     "puppeteer": "^2.1.1"
   }
 }
