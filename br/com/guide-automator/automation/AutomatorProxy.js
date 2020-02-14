@@ -13,7 +13,7 @@ class AutomatorProxy {
         try{
             result = await this[methodName].apply(this, args);
         } catch(e) {
-            console.err(`${e}`);
+            console.log(`${e}`);
             err = e;
         } finally {
             let callback = args[args.length-1];
