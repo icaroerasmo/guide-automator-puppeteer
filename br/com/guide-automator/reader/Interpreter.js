@@ -2,8 +2,8 @@ const fs = require('fs');
 const InterpreterProxy = require('main/reader/InterpreterProxy')
 const Automator = require('main/automation/Automator');
 
-
 class Interpreter extends InterpreterProxy{
+    
     constructor() {
         super();
     }
