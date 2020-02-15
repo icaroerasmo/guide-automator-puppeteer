@@ -1,1 +1,1 @@
-node main
+node main $getopts
