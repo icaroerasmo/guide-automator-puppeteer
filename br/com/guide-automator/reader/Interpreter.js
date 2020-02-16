@@ -22,7 +22,7 @@ class Interpreter extends InterpreterProxy{
         this.instance = await Automator.instance();
         this.readParameters(argv);
         await this.parseFile();
-        await this.instance.makePDF(this.mdContent);
+        await this.instance.makePDF(this.mdContent, `${this.outputFolder}/${this.outputFileName}`);
     }
 
     readParameters(argv){
