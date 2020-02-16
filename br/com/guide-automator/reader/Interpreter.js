@@ -10,31 +10,17 @@ class Interpreter extends InterpreterProxy{
     constructor() {
         super();
         this.mdFile = null;
+        this.mdContent = null;
         this.outputFolder = './'
         this.outputFileName = 'output.pdf'
         this.resourcesFolder = './resources'
     }
 
-    // static async run() {
-    //     console.log(`ARGUMENTS: ${JSON.stringify(process.argv)}`);
-    //     let instance = await Automator.instance();
-    //     instance = await instance.goToPage('https://google.com/')
-    //     instance = await instance.fillField('[name=q]', 'Hello World');
-    //     instance = await instance.submitForm('#tsf')
-    //     instance = await instance.screenshot(null, 'test.png',
-    //      (err)=>{
-    //             if(!err) {
-    //                 console.log('took screenshot');
-    //             }
-    //         });
-    //     await instance.makePDF(fs.readFileSync('./example.md', 'utf8'));
-    //     instance = await instance.close(); 
-    // }
-
     async run(argv) {
         this.instance = await Automator.instance();
         this.readParameters(argv);
         await this.parseFile();
+        await this.instance.makePDF(this.mdContent);
     }
 
     readParameters(argv){
@@ -45,51 +31,57 @@ class Interpreter extends InterpreterProxy{
 
     async parseFile() {
         let stack = [];
-        let mdContent = fs.readFileSync(this.mdFile, 'utf8');
-        for(let i = 0; i < mdContent.length; i++){
+        this.mdContent = fs.readFileSync(this.mdFile, 'utf8');
+        for(let i = 0; i < this.mdContent.length; i++){
             
             const j = i + this.codeMarker.length;
 
-            let substring = mdContent.substring(i, j);
+            let substring = this.mdContent.substring(i, j);
 
             if(substring === this.codeMarker) {
                 if(stack.length == 0){
                     stack.push(i);
                 } else {
                     const start = stack.pop();
-                    const code = mdContent.substring(start+this.codeMarker.length, i);
+                    const code = this.mdContent.substring(start+this.codeMarker.length, i);
 
                     let output = await this.runCommand(code);
 
-            console.log(`OUTPUT: ${output}`)
-
-                    mdContent = Util.replaceAt(start, j, mdContent, output);
+                    this.mdContent = Util.replaceAt(start, j, this.mdContent, output);
 
                     i = start;
                 }
             }
         }
-        console.log(mdContent);
-        return mdContent;
     }
 
-    runCommand(code) {
+    async runCommand(code) {
         let output = 'TESTE 123';
         const lines = code.split('\n');
         for(let line of lines) {
-            const params = line.split('\s+');
+            const params = line.split(/\s+/g);
+            console.log(`PARAMS: ${JSON.stringify(params)}`)
             switch(params[0]) {
                 case 'go-to-page':
+                    await this.instance.goToPage(params[1]);
                     break;
                 case 'screenshot':
+                    await this.instance.screenshot(
+                        params[1] === 'null' ? null : params[1], params[2]);
+                    output = `![${params[1]} ${params[2]}]`
+                    console.log(`OUTPUT: ${output}`)
                     break;
                 case 'fill-field':
+                    await this.instance.fillField(params[1], params.slice(2).join(' '));
                     break;
                 case 'submit-form':
+                    await this.instance.submitForm(params[1]);
                     break;
                 case 'click-button':
                     break;
                 case 'make-pdf':
+                    // console.log(this.mdContent)
+                    // await this.instance.makePDF(this.mdContent);
                     break;
                 default:
                     break;
