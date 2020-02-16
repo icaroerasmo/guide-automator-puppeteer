@@ -8,6 +8,5 @@
 go-to-page https://www.google.com
 fill-field [name=q] Hello World
 submit-form #tsf
-screenshot null test.png
-make-pdf
+screenshot
 ```

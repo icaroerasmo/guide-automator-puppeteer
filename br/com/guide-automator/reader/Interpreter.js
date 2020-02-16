@@ -5,6 +5,7 @@ const Util = require('main/libs/Util');
 
 class Interpreter extends InterpreterProxy{
     
+    printCounter = 1
     codeMarker = "```"
 
     constructor() {
@@ -13,7 +14,7 @@ class Interpreter extends InterpreterProxy{
         this.mdContent = null;
         this.outputFolder = './'
         this.outputFileName = 'output.pdf'
-        this.resourcesFolder = './resources'
+        this.resourcesFolder = './'
     }
 
     async run(argv) {
@@ -56,7 +57,7 @@ class Interpreter extends InterpreterProxy{
     }
 
     async runCommand(code) {
-        let output = 'TESTE 123';
+        let output = '';
         const lines = code.split('\n');
         for(let line of lines) {
             const params = line.split(/\s+/g);
@@ -66,22 +67,21 @@ class Interpreter extends InterpreterProxy{
                     await this.instance.goToPage(params[1]);
                     break;
                 case 'screenshot':
+                    const printName =
+                     `${this.resourcesFolder}/print${this.printCounter++}.png`;
                     await this.instance.screenshot(
-                        params[1] === 'null' ? null : params[1], params[2]);
-                    output = `![${params[1]} ${params[2]}]`
+                        params[1], printName);
+                    output = `![${printName}]`
                     console.log(`OUTPUT: ${output}`)
                     break;
                 case 'fill-field':
-                    await this.instance.fillField(params[1], params.slice(2).join(' '));
+                    await this.instance.fillField(params[1],
+                         params.slice(2).join(' '));
                     break;
                 case 'submit-form':
                     await this.instance.submitForm(params[1]);
                     break;
                 case 'click-button':
-                    break;
-                case 'make-pdf':
-                    // console.log(this.mdContent)
-                    // await this.instance.makePDF(this.mdContent);
                     break;
                 default:
                     break;
