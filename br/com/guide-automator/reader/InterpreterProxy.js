@@ -9,7 +9,7 @@ class InterpreterProxy extends Proxy {
     }
 
     async proxy(methodName, args) {
-       let output = await super.proxy(methodName, args,
+        let output = await super.proxy(methodName, args,
         (err) => {
             this.instance.close();
             if(err){
