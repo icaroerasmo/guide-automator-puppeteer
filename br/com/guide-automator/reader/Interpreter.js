@@ -59,7 +59,9 @@ class Interpreter extends InterpreterProxy{
                     const start = stack.pop();
                     const code = mdContent.substring(start+this.codeMarker.length, i);
 
-                    const output = await this.runCommand(code);
+                    let output = await this.runCommand(code);
+
+            console.log(`OUTPUT: ${output}`)
 
                     mdContent = Util.replaceAt(start, j, mdContent, output);
 
@@ -71,7 +73,7 @@ class Interpreter extends InterpreterProxy{
         return mdContent;
     }
 
-    async runCommand(code) {
+    runCommand(code) {
         let output = 'TESTE 123';
         const lines = code.split('\n');
         for(let line of lines) {
