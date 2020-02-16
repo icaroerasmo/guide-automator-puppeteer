@@ -1,245 +1,81 @@
----
-__Advertisement :)__
+# Github - Getting Started
 
-- __[pica](https://nodeca.github.io/pica/demo/)__ - high quality and fast image
-  resize in browser.
-- __[babelfish](https://github.com/nodeca/babelfish/)__ - developer friendly
-  i18n with plurals support and easy syntax.
+## Create a new account
 
-You will like those projects!
+  First of all, you need access [https://github.com](https://github.com).
 
----
+```javascript
+//Declare global variable
+GDGLOBAL["SITE"] = 'github';
 
-# h1 Heading 8-)
-## h2 Heading
-### h3 Heading
-#### h4 Heading
-##### h5 Heading
-###### h6 Heading
+  //Access url
+  get('https://github.com/');
 
-
-## Horizontal Rules
-
-___
-
----
-
-***
-
-
-## Typographic replacements
-
-Enable typographer option to see result.
-
-(c) (C) (r) (R) (tm) (TM) (p) (P) +-
-
-test.. test... test..... test?..... test!....
-
-!!!!!! ???? ,,  -- ---
-
-"Smartypants, double quotes" and 'single quotes'
-
-
-## Emphasis
-
-**This is bold text**
-
-__This is bold text__
-
-*This is italic text*
-
-_This is italic text_
-
-~~Strikethrough~~
-
-
-## Blockquotes
-
-
-> Blockquotes can also be nested...
->> ...by using additional greater-than signs right next to each other...
-> > > ...or with spaces between arrows.
-
-
-## Lists
-
-Unordered
-
-+ Create a list by starting a line with `+`, `-`, or `*`
-+ Sub-lists are made by indenting 2 spaces:
-  - Marker character change forces new list start:
-    * Ac tristique libero volutpat at
-    + Facilisis in pretium nisl aliquet
-    - Nulla volutpat aliquam velit
-+ Very easy!
-
-Ordered
-
-1. Lorem ipsum dolor sit amet
-2. Consectetur adipiscing elit
-3. Integer molestie lorem at massa
-
-
-1. You can use sequential numbers...
-1. ...or keep all the numbers as `1.`
-
-Start numbering with offset:
-
-57. foo
-1. bar
-
-
-## Code
-
-Inline `code`
-
-Indented code
-
-    // Some comments
-    line 1 of code
-    line 2 of code
-    line 3 of code
-
-
-Block code "fences"
-
-```
-Sample text here...
+  //Take Screenshot of actual state
+  takeScreenshot();
 ```
 
-Syntax highlighting
+After this, you'll need create account, if you don't have, if you have, jump for next topic.
 
-``` js
-var foo = function (bar) {
-  return bar++;
-};
+To create new account, click on 'Sign Up' or fill in the form's fields.
 
-console.log(foo(5));
+```javascript
+  //Take screenshot of css selectors, with no crop and with outline
+  takeScreenshotOf(['a.text-bold:nth-child(4)','.col-md-5'],false,true);
+
+  //Click in button 'sign out'
+  click('button.btn');
+
+  //Take screenshot of actual state
+  takeScreenshot();
+
+  //Sleep for 500ms, if u need wait page load
+  sleep(500);
+
+  //Fill in css selector with text
+  fillIn('#user_login','PutYourUserName');
+  fillIn('#user_email','yourEmail@email.com');
+  fillIn('#user_password','SuperSecretPassword');
+
+  sleep(200);
+
+  //Print text on markdown file
+  console.print('_PS:_ If you agreeing with '+GDGLOBAL["SITE"]+
+  ' terms, you can click on "Create an account"');
+
+  takeScreenshotOf('#signup_button',false,true);
 ```
 
-## Tables
+## Search things
 
-| Option | Description |
-| ------ | ----------- |
-| data   | path to data files to supply the data that will be passed into templates. |
-| engine | engine to be used for processing templates. Handlebars is the default. |
-| ext    | extension to be used for dest files. |
+Github is a repository of so many codes and others things. You can search for a specific repository, person, wiki and etc, using 'Search Github' and write what you want.
 
-Right aligned columns
+```javascript
+  get('https://github.com/');
 
-| Option | Description |
-| ------:| -----------:|
-| data   | path to data files to supply the data that will be passed into templates. |
-| engine | engine to be used for processing templates. Handlebars is the default. |
-| ext    | extension to be used for dest files. |
+  fillIn('.header-search-input','Welbert Serra');
 
+  takeScreenshotOf('.header-search-input',false,true);
 
-## Links
+  //Submit form
+  submit('.js-site-search-form');
 
-[link text](http://dev.nodeca.com)
+  //Wait for element load
+  wait('div.column:nth-child(1)');
 
-[link with title](http://nodeca.github.io/pica/demo/ "title text!")
+  takeScreenshot();
+```
 
-Autoconverted link https://github.com/nodeca/pica (enable linkify to see)
+In this page, we have a extra information. Like:
 
+```javascript
+  //takeScreenshotOf with crop and height ajust
+  takeScreenshotOf('.underline-nav',true,false,'50%');
 
-## Images
+  console.print('We can filter using Repositories, Code, Issues, Wikis and Users (_In this case, i wanted to search myself_)')
 
-![Test](./test.png "Test")
-![Stormtroopocat](https://octodex.github.com/images/stormtroopocat.jpg "The Stormtroopocat")
+  click('a.underline-nav-item:nth-child(6)');
+  sleep(1500);
+  takeScreenshot();
 
-Like links, Images also have a footnote style syntax
-
-![Alt text][id]
-
-With a reference later in the document defining the URL location:
-
-[id]: https://octodex.github.com/images/dojocat.jpg  "The Dojocat"
-
-
-## Plugins
-
-The killer feature of `markdown-it` is very effective support of
-[syntax plugins](https://www.npmjs.org/browse/keyword/markdown-it-plugin).
-
-
-### [Emojies](https://github.com/markdown-it/markdown-it-emoji)
-
-> Classic markup: :wink: :crush: :cry: :tear: :laughing: :yum:
->
-> Shortcuts (emoticons): :-) :-( 8-) ;)
-
-see [how to change output](https://github.com/markdown-it/markdown-it-emoji#change-output) with twemoji.
-
-
-### [Subscript](https://github.com/markdown-it/markdown-it-sub) / [Superscript](https://github.com/markdown-it/markdown-it-sup)
-
-- 19^th^
-- H~2~O
-
-
-### [\<ins>](https://github.com/markdown-it/markdown-it-ins)
-
-++Inserted text++
-
-
-### [\<mark>](https://github.com/markdown-it/markdown-it-mark)
-
-==Marked text==
-
-
-### [Footnotes](https://github.com/markdown-it/markdown-it-footnote)
-
-Footnote 1 link[^first].
-
-Footnote 2 link[^second].
-
-Inline footnote^[Text of inline footnote] definition.
-
-Duplicated footnote reference[^second].
-
-[^first]: Footnote **can have markup**
-
-    and multiple paragraphs.
-
-[^second]: Footnote text.
-
-
-### [Definition lists](https://github.com/markdown-it/markdown-it-deflist)
-
-Term 1
-
-:   Definition 1
-with lazy continuation.
-
-Term 2 with *inline markup*
-
-:   Definition 2
-
-        { some code, part of Definition 2 }
-
-    Third paragraph of definition 2.
-
-_Compact style:_
-
-Term 1
-  ~ Definition 1
-
-Term 2
-  ~ Definition 2a
-  ~ Definition 2b
-
-
-### [Abbreviations](https://github.com/markdown-it/markdown-it-abbr)
-
-This is HTML abbreviation example.
-
-It converts "HTML", but keep intact partial entries like "xxxHTMLyyy" and so on.
-
-*[HTML]: Hyper Text Markup Language
-
-### [Custom containers](https://github.com/markdown-it/markdown-it-container)
-
-::: warning
-*here be dragons*
-:::
+```

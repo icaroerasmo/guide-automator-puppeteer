@@ -9,10 +9,17 @@ class InterpreterProxy extends Proxy {
     }
 
     async proxy(methodName, args) {
-        super.proxy(methodName, args,
-        () => {
+        await super.proxy(methodName, args,
+        (err) => {
             this.instance.close();
+            if(err){
+                process.exit(-1);    
+            }
+            process.exit(0);
         });
+        if(methodName == '_run') {
+            this.instance.close();
+        }
     }
 }
 

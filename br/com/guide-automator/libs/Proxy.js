@@ -16,9 +16,9 @@ class Proxy {
             let callback = args[args.length-1];
             if(!err && callback &&
                  typeof callback === 'function'){
-                callback(err);
+                callback();
             } else if(err) {
-                errorCallback();
+                errorCallback(err);
             }
             return result;
         }
