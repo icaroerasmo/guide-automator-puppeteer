@@ -13,6 +13,7 @@ class Automator extends AutomatorProxy {
             ]
         });
         this.page = await this.browser.newPage();
+        this.page.setViewport({width:1366, height: 768});
         console.log("initialized");
         return this;
     }
@@ -79,8 +80,8 @@ class Automator extends AutomatorProxy {
             printBackground: true,
             displayHeaderFooter: true,
             headerTemplate: "",
-            footerTemplate: "<h1 style='font-size: 12px;width: 100%;margin-left: 5px;'><span class='pageNumber'></span></div>"
-            ,margin: { left: '2cm', top: '3cm', right: '1cm', bottom: '2.5cm' }       
+            footerTemplate: "<h1 style='font-size: 12px;width: 100%;margin-left: 5px;'><span class='pageNumber'></span></div>",
+            margin: { left: '2cm', top: '3cm', right: '1cm', bottom: '2.5cm' }       
         });
     }
 }

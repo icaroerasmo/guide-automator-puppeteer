@@ -2,7 +2,8 @@ const fs = require('fs');
 const InterpreterProxy = require('main/reader/InterpreterProxy')
 const Automator = require('main/automation/Automator');
 const Util = require('main/libs/Util');
-const converter = require('image-to-base64');
+const base64Converter = require('image-to-base64');
+const resize = require('main/libs/ImageResizer');
 
 class Interpreter extends InterpreterProxy{
     
@@ -72,7 +73,8 @@ class Interpreter extends InterpreterProxy{
                      `${this.resourcesFolder}/print${this.printCounter++}.png`;
                     await this.instance.screenshot(
                         params[1], printName);
-                    output = `![${params.slice(2).join(' ')}](data:image/png;base64,${await converter(printName)})`
+                    await resize(printName, 600, 100);
+                    output = `![${params.slice(2).join(' ')}](data:image/png;base64,${await base64Converter(printName)})`
                     console.log(`OUTPUT: ${output}`)
                     break;
                 case 'fill-field':
@@ -83,7 +85,7 @@ class Interpreter extends InterpreterProxy{
                     await this.instance.submitForm(params.slice(1).join(' '));
                     break;
                 case 'click-button':
-                    await this.instance.clickButton(params[1]);
+                    await this.instance.clickButton(params.slice(1).join(' '));
                     break;
                 default:
                     break;
