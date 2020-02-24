@@ -5,15 +5,18 @@ var md = require('markdown-it')();
 class Automator extends AutomatorProxy {
 
     async init() {
+        const width = 1366;
+        const height = 768;
         this.browser = await puppeteer.launch({
             headless: true,
             args: [
             '--no-sandbox',
             '--disable-setuid-sandbox',
+            `--window-size=${width},${height}`
             ]
         });
         this.page = await this.browser.newPage();
-        this.page.setViewport({width:1366, height: 768});
+        this.page.setViewport({width:width, height: height});
         console.log("initialized");
         return this;
     }
@@ -72,7 +75,6 @@ class Automator extends AutomatorProxy {
         console.log('CONTENT:\n')
         console.log(html)
 
-        await this.page.setViewport({width: 1600, height: 1200, deviceScaleFactor: 2});
         await this.page.setContent(html, { waitUntil: 'networkidle0' })
         await this.page.pdf({
             path: outputFilePath,
@@ -80,7 +82,7 @@ class Automator extends AutomatorProxy {
             printBackground: true,
             displayHeaderFooter: true,
             headerTemplate: "",
-            footerTemplate: "<h1 style='font-size: 12px;width: 100%;margin-left: 5px;'><span class='pageNumber'></span></div>",
+            footerTemplate: "<h1 style='font-size: 12px;width: 100%;margin-left: 20px;'><span class='pageNumber'></span></div>",
             margin: { left: '2cm', top: '3cm', right: '1cm', bottom: '2.5cm' }       
         });
     }

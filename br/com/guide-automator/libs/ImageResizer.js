@@ -9,9 +9,9 @@ const Jimp = require('jimp');
  * @param Number height Optional number value of height e.g. 1080.
  * @param Number quality Optional number value of quality of the image e.g. 90.
  */
-module.exports = async (imgPath, width, quality) => {
+module.exports = async (imgPath, height, quality) => {
     const image = await Jimp.read(imgPath);
     await image.quality(quality);
-    await image.resize(width, Jimp.AUTO);
+    await image.resize(Jimp.AUTO, height);
     await image.writeAsync(imgPath);
 };
