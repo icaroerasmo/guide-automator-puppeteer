@@ -16,10 +16,13 @@ class Interpreter extends InterpreterProxy{
         this.mdContent = null;
         this.outputFolder = './'
         this.outputFileName = 'output.pdf'
-        this.resourcesFolder = './'
+        this.resourcesFolder = './resources'
     }
 
     async run(argv) {
+        if(!fs.existsSync(this.resourcesFolder)){
+            fs.mkdirSync(this.resourcesFolder);
+        }
         this.instance = await Automator.instance();
         this.readParameters(argv);
         await this.parseFile();
