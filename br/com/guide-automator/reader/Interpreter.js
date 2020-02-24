@@ -77,7 +77,8 @@ class Interpreter extends InterpreterProxy{
                     await this.instance.screenshot(
                         params[1], printName);
                     await resize(printName, 300, 90);
-                    output = `| ![${params.slice(2).join(' ')}](data:image/png;base64,${await base64Converter(printName)}) |\n|:--:|\n| *${params.slice(2).join(' ')}* |`
+                    output = `| ![${params.slice(2).join(' ')}](data:image/png;base64,`+
+                        `${await base64Converter(printName)}) |\n|:--:|\n| *${params.slice(2).join(' ')}* |`;
                     console.log(`OUTPUT: ${output}`)
                     break;
                 case 'fill-field':
@@ -90,8 +91,10 @@ class Interpreter extends InterpreterProxy{
                 case 'click-button':
                     await this.instance.clickButton(params.slice(1).join(' '));
                     break;
-                default:
+                case '':
                     break;
+                default:
+                    throw new Error('Command not recognized');
             }
         }
         return output;
