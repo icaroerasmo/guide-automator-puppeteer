@@ -8,7 +8,7 @@
 go-to-page https://www.google.com
 fill-field [name=q] Hello World
 submit-form #tsf
-screenshot null Google
+screenshot null Google page printscreen
 ```
 
 ## Github screenshot

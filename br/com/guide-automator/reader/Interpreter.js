@@ -3,7 +3,6 @@ const InterpreterProxy = require('main/reader/InterpreterProxy')
 const Automator = require('main/automation/Automator');
 const Util = require('main/libs/Util');
 const base64Converter = require('image-to-base64');
-const resize = require('main/libs/ImageResizer');
 
 class Interpreter extends InterpreterProxy{
     
@@ -17,16 +16,19 @@ class Interpreter extends InterpreterProxy{
         this.outputFolder = './'
         this.outputFileName = 'output.pdf'
         this.resourcesFolder = './resources'
+        this.tmpFolder = `${this.resourcesFolder}/tmp`;
     }
 
     async run(argv) {
-        if(!fs.existsSync(this.resourcesFolder)){
-            fs.mkdirSync(this.resourcesFolder);
+        if(!fs.existsSync(this.tmpFolder)) {
+            fs.mkdirSync(this.tmpFolder);
         }
         this.instance = await Automator.instance();
         this.readParameters(argv);
         await this.parseFile();
-        await this.instance.makePDF(this.mdContent, `${this.outputFolder}/${this.outputFileName}`);
+        await this.instance.makePDF(this.mdContent,
+            `${this.resourcesFolder}/styles.css`,
+            `${this.outputFolder}/${this.outputFileName}`);
     }
 
     readParameters(argv){
@@ -73,10 +75,9 @@ class Interpreter extends InterpreterProxy{
                     break;
                 case 'screenshot':
                     const printName =
-                     `${this.resourcesFolder}/print${this.printCounter++}.png`;
+                     `${this.tmpFolder}/print${this.printCounter++}.png`;
                     await this.instance.screenshot(
                         params[1], printName);
-                    await resize(printName, 300, 90);
                     output = `| ![${params.slice(2).join(' ')}](data:image/png;base64,`+
                         `${await base64Converter(printName)}) |\n|:--:|\n| *${params.slice(2).join(' ')}* |`;
                     console.log(`OUTPUT: ${output}`)

@@ -34,7 +34,6 @@
   "dependencies": {
     "bower": "^1.8.8",
     "image-to-base64": "^2.0.1",
-    "jimp": "^0.9.3",
     "markdown-it": "^10.0.0",
     "puppeteer": "^2.1.1"
   }

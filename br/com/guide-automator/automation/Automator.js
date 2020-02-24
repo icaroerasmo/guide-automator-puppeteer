@@ -66,7 +66,7 @@ class Automator extends AutomatorProxy {
         return this;
     }
 
-    async makePDF(content, outputFilePath) {
+    async makePDF(content, cssPath, outputFilePath) {
 
         console.log("Save content as PDF");
 
@@ -76,7 +76,8 @@ class Automator extends AutomatorProxy {
         console.log(html)
 
         await this.page.setViewport({width: 2732, height: 1536, deviceScaleFactor: 2});
-        await this.page.setContent(html, { waitUntil: 'networkidle0' })
+        await this.page.setContent(html, { waitUntil: 'networkidle0' });
+        await this.page.addStyleTag({path: cssPath});
         await this.page.pdf({
             path: outputFilePath,
             format: 'A4',
