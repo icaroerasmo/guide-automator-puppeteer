@@ -80,7 +80,7 @@ class Interpreter extends InterpreterProxy{
                          params.slice(2).join(' '));
                     break;
                 case 'submit-form':
-                    await this.instance.submitForm(params[1]);
+                    await this.instance.submitForm(params.slice(1).join(' '));
                     break;
                 case 'click-button':
                     await this.instance.clickButton(params[1]);

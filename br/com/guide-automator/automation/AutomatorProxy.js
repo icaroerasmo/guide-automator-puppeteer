@@ -11,8 +11,11 @@ class AutomatorProxy extends Proxy{
 
     async proxy(methodName, args){
        return await super.proxy(methodName, args,
-        () => {
-            this.browser.close();
+        (err) => {
+            if(err) {
+                this.browser.close();
+                process.exit(-1);
+            }
         })
     }
 }

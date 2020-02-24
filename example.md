@@ -8,5 +8,15 @@
 go-to-page https://www.google.com
 fill-field [name=q] Hello World
 submit-form #tsf
-screenshot null HELLOOOOOOOO
+screenshot null Google
+```
+
+## Github screenshot
+
+```
+go-to-page https://github.com/login
+fill-field #login_field icaroerasmo
+fill-field #password 111111
+click-button .btn
+screenshot null Github
 ```
