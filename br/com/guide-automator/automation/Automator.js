@@ -75,6 +75,7 @@ class Automator extends AutomatorProxy {
         console.log('CONTENT:\n')
         console.log(html)
 
+        await this.page.setViewport({width: 2732, height: 1536, deviceScaleFactor: 2});
         await this.page.setContent(html, { waitUntil: 'networkidle0' })
         await this.page.pdf({
             path: outputFilePath,
@@ -83,7 +84,7 @@ class Automator extends AutomatorProxy {
             displayHeaderFooter: true,
             headerTemplate: "",
             footerTemplate: "<h1 style='font-size: 12px;width: 100%;margin-left: 20px;'><span class='pageNumber'></span></div>",
-            margin: { left: '2cm', top: '3cm', right: '1cm', bottom: '2.5cm' }       
+            margin: { left: '2cm', top: '2cm', right: '1cm', bottom: '2.5cm' }       
         });
     }
 }

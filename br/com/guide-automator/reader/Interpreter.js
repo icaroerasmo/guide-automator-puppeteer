@@ -73,8 +73,8 @@ class Interpreter extends InterpreterProxy{
                      `${this.resourcesFolder}/print${this.printCounter++}.png`;
                     await this.instance.screenshot(
                         params[1], printName);
-                    await resize(printName, 300, 100);
-                    output = `![${params.slice(2).join(' ')}](data:image/png;base64,${await base64Converter(printName)})`
+                    await resize(printName, 300, 90);
+                    output = `| ![${params.slice(2).join(' ')}](data:image/png;base64,${await base64Converter(printName)}) |\n|:--:|\n| *${params.slice(2).join(' ')}* |`
                     console.log(`OUTPUT: ${output}`)
                     break;
                 case 'fill-field':
