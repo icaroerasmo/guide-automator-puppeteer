@@ -1,6 +1,7 @@
 const AutomatorProxy = require('./AutomatorProxy');
 const puppeteer = require('puppeteer');
-var md = require('markdown-it')();
+const md = require('markdown-it')();
+const wkhtmltopdf = require('wkhtmltopdf');
 
 class Automator extends AutomatorProxy {
 
@@ -67,27 +68,49 @@ class Automator extends AutomatorProxy {
         return this;
     }
 
+    // async makePDF(content, cssPath, outputFilePath) {
+
+    //     console.log("Save content as PDF");
+
+    //     const html = md.render(content);
+
+    //     console.log('CONTENT:\n')
+    //     console.log(html)
+
+    //     await this.page.setViewport({width: 2732, height: 1536, deviceScaleFactor: 2});
+    //     await this.page.setContent(html, { waitUntil: 'networkidle0' });
+    //     await this.page.addStyleTag({path: cssPath});
+    //     await this.page.pdf({
+    //         path: outputFilePath,
+    //         format: 'A4',
+    //         printBackground: true,
+    //         displayHeaderFooter: true,
+    //         headerTemplate: "",
+    //         footerTemplate: "<h1 style='font-size: 12px;width: 100%;margin-left: 20px;'><span class='pageNumber'></span></div>",
+    //         margin: { left: '2cm', top: '2cm', right: '1cm', bottom: '2.5cm' }       
+    //     });
+    // }
+
     async makePDF(content, cssPath, outputFilePath) {
 
         console.log("Save content as PDF");
+
+        const options = {
+            pageSize: 'A4',
+            toc: true,
+            tocHeaderText: 'Índice',
+            output: outputFilePath,
+            'user-style-sheet': cssPath,
+            headerFontName: 'Calibri',
+            footerLeft: '[page]'
+        };
 
         const html = md.render(content);
 
         console.log('CONTENT:\n')
         console.log(html)
 
-        await this.page.setViewport({width: 2732, height: 1536, deviceScaleFactor: 2});
-        await this.page.setContent(html, { waitUntil: 'networkidle0' });
-        await this.page.addStyleTag({path: cssPath});
-        await this.page.pdf({
-            path: outputFilePath,
-            format: 'A4',
-            printBackground: true,
-            displayHeaderFooter: true,
-            headerTemplate: "",
-            footerTemplate: "<h1 style='font-size: 12px;width: 100%;margin-left: 20px;'><span class='pageNumber'></span></div>",
-            margin: { left: '2cm', top: '2cm', right: '1cm', bottom: '2.5cm' }       
-        });
+        wkhtmltopdf(html, options);
     }
 }
 

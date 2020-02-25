@@ -1,7 +1,8 @@
-img {
-    height: 300px;
+html {
+    font-family: Calibri,Candara,Segoe,Segoe UI,Optima,Arial,sans-serif; 
 }
 
-th {
+img {
+    height: 300px;
     border: 1px solid #cccccc;
 }
