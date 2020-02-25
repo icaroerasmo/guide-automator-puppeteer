@@ -16,6 +16,7 @@ class Automator extends AutomatorProxy {
             ]
         });
         this.page = await this.browser.newPage();
+        this.page.setCacheEnabled(false);
         this.page.setViewport({width:width, height: height});
         console.log("initialized");
         return this;
@@ -56,11 +57,11 @@ class Automator extends AutomatorProxy {
     async submitForm(selector){
         console.log(`Submit form: ${selector}`)
         await this.page.$eval(selector, form => form.submit());
-        await this.page.waitForNavigation({waitUntil: 'networkidle2'});
+        await this.page.waitForNavigation({waitUntil: 'networkidle0'});
         return this;
     }
 
-    async clickButton(selector){
+    async click(selector){
         console.log(`Click button: ${selector}`)
         await this.page.click(selector);
         return this;
