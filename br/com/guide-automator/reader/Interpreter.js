@@ -126,7 +126,7 @@ class Interpreter extends InterpreterProxy{
                 return;
             case '-cv':
                 this.coverPath = val;
-                console.log(`Cover folder: ${this.coverPath}`);
+                console.log(`Cover path: ${this.coverPath}`);
                 return;
             default:
                 throw new Error(`Parameter \'${key}\' wasn\'t recognized`);
