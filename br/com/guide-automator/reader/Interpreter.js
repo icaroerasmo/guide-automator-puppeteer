@@ -13,10 +13,11 @@ class Interpreter extends InterpreterProxy{
         super();
         this.mdFile = null;
         this.mdContent = null;
-        this.outputFolder = './'
-        this.outputFileName = 'output.pdf'
-        this.resourcesFolder = './resources'
+        this.outputFolder = './';
+        this.outputFileName = 'output.pdf';
+        this.resourcesFolder = './resources';
         this.tmpFolder = `${this.resourcesFolder}/tmp`;
+        this.coverPath = `${this.resourcesFolder}/cover.html`;
     }
 
     async run(argv) {
@@ -27,7 +28,7 @@ class Interpreter extends InterpreterProxy{
         this.readParameters(argv);
         await this.parseFile();
         await this.instance.makePDF(this.mdContent,
-            `${this.resourcesFolder}/cover.html`,
+            this.coverPath,
             `${this.resourcesFolder}/styles.css`,
             `${this.outputFolder}/${this.outputFileName}`);
     }
@@ -35,6 +36,9 @@ class Interpreter extends InterpreterProxy{
     readParameters(argv){
         for(let i = 2; i < argv.length; i++) {
             this.parametersInterpreter(argv[i++], argv[i]);
+        }
+        if(!this.mdFile) {
+            throw new Error('MD file path was not defined.');
         }
     }
 
@@ -119,6 +123,10 @@ class Interpreter extends InterpreterProxy{
             case '-r':
                 this.resourcesFolder = val;
                 console.log(`Resources folder: ${this.resourcesFolder}`);
+                return;
+            case '-cv':
+                this.coverPath = val;
+                console.log(`Cover folder: ${this.coverPath}`);
                 return;
             default:
                 throw new Error(`Parameter \'${key}\' wasn\'t recognized`);

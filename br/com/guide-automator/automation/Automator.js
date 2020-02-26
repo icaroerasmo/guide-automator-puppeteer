@@ -97,6 +97,7 @@ class Automator extends AutomatorProxy {
         console.log("Save content as PDF");
 
         const options = {
+            encoding: 'UTF-8',
             cover: coverPath,
             pageSize: 'A4',
             toc: true,
