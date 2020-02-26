@@ -83,9 +83,12 @@ class Interpreter extends InterpreterProxy{
                      `${this.tmpFolder}/print${this.printCounter++}.png`;
                     await this.instance.screenshot(
                         params[1], printName);
-                    output = `| ![${params.slice(2).join(' ')}](data:image/png;base64,`+
-                        `${await base64Converter(printName)}) |\n|:--:|\n| *${params.slice(2).join(' ')}* |`;
-                    console.log(`OUTPUT: ${output}`)
+
+                    output +=   `<p class="img-wrapper">`+
+                                `   <img src="data:image/png;base64,${await base64Converter(printName)}">`+
+                                `   <em>${params.slice(2).join(' ')}</em>`+
+                                `</p>`;
+
                     break;
                 case 'fill-field':
                     await this.instance.fillField(params[1],
@@ -102,6 +105,7 @@ class Interpreter extends InterpreterProxy{
                 default:
                     throw new Error('Command not recognized');
             }
+            console.log(`OUTPUT: ${output}`)
         }
         return output;
     }

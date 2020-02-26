@@ -2,7 +2,18 @@ html {
     font-family: Calibri,Candara,Segoe,Segoe UI,Optima,Arial,sans-serif; 
 }
 
-img {
+.img-wrapper {
+    text-align: center;
+}
+
+.img-wrapper > img {
     height: 300px;
     border: 1px solid #cccccc;
+}
+
+.img-wrapper > em {
+    display: block;
+    font-style: italic;
+    font-size: 0.7em;
+    margin-top: 0.2em;
 }
