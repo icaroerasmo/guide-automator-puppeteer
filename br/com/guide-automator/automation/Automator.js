@@ -2,6 +2,7 @@ const AutomatorProxy = require('./AutomatorProxy');
 const puppeteer = require('puppeteer');
 const md = require('markdown-it')();
 const wkhtmltopdf = require('wkhtmltopdf');
+const fs = require('fs');
 
 class Automator extends AutomatorProxy {
 
@@ -91,17 +92,17 @@ class Automator extends AutomatorProxy {
     //     });
     // }
 
-    async makePDF(content, cssPath, outputFilePath) {
+    async makePDF(content, coverPath, cssPath, outputFilePath) {
 
         console.log("Save content as PDF");
 
         const options = {
+            cover: coverPath,
             pageSize: 'A4',
             toc: true,
             tocHeaderText: 'Índice',
             output: outputFilePath,
             'user-style-sheet': cssPath,
-            headerFontName: 'Calibri',
             footerLeft: '[page]'
         };
 

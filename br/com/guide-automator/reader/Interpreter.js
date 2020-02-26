@@ -27,6 +27,7 @@ class Interpreter extends InterpreterProxy{
         this.readParameters(argv);
         await this.parseFile();
         await this.instance.makePDF(this.mdContent,
+            `${this.resourcesFolder}/cover.html`,
             `${this.resourcesFolder}/styles.css`,
             `${this.outputFolder}/${this.outputFileName}`);
     }
