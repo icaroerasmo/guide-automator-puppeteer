@@ -68,6 +68,11 @@ class Automator extends AutomatorProxy {
         return this;
     }
 
+    async wait(amount) {
+        await new Promise(resolve => setTimeout(resolve, amount));
+        return this;
+    }
+
     // async makePDF(content, cssPath, outputFilePath) {
 
     //     console.log("Save content as PDF");

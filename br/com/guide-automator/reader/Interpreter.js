@@ -103,6 +103,9 @@ class Interpreter extends InterpreterProxy{
                 case 'click':
                     await this.instance.click(params.slice(1).join(' '));
                     break;
+                case 'wait' :
+                    await this.instance.wait(Number(params[1]));
+                    break;
                 case '':
                     break;
                 default:
