@@ -1,1 +1,1 @@
-node main $getopts
+node main $@
