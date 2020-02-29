@@ -13,11 +13,11 @@ class Interpreter extends InterpreterProxy{
         super();
         this.mdFile = null;
         this.mdContent = null;
+        this.coverPath = null;
         this.outputFolder = './';
         this.outputFileName = 'output.pdf';
         this.resourcesFolder = './resources';
         this.tmpFolder = `${this.resourcesFolder}/tmp`;
-        this.coverPath = `${this.resourcesFolder}/cover.html`;
     }
 
     async run(argv) {
@@ -39,6 +39,9 @@ class Interpreter extends InterpreterProxy{
         }
         if(!this.mdFile) {
             throw new Error('MD file path was not defined.');
+        }
+        if(!this.coverPath) {
+            throw new Error('Cover file path was not defined.');
         }
     }
 

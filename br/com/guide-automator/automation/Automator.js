@@ -2,7 +2,6 @@ const AutomatorProxy = require('./AutomatorProxy');
 const puppeteer = require('puppeteer');
 const md = require('markdown-it')({html: true});
 const wkhtmltopdf = require('wkhtmltopdf');
-const fs = require('fs');
 
 class Automator extends AutomatorProxy {
 
@@ -108,8 +107,6 @@ class Automator extends AutomatorProxy {
         };
 
         const html = md.render(content);
-
-        fs.writeFileSync('output.html', html);
 
         console.log('CONTENT:\n')
         console.log(html)
