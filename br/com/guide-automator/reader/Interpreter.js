@@ -111,7 +111,6 @@ class Interpreter extends InterpreterProxy{
                 default:
                     throw new Error('Command not recognized');
             }
-            console.log(`OUTPUT: ${output}`)
         }
         return output;
     }

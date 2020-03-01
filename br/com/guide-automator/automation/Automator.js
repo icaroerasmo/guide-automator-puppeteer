@@ -18,7 +18,7 @@ class Automator extends AutomatorProxy {
         });
         this.page = await this.browser.newPage();
         this.page.setCacheEnabled(false);
-        this.page.setViewport({width:width, height: height});
+        this.page.setViewport({width: width, height: height});
         console.log("initialized");
         return this;
     }
@@ -69,6 +69,7 @@ class Automator extends AutomatorProxy {
     }
 
     async wait(amount) {
+        console.log(`Waiting for ${amount} milisseconds`)
         await new Promise(resolve => setTimeout(resolve, amount));
         return this;
     }
@@ -111,10 +112,10 @@ class Automator extends AutomatorProxy {
             footerLeft: '[page]'
         };
 
+        console.log('Rendering HTML');
         const html = md.render(content);
 
-        console.log('CONTENT:\n')
-        console.log(html)
+        console.log('Building PDF');
 
         wkhtmltopdf(html, options);
     }
