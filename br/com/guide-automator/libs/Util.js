@@ -8,6 +8,6 @@ module.exports = {
     splitCommandLine: (line) => {
         return line.split(/('.*?'|".*?"|\S+)/g).
             filter(w => w != null && w !== '' && w !== ' ').
-            map(w => w.replace(/"/g, "").replace(/"/g, ""));
+            map(w => w.replace(/"/g, "").replace(/'/g, ""));
     },
 };
