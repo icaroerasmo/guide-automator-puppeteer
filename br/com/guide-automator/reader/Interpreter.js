@@ -73,9 +73,10 @@ class Interpreter extends InterpreterProxy{
 
     async runCommand(code) {
         let output = '';
-        const lines = code.split('\n');
+        const lines = Util.splitCodeIntoLines(code);
+        console.log(`LINES: ${lines}`);
         for(let line of lines) {
-            const params = line.split(/\s+/g);
+            const params = Util.splitCommandLine(line);
             console.log(`PARAMS: ${JSON.stringify(params)}`)
             switch(params[0]) {
                 case 'go-to-page':
@@ -84,27 +85,25 @@ class Interpreter extends InterpreterProxy{
                 case 'screenshot':
                     const printName =
                      `${this.tmpFolder}/print${this.printCounter++}.png`;
-                    await this.instance.screenshot(
+                    
+                     await this.instance.screenshot(
                         params[1], printName);
 
                     output +=   `<p class="img-wrapper">`+
                                 `   <img src="data:image/png;base64,${await base64Converter(printName)}">`+
-                                `   <em>${params.slice(2).join(' ')}</em>`+
+                                `   <em>${params[2]}</em>`+
                                 `</p>`;
 
                     break;
                 case 'fill-field':
                     await this.instance.fillField(params[1],
-                         params.slice(2).join(' '));
+                         params[2]);
                     break;
                 case 'submit-form':
-                    await this.instance.submitForm(params.slice(1).join(' '));
+                    await this.instance.submitForm(params[1]);
                     break;
                 case 'click':
-                    await this.instance.click(params.slice(1).join(' '));
-                    break;
-                case 'wait' :
-                    await this.instance.wait(Number(params[1]));
+                    await this.instance.click(params[1], params[2]);
                     break;
                 case '':
                     break;

@@ -8,23 +8,16 @@
 
 ```
 go-to-page https://g1.globo.com/
-wait 3000
-screenshot null Página principal
-click div.header-principal:nth-child(3) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1)
-wait 500
-screenshot null Menu principal
-wait 500
-click #menu-1-regioes a
-wait 500
-screenshot null Menu regiões
-click #menu-2-nordeste a
-wait 500
-screenshot null Menu Nordeste
-click #menu-3-bahia a
-wait 500
-screenshot null Menu Bahia
-click .first-layer > li:nth-child(3) > a:nth-child(1)
-wait 2000
-screenshot null G1 Bahia
+screenshot null "Página principal"
+click "div.header-principal:nth-child(3) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1)" #menu-container
+screenshot null "Menu principal"
+click "#menu-1-regioes a" #menu-container
+screenshot null "Menu regiões"
+click "#menu-2-nordeste a" #menu-container
+screenshot null "Menu Nordeste"
+click "#menu-3-bahia a" #menu-container
+screenshot null "Menu Bahia"
+click ".first-layer > li:nth-child(3) > a:nth-child(1)" #menu-container
+screenshot null "G1 Bahia"
 ```
 
