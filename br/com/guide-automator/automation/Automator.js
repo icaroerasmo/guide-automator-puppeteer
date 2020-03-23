@@ -58,34 +58,36 @@ class Automator extends AutomatorProxy {
     async submitForm(selector) {
         console.log(`Submit form: ${selector}`)
         await this.page.$eval(selector, form => form.submit());
-        await this.page.waitForNavigation({ waitUntil: 'networkidle0' });
+        await this.page.waitForNavigation({ waitUntil: 'networkidle2' });
         return this;
     }
 
-    async click(clickSelector, animationSelector) {
+    async click(clickSelector, waitType) {
         console.log(`Click button: ${clickSelector}`)
-        await this.page.click(clickSelector);
-        if(animationSelector){
-            await this.waitForTransitionEnd(animationSelector);
+        if(waitType){
+            if(waitType === 'dom'){
+                await this.page.click(clickSelector);
+                await this.waitForTransitionEnd();
+            } else if(waitType === 'network') {
+                await this.page.click(clickSelector);
+                //await this.page.waitForNavigation({waitUntil: 'load'})
+            }
+        } else {
+            await this.page.click(clickSelector);
         }
         return this;
     }
 
-    async waitForTransitionEnd(selector) {
-        return this.page.evaluate((selector) => {
+    async waitForTransitionEnd() {
+        return this.page.evaluate(() => {
             return new Promise((resolve) => {
-                const transition = document.querySelector(selector);
-                if(!!transition){
-                    const onEnd = () => {
-                        transition.removeEventListener('transitionend', onEnd);
-                        resolve();
-                    };
-                    transition.addEventListener('transitionend', onEnd);
-                } else {
+                const onEnd = () => {
+                    document.removeEventListener('transitionend', onEnd);
                     resolve();
-                }
+                };
+                document.addEventListener('transitionend', onEnd);
             });
-        }, selector);
+        });
     }
 
     async makePDF(content, coverPath, cssPath, outputFilePath) {
