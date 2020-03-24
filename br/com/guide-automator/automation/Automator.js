@@ -69,7 +69,10 @@ class Automator extends AutomatorProxy {
         console.log(`HREF: ${href}`);
         if(!href || href === '#') {
             await this.page.click(clickSelector);
-            await this.waitForTransitionEnd(timeout);
+            let hasTimedOut = await this.waitForTransitionEnd(timeout);
+            if(hasTimedOut) {
+                console.log(`Click action on ${clickSelector} has timed out!!!`);
+            }
         } else {
             await this.page.goto(href, { waitUntil: 'networkidle2' });
         }
@@ -81,13 +84,13 @@ class Automator extends AutomatorProxy {
             return new Promise((resolve) => {
                 const onEnd = () => {
                     document.removeEventListener('transitionend', onEnd);
-                    resolve();
+                    resolve(false);
                 };
                 if(!timeout || typeof timeout !== 'number'){
                     timeout = 10000;
                 }
                 setTimeout(() => {
-                    resolve();
+                    resolve(true);
                 }, timeout);
                 document.addEventListener('transitionend', onEnd);
             });
