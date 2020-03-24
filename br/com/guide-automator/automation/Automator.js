@@ -64,7 +64,8 @@ class Automator extends AutomatorProxy {
 
     async click(clickSelector, timeout) {
         console.log(`Click button: ${clickSelector}`)
-        let href = await this.page.$eval(clickSelector, href => href.getAttribute('href'));
+        let href = await this.page.$eval(clickSelector,
+             href => href.getAttribute('href'));
         console.log(`HREF: ${href}`);
         if(!href || href === '#') {
             await this.page.click(clickSelector);
