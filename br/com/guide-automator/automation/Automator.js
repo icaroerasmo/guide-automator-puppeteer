@@ -30,7 +30,7 @@ class Automator extends AutomatorProxy {
 
     async goToPage(url) {
         console.log(`Go to page: ${url}`);
-        await this.page.goto(url);
+        await this.page.goto(url, {waitUntil: 'networkidle2'});
         return this;
     }
 
@@ -62,32 +62,30 @@ class Automator extends AutomatorProxy {
         return this;
     }
 
-    async click(clickSelector, waitType) {
+    async click(clickSelector, timeout) {
         console.log(`Click button: ${clickSelector}`)
-        if(waitType){
-            if(waitType === 'dom'){
-                await this.page.click(clickSelector);
-                await this.waitForTransitionEnd();
-            } else if(waitType === 'network') {
-                await this.page.click(clickSelector);
-                //await this.page.waitForNavigation({waitUntil: 'load'})
-            }
-        } else {
-            await this.page.click(clickSelector);
-        }
+        await this.page.click(clickSelector);
+        await this.waitForTransitionEnd(timeout);
         return this;
     }
 
-    async waitForTransitionEnd() {
-        return this.page.evaluate(() => {
+    async waitForTransitionEnd(timeout) {
+        return this.page.evaluate((timeout) => {
             return new Promise((resolve) => {
                 const onEnd = () => {
                     document.removeEventListener('transitionend', onEnd);
                     resolve();
                 };
+                if(!timeout || typeof timeout !== 'number'){
+                    timeout = 10000;
+                }
+                setTimeout(() => {
+                    console.log('Click function wait timed out!!!');
+                    resolve();
+                }, timeout);
                 document.addEventListener('transitionend', onEnd);
             });
-        });
+        }, timeout);
     }
 
     async makePDF(content, coverPath, cssPath, outputFilePath) {

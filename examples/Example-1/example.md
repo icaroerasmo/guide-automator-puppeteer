@@ -9,14 +9,14 @@
 ```
 go-to-page https://g1.globo.com/
 screenshot null "Página principal"
-click "div.header-principal:nth-child(3) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1)" dom
+click "div.header-principal:nth-child(3) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1)"
 screenshot null "Menu principal"
-click "#menu-1-regioes a" dom
+click "#menu-1-regioes a"
 screenshot null "Menu regiões"
-click "#menu-2-nordeste a" dom
+click "#menu-2-nordeste a"
 screenshot null 'Menu Nordeste'
-click "#menu-3-bahia a" dom
+click "#menu-3-bahia a"
 screenshot null 'Menu Bahia'
-click ".first-layer > li:nth-child(3) > a:nth-child(1)" network
+click ".first-layer > li:nth-child(3) > a:nth-child(1)" 6000
 screenshot null "G1 Bahia"
 ```
