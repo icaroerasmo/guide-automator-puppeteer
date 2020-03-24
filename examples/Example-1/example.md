@@ -11,12 +11,12 @@ go-to-page https://g1.globo.com/
 screenshot null "Página principal"
 click "div.header-principal:nth-child(3) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1)"
 screenshot null "Menu principal"
-click "#menu-1-regioes a"
+click "#menu-1-regioes"
 screenshot null "Menu regiões"
-click "#menu-2-nordeste a"
+click "#menu-2-nordeste"
 screenshot null 'Menu Nordeste'
-click "#menu-3-bahia a"
+click "#menu-3-bahia"
 screenshot null 'Menu Bahia'
-click ".first-layer > li:nth-child(3) > a:nth-child(1)" 6000
+click ".first-layer > li:nth-child(3) > a:nth-child(1)"
 screenshot null "G1 Bahia"
 ```

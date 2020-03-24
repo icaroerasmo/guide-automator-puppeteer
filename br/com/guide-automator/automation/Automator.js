@@ -64,8 +64,14 @@ class Automator extends AutomatorProxy {
 
     async click(clickSelector, timeout) {
         console.log(`Click button: ${clickSelector}`)
-        await this.page.click(clickSelector);
-        await this.waitForTransitionEnd(timeout);
+        let href = await this.page.$eval(clickSelector, href => href.getAttribute('href'));
+        console.log(`HREF: ${href}`);
+        if(!href || href === '#') {
+            await this.page.click(clickSelector);
+            await this.waitForTransitionEnd(timeout);
+        } else {
+            await this.page.goto(href, { waitUntil: 'networkidle2' });
+        }
         return this;
     }
 
@@ -80,7 +86,6 @@ class Automator extends AutomatorProxy {
                     timeout = 10000;
                 }
                 setTimeout(() => {
-                    console.log('Click function wait timed out!!!');
                     resolve();
                 }, timeout);
                 document.addEventListener('transitionend', onEnd);
