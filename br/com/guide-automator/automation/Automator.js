@@ -79,6 +79,11 @@ class Automator extends AutomatorProxy {
         return this;
     }
 
+    async select(selector, value) {
+        await this.page.select(selector, value);
+        return this;
+    }
+
     async waitForTransitionEnd(timeout) {
         return this.page.evaluate((timeout) => {
             return new Promise((resolve) => {
