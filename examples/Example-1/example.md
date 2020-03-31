@@ -7,8 +7,17 @@
 ## G1 screenshots
 
 ```
-go-to-page https://google.com
-screenshot #main "Página principal"
-screenshot 11724 1905 -3 -3 "Menu principal"
+go-to-page https://g1.globo.com/
+viewport 1365 982
+screenshot "Página principal"
+click "div.header-principal:nth-child(3) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1)" #menu-container
 screenshot "Menu principal"
+click "#menu-1-regioes a" #menu-container
+screenshot "Menu regiões"
+click "#menu-2-nordeste a" #menu-container
+screenshot "Menu Nordeste"
+click "#menu-3-bahia" #menu-container
+screenshot "Menu Bahia"
+click '#menu-3-bahia > .menu-level > #menu-4-primeira-pagina > .menu-item-link > .menu-item-title'
+screenshot "G1 Bahia"
 ```
