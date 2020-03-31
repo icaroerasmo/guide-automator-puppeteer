@@ -108,6 +108,9 @@ class Interpreter extends InterpreterProxy{
                 case 'select':
                     await this.instance.select(params[1], params[2])
                     break;
+                case 'viewport':
+                    await this.instance.viewport(params[1], params[2])
+                    break;
                 default:
                     throw new Error('Command not recognized');
             }

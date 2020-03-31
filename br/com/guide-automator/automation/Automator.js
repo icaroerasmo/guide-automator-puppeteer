@@ -7,19 +7,20 @@ const measure = /^\-?\d+(\.\d+)?$/g;
 class Automator extends AutomatorProxy {
 
     async init() {
-        const width = 1366;
-        const height = 768;
+        // const width = 1366;
+        // const height = 768;
         this.browser = await puppeteer.launch({
             headless: true,
             args: [
                 '--no-sandbox',
                 '--disable-setuid-sandbox',
-                `--window-size=${width},${height}`
-            ]
+                // `--window-size=${width},${height}`
+            ],
+            defaultViewport: null
         });
         this.page = await this.browser.newPage();
         this.page.setCacheEnabled(false);
-        this.page.setViewport({ width: width, height: height });
+        // this.page.setViewport({ width: width, height: height });
         console.log("initialized");
         return this;
     }
@@ -51,6 +52,7 @@ class Automator extends AutomatorProxy {
     }
 
     async screenshotFromClip(width, height, left, top, path) {
+        console.log(...arguments);
         const padding = 0;
         let clip = null;
         console.log(`Save in: ${path}`);
@@ -60,7 +62,7 @@ class Automator extends AutomatorProxy {
                 y: Number(top) - padding,
                 width: Number(width) + padding * 2,
                 height: Number(height) + padding * 2
-            } 
+            };
         }
         await this.page.screenshot(
             {
@@ -119,6 +121,11 @@ class Automator extends AutomatorProxy {
     async select(selector, value) {
         await this.page.select(selector, value);
         return this;
+    }
+
+    async viewport(width, height) {
+       await this.page.setViewport({ width: Number(width), height: Number(height) });
+       return this;
     }
 
     async waitForTransitionEnd(timeout) {
