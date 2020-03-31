@@ -2,6 +2,7 @@ const AutomatorProxy = require('./AutomatorProxy');
 const puppeteer = require('puppeteer');
 const md = require('markdown-it')({ html: true });
 const wkhtmltopdf = require('wkhtmltopdf');
+const measure = /^\-?\d+(\.\d+)?$/g;
 
 class Automator extends AutomatorProxy {
 
@@ -34,19 +35,56 @@ class Automator extends AutomatorProxy {
         return this;
     }
 
-    async screenshot(selector, path) {
-        if (selector) {
-            console.log(`Take screenshot of: ${selector}`);
-            await this.page.evaluate((selector) => {
-                const dom = document.querySelector(selector);
-                if (dom) {
-                    dom.scrollIntoView();
-                }
-            }, selector);
+    async screenshot() {
+        if((arguments[0] && arguments[0].match(measure)) &&
+            (arguments[1] && arguments[1].match(measure)) &&
+            (arguments[2] && arguments[2].match(measure)) &&
+            (arguments[3] && arguments[3].match(measure))) {
+            let newArgs = Object.values(arguments).slice(0,4);
+            newArgs.push(arguments[5]);
+            return this.screenshotFromClip(...newArgs);
+        } else if(arguments[0] && arguments[2]){
+            return this.screenshotFromSelector(...arguments);
+        } else {
+            return this.screenshotOfEntire(arguments[1]);
         }
+    }
+
+    async screenshotFromClip(width, height, left, top, path) {
+        const padding = 0;
+        let clip = null;
         console.log(`Save in: ${path}`);
-        await this.page.screenshot({ path: path });
+        console.log(width, height, left, top, path);
+        if(width && height && left && top && path) {
+            clip = {
+                x: Number(left) - padding,
+                y: Number(top) - padding,
+                width: Number(width) + padding * 2,
+                height: Number(height) + padding * 2
+            } 
+        }
+        await this.page.screenshot(
+            {
+                path: path,
+                clip: clip
+            });
         return this;
+    }
+
+    async screenshotOfEntire(path) {
+        return await this.screenshotFromClip(null, null, null, null, path);
+    }
+
+    async screenshotFromSelector() {
+        console.log(`Take screenshot of: ${arguments[0]}`);
+        const rect = await this.page.evaluate(selector => {
+            const element = document.querySelector(selector);
+            if (!element)
+                return null;
+            const {x, y, width, height} = element.getBoundingClientRect();
+            return {width, height, left: x, top: y};
+        }, arguments[0]);
+        return await this.screenshotFromClip(...Object.values(rect), arguments[2]);
     }
 
     async fillField(selector, content) {
