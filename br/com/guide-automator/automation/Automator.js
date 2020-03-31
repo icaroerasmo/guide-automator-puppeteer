@@ -54,7 +54,6 @@ class Automator extends AutomatorProxy {
         const padding = 0;
         let clip = null;
         console.log(`Save in: ${path}`);
-        console.log(width, height, left, top, path);
         if(width && height && left && top && path) {
             clip = {
                 x: Number(left) - padding,
