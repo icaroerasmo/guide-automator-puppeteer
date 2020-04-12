@@ -78,9 +78,25 @@ class Interpreter extends InterpreterProxy{
         }
     }
 
+    async viewportAdjustment(lines) {
+        let index = 0;
+        console.log(`LINES2: ${lines}`);
+        let arr = [];
+        for(let i = 0; i < lines.length; i++) {
+            const line = lines[i];
+            if(line.includes('viewport')){
+                arr.splice(index++, 0, line);
+            } else {
+                arr.push(line);
+            }
+        }
+        return arr;
+    }
+
     async runCommand(code) {
         let output = '';
-        const lines = Util.splitCodeIntoLines(code);
+        let lines = Util.splitCodeIntoLines(code);
+        lines = await this.viewportAdjustment(lines);
         console.log(`LINES: ${lines}`);
         for(let line of lines) {
             const params = Util.splitCommandLine(line);
