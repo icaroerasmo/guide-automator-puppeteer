@@ -7,8 +7,8 @@
 ## G1 screenshots
 
 ```
-go-to-page https://g1.globo.com/
 viewport 1365 982
+go-to-page https://g1.globo.com/
 screenshot "Página principal"
 click "div.header-principal:nth-child(3) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1)" #menu-container
 screenshot "Menu principal"

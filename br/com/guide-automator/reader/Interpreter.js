@@ -2,6 +2,7 @@ const fs = require('fs');
 const InterpreterProxy = require('main/reader/InterpreterProxy')
 const Automator = require('main/automation/Automator');
 const Util = require('main/libs/Util');
+const nodePuppeteerApng = require('node-puppeteer-apng');
 const base64Converter = require('image-to-base64');
 
 class Interpreter extends InterpreterProxy{
@@ -15,7 +16,7 @@ class Interpreter extends InterpreterProxy{
         this.mdContent = null;
         this.coverPath = null;
         this.outputFolder = './';
-        this.outputFileName = 'output.pdf';
+        this.outputFileName = 'output';
         this.resourcesFolder = './resources';
         this.tmpFolder = `${this.resourcesFolder}/tmp`;
     }
@@ -26,11 +27,17 @@ class Interpreter extends InterpreterProxy{
         }
         this.instance = await Automator.instance();
         this.readParameters(argv);
-        await this.parseFile();
-        await this.instance.makePDF(this.mdContent,
-            this.coverPath,
-            `${this.resourcesFolder}/styles.css`,
-            `${this.outputFolder}/${this.outputFileName}`);
+        const runner = async (start, stop) => {
+            start(await this.instance.getPage());
+            await this.parseFile();
+            await this.instance.makePDF(this.mdContent,
+                this.coverPath,
+                `${this.resourcesFolder}/styles.css`,
+                `${this.outputFolder}/${this.outputFileName}.pdf`);
+            stop();
+        };
+        const buffer = await nodePuppeteerApng(runner);
+        fs.writeFile(`${this.outputFolder}/video_${this.outputFileName}.png`, buffer, ()=>{});
     }
 
     readParameters(argv){

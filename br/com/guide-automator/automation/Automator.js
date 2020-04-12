@@ -168,6 +168,10 @@ class Automator extends AutomatorProxy {
 
         wkhtmltopdf(html, options);
     }
+
+    getPage(){
+        return this.page;
+    }
 }
 
 module.exports = {
