@@ -2,7 +2,7 @@ module.exports = {
     replaceAt: (begin, end, str, replacement) => {
         return str.substr(0, begin) + replacement + str.substr(end);
     },
-    splitCodeIntoLines(code) {
+    splitCodeIntoLines: (code) => {
         return code.split('\n').filter(w => !w.match(/^\s*$/g));
     },
     splitCommandLine: (line) => {

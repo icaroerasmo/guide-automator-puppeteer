@@ -80,7 +80,6 @@ class Interpreter extends InterpreterProxy{
 
     async viewportAdjustment(lines) {
         let index = 0;
-        console.log(`LINES2: ${lines}`);
         let arr = [];
         for(let i = 0; i < lines.length; i++) {
             const line = lines[i];
@@ -97,10 +96,8 @@ class Interpreter extends InterpreterProxy{
         let output = '';
         let lines = Util.splitCodeIntoLines(code);
         lines = await this.viewportAdjustment(lines);
-        console.log(`LINES: ${lines}`);
         for(let line of lines) {
             const params = Util.splitCommandLine(line);
-            console.log(`PARAMS: ${JSON.stringify(params)}`)
             switch(params[0]) {
                 case 'go-to-page':
                     await this.instance.goToPage(params[1]);
@@ -145,23 +142,23 @@ class Interpreter extends InterpreterProxy{
         switch(key) {
             case '-i':
                 this.mdFile = val;
-                console.log(`MD file name: ${this.mdFile}`);
+                this.log(`MD file name: ${this.mdFile}`);
                 return
             case '-f':
                 this.outputFileName = val;
-                console.log(`Output file name: ${this.outputFileName}`);
+                this.log(`output file name: ${this.outputFileName}`);
                 return
             case '-o':
                 this.outputFolder = val;
-                console.log(`Output folder: ${this.outputFolder}`);
+                this.log(`output folder: ${this.outputFolder}`);
                 return;
             case '-r':
                 this.resourcesFolder = val;
-                console.log(`Resources folder: ${this.resourcesFolder}`);
+                this.log(`resources folder: ${this.resourcesFolder}`);
                 return;
             case '-cv':
                 this.coverPath = val;
-                console.log(`Cover path: ${this.coverPath}`);
+                this.log(`cover path: ${this.coverPath}`);
                 return;
             default:
                 throw new Error(`Parameter \'${key}\' wasn\'t recognized`);

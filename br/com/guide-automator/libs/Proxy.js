@@ -1,4 +1,7 @@
 class Proxy {
+
+    isVerboseEnabled = true;
+    isDebugEnabled = false;
     
     constructor() {
         this.applyProxy();
@@ -10,7 +13,7 @@ class Proxy {
         try{
             result = await this[methodName].apply(this, args);
         } catch(e) {
-            console.log(`${e}`);
+            this.log(`${e}`);
             err = e;
         } finally {
             let callback = args[args.length-1];
@@ -28,9 +31,10 @@ class Proxy {
         let thisPrototype = Object.getPrototypeOf(this);
         let methods = Object.getOwnPropertyNames(thisPrototype).
             filter(m => m !== 'constructor');
-        console.log(`IDENTIFIED METHODS: ${JSON.stringify(methods)}`);
+        this.debug(`IDENTIFIED METHODS: ${methods.reduce(
+            (buff, meth) => buff + (buff.length <= 0 ? "" : ", ") + meth)}`);
         for(let m of methods) {
-            console.log(`PROXY APPLIED TO METHOD: ${m}`);
+            this.debug(`PROXY APPLIED TO METHOD: ${m}`);
             const methodName = `_${m}`;
             thisPrototype[methodName] = thisPrototype[m];
             thisPrototype[m] =
@@ -39,6 +43,18 @@ class Proxy {
             }
         }
         Object.setPrototypeOf(this, thisPrototype);
+    }
+
+    log(message) {
+        if(this.isVerboseEnabled) {
+            console.log("INFO - "+message);
+        }
+    }
+
+    debug(message) {
+        if(this.isDebugEnabled) {
+            console.log("DEBUG - "+message);
+        }
     }
 }
 module.exports = Proxy;
