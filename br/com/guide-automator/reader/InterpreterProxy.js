@@ -19,7 +19,7 @@ class InterpreterProxy extends Proxy {
             }
             process.exit(0);
         });
-        if(methodName == '_run') {
+        if(this.instance && methodName == '_run') {
             this.instance.close();
         }
 
