@@ -12,7 +12,7 @@ class Proxy {
         try{
             result = await this[methodName].apply(this, args);
         } catch(e) {
-            this.log(`${e}`);
+            console.log(`${e}`);
             err = e;
         } finally {
             let callback = args[args.length-1];

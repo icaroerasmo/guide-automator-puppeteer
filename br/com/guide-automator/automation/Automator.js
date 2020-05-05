@@ -89,7 +89,7 @@ class Automator extends AutomatorProxy {
         const rect = await this.page.evaluate(selector => {
             const element = document.querySelector(selector);
             if (!element)
-                return null;
+                throw new Error(`Selector '${selector}' not found`)
             const {x, y, width, height} = element.getBoundingClientRect();
             return {width, height, left: x, top: y};
         }, arguments[0]);

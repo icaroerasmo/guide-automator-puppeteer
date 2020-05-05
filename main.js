@@ -13,16 +13,10 @@ readParameters = (argv) => {
     for(let i = 2; i < argv.length; i++) {
         const key = argv[i];
         let val = null;
-        if(!argv[i+1].startsWith('-')) {
+        if(argv[i+1] && !argv[i+1].startsWith('-')) {
             val = argv[++i];
         }
         parametersInterpreter(key, val);
-    }
-    if(!mdFile) {
-        throw new Error('MD file path was not defined.');
-    }
-    if(!coverPath) {
-        throw new Error('Cover file path was not defined.');
     }
 };
 

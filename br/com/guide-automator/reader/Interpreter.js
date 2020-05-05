@@ -31,7 +31,7 @@ class Interpreter extends InterpreterProxy{
     }
 
     async run() {
-        this.logParameters();
+        this.checkParameters();
         if(!fs.existsSync(this.tmpFolder)) {
             fs.mkdirSync(this.tmpFolder);
         }
@@ -50,25 +50,35 @@ class Interpreter extends InterpreterProxy{
         fs.writeFile(`${this.outputFolder}/video_${this.outputFileName}.png`, buffer, ()=>{});
     }
     
-    logParameters() {
+    checkParameters() {
         if(this.mdFile){
             this.log(`MD file name: ${this.mdFile}`);
+        } else {
+            throw new Error('MD file path was not defined.');
         }
+
         if(this.outputFileName){
             this.log(`output file name: ${this.outputFileName}`);
         }
+
         if(this.outputFolder){
             this.log(`output folder: ${this.outputFolder}`);
         }
+
         if(this.resourcesFolder){
             this.log(`resources folder: ${this.resourcesFolder}`);
         }
+
         if(this.coverPath){
             this.log(`cover path: ${this.coverPath}`);
+        } else {
+            throw new Error('Cover file path was not defined.');
         }
+
         if(this.isVerboseEnabled){
             this.log(`verbose enabled`);
         }
+        
         if(this.isDebugEnabled){
             this.log(`debug enabled`);
         }
