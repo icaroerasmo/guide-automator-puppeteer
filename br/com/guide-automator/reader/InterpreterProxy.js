@@ -4,8 +4,8 @@ class InterpreterProxy extends Proxy {
     
     instance = null;
 
-    constructor() {
-        super();
+    constructor(isDebugEnabled, isVerboseEnabled) {
+        super(isDebugEnabled, isVerboseEnabled);
     }
 
     async proxy(methodName, args) {

@@ -5,8 +5,8 @@ class AutomatorProxy extends Proxy{
     browser = null;
     page = null;
 
-    constructor() {
-        super();
+    constructor(isDebugEnabled, isVerboseEnabled) {
+        super(isDebugEnabled, isVerboseEnabled);
     }
 
     async proxy(methodName, args){

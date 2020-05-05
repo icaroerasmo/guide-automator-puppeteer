@@ -6,6 +6,10 @@ const measure = /^\-?\d+(\.\d+)?$/g;
 
 class Automator extends AutomatorProxy {
 
+    constructor(isDebugEnabled, isVerboseEnabled) {
+        super(isDebugEnabled, isVerboseEnabled)
+    }
+
     async init() {
         // const width = 1366;
         // const height = 768;
@@ -181,7 +185,7 @@ class Automator extends AutomatorProxy {
 }
 
 module.exports = {
-    instance() {
-        return new Automator().init();
+    instance(isDebugEnabled, isVerboseEnabled) {
+        return new Automator(isDebugEnabled, isVerboseEnabled).init();
     }
 }

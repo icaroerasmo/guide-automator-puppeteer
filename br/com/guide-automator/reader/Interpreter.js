@@ -4,29 +4,39 @@ const Automator = require('main/automation/Automator');
 const Util = require('main/libs/Util');
 const nodePuppeteerApng = require('node-puppeteer-apng');
 const base64Converter = require('image-to-base64');
+const codeMarker = "```"
 
 class Interpreter extends InterpreterProxy{
     
     printCounter = 1
-    codeMarker = "```"
 
-    constructor() {
-        super();
-        this.mdFile = null;
+    constructor(
+        mdFile,
+        coverPath,
+        outputFolder,
+        outputFileName,
+        resourcesFolder,
+        tmpFolder,
+        isDebugEnabled,
+        isVerboseEnabled
+    ) {
+        super(isDebugEnabled, isVerboseEnabled);
+        this.mdFile = mdFile;
+        this.coverPath = coverPath;
+        this.outputFolder = outputFolder;
+        this.outputFileName = outputFileName;
+        this.resourcesFolder = resourcesFolder;
+        this.tmpFolder = tmpFolder;
         this.mdContent = null;
-        this.coverPath = null;
-        this.outputFolder = './';
-        this.outputFileName = 'output';
-        this.resourcesFolder = './resources';
-        this.tmpFolder = `${this.resourcesFolder}/tmp`;
     }
 
-    async run(argv) {
+    async run() {
+        this.logParameters();
         if(!fs.existsSync(this.tmpFolder)) {
             fs.mkdirSync(this.tmpFolder);
         }
-        this.instance = await Automator.instance();
-        this.readParameters(argv);
+        this.instance = await Automator.instance(
+            this.isDebugEnabled, this.isVerboseEnabled);
         const runner = async (start, stop) => {
             start(await this.instance.getPage());
             await this.parseFile();
@@ -39,16 +49,28 @@ class Interpreter extends InterpreterProxy{
         const buffer = await nodePuppeteerApng(runner);
         fs.writeFile(`${this.outputFolder}/video_${this.outputFileName}.png`, buffer, ()=>{});
     }
-
-    readParameters(argv){
-        for(let i = 2; i < argv.length; i++) {
-            this.parametersInterpreter(argv[i++], argv[i]);
+    
+    logParameters() {
+        if(this.mdFile){
+            this.log(`MD file name: ${this.mdFile}`);
         }
-        if(!this.mdFile) {
-            throw new Error('MD file path was not defined.');
+        if(this.outputFileName){
+            this.log(`output file name: ${this.outputFileName}`);
         }
-        if(!this.coverPath) {
-            throw new Error('Cover file path was not defined.');
+        if(this.outputFolder){
+            this.log(`output folder: ${this.outputFolder}`);
+        }
+        if(this.resourcesFolder){
+            this.log(`resources folder: ${this.resourcesFolder}`);
+        }
+        if(this.coverPath){
+            this.log(`cover path: ${this.coverPath}`);
+        }
+        if(this.isVerboseEnabled){
+            this.log(`verbose enabled`);
+        }
+        if(this.isDebugEnabled){
+            this.log(`debug enabled`);
         }
     }
 
@@ -57,16 +79,16 @@ class Interpreter extends InterpreterProxy{
         this.mdContent = fs.readFileSync(this.mdFile, 'utf8');
         for(let i = 0; i < this.mdContent.length; i++){
             
-            const j = i + this.codeMarker.length;
+            const j = i + codeMarker.length;
 
             let substring = this.mdContent.substring(i, j);
 
-            if(substring === this.codeMarker) {
+            if(substring === codeMarker) {
                 if(stack.length == 0){
                     stack.push(i);
                 } else {
                     const start = stack.pop();
-                    const code = this.mdContent.substring(start+this.codeMarker.length, i);
+                    const code = this.mdContent.substring(start+codeMarker.length, i);
 
                     let output = await this.runCommand(code);
 
@@ -136,33 +158,6 @@ class Interpreter extends InterpreterProxy{
             }
         }
         return output;
-    }
-
-    parametersInterpreter(key, val) {
-        switch(key) {
-            case '-i':
-                this.mdFile = val;
-                this.log(`MD file name: ${this.mdFile}`);
-                return
-            case '-f':
-                this.outputFileName = val;
-                this.log(`output file name: ${this.outputFileName}`);
-                return
-            case '-o':
-                this.outputFolder = val;
-                this.log(`output folder: ${this.outputFolder}`);
-                return;
-            case '-r':
-                this.resourcesFolder = val;
-                this.log(`resources folder: ${this.resourcesFolder}`);
-                return;
-            case '-cv':
-                this.coverPath = val;
-                this.log(`cover path: ${this.coverPath}`);
-                return;
-            default:
-                throw new Error(`Parameter \'${key}\' wasn\'t recognized`);
-        }
     }
 }
 module.exports = Interpreter;

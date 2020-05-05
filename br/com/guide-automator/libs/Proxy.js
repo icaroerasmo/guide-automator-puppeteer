@@ -1,9 +1,8 @@
 class Proxy {
-
-    isVerboseEnabled = true;
-    isDebugEnabled = false;
     
-    constructor() {
+    constructor(isDebugEnabled, isVerboseEnabled) {
+        this.isDebugEnabled = isDebugEnabled || false;
+        this.isVerboseEnabled = isVerboseEnabled || false;
         this.applyProxy();
     }
 
@@ -46,7 +45,7 @@ class Proxy {
     }
 
     log(message) {
-        if(this.isVerboseEnabled) {
+        if(this.isDebugEnabled || this.isVerboseEnabled) {
             console.log("INFO - "+message);
         }
     }
