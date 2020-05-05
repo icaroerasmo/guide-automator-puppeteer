@@ -20,4 +20,5 @@ click "#menu-3-bahia" #menu-container
 screenshot "Menu Bahia"
 click '#menu-3-bahia > .menu-level > #menu-4-primeira-pagina > .menu-item-link > .menu-item-title'
 screenshot "G1 Bahia"
+screenshot ".footer > div:nth-child(1)" "footer"
 ```

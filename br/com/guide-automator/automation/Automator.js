@@ -72,8 +72,8 @@ class Automator extends AutomatorProxy {
         return this;
     }
 
-    async screenshotOfEntire(path) {
-        return await this.screenshotFromClip(null, null, null, null, path);
+    screenshotOfEntire(path) {
+        return this.screenshotFromClip(null, null, null, null, path);
     }
 
     async screenshotFromSelector() {
@@ -85,7 +85,10 @@ class Automator extends AutomatorProxy {
             const {x, y, width, height} = element.getBoundingClientRect();
             return {width, height, left: x, top: y};
         }, arguments[0]);
-        return await this.screenshotFromClip(...Object.values(rect), arguments[2]);
+        await this.page.evaluate(rect => {
+            window.scrollTo(rect.left, rect.top);
+        }, rect);
+        return this.screenshotFromClip(...Object.values(rect), arguments[2]);
     }
 
     async fillField(selector, content) {
