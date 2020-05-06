@@ -42,17 +42,7 @@ class Automator extends AutomatorProxy {
     }
 
     async screenshot() {
-        if((arguments[0] && arguments[0].match(measure)) &&
-            (arguments[1] && arguments[1].match(measure)) &&
-            (arguments[2] && arguments[2].match(measure)) &&
-            (arguments[3] && arguments[3].match(measure))) {
-            let newArgs = Object.values(arguments).slice(0,4);
-            newArgs.push(arguments[5]);
-            this.log(`screenshot from clip: width("${newArgs[0]}")` +
-            ` height("${arnewArgsguments[1]}") left("${newArgs[2]}")` +
-            ` top("${newArgs[3]}") path("${newArgs[4]}")`);
-            return this.screenshotFromClip(...newArgs);
-        } else if(arguments[0] && arguments[2]){
+        if(arguments[0] && arguments[2]){
             this.log(`screenshot from selector: selector("${arguments[0]}")` +
             ` path("${arguments[2]}")`);
             return this.screenshotFromSelector(...arguments);
@@ -62,41 +52,41 @@ class Automator extends AutomatorProxy {
         }
     }
 
-    async screenshotFromClip(width, height, left, top, path) {
-        const padding = 0;
-        let clip = null;
-        if(width && height && left && top && path) {
-            clip = {
-                x: Number(left) - padding,
-                y: Number(top) - padding,
-                width: Number(width) + padding * 2,
-                height: Number(height) + padding * 2
-            };
-        }
+    async screenshotImpl(path) {
         await this.page.screenshot(
             {
-                path: path,
-                clip: clip
+                path: path
             });
         return this;
     }
 
     screenshotOfEntire(path) {
-        return this.screenshotFromClip(null, null, null, null, path);
+        return this.screenshotImpl(path);
     }
 
     async screenshotFromSelector() {
-        const rect = await this.page.evaluate(selector => {
+        await this.autoScroll();
+        await this.page.waitForSelector(arguments[0]);
+        await this.page.evaluate(selector => {
             const element = document.querySelector(selector);
-            if (!element)
-                throw new Error(`Selector '${selector}' not found`)
-            const {x, y, width, height} = element.getBoundingClientRect();
-            return {width, height, left: x, top: y};
+            if (!element){
+                throw new Error(`Selector '${selector}' not found`);
+            }
+            element.scrollIntoView();
         }, arguments[0]);
-        await this.page.evaluate(rect => {
-            window.scrollTo(rect.left, rect.top);
-        }, rect);
-        return this.screenshotFromClip(...Object.values(rect), arguments[2]);
+        await this.waitForTransitionEnd(null, arguments[0]);
+        return this.screenshotImpl(arguments[2]);
+    }
+
+    async autoScroll(){
+        await this.page.evaluate(async () => {
+            const distance = 100;
+            const delay = 100;
+            while (document.scrollingElement.scrollTop + window.innerHeight < document.scrollingElement.scrollHeight) {
+              document.scrollingElement.scrollBy(0, distance);
+              await new Promise(resolve => { setTimeout(resolve, delay); });
+            }
+        });
     }
 
     async fillField(selector, content) {
@@ -116,7 +106,6 @@ class Automator extends AutomatorProxy {
         this.log(`clicking: selector("${clickSelector}")`)
         let href = await this.page.$eval(clickSelector,
              href => href.getAttribute('href'));
-        this.debug(`href attribute found: ${href}`);
         if(!href || href === '#') {
             await this.page.click(clickSelector);
             let hasTimedOut = await this.waitForTransitionEnd(timeout);
@@ -124,6 +113,7 @@ class Automator extends AutomatorProxy {
                 this.log(`click action has timed out!!! selector: "${clickSelector}"`);
             }
         } else {
+            this.debug(`href attribute found: ${href}`);
             this.debug(`going to page: ${href}`);
             await this.page.goto(href, { waitUntil: 'networkidle2' });
         }
@@ -136,11 +126,12 @@ class Automator extends AutomatorProxy {
         return this;
     }
 
-    async waitForTransitionEnd(timeout) {
-        return this.page.evaluate((timeout) => {
+    async waitForTransitionEnd(timeout, selector) {
+        return this.page.evaluate((timeout, selector) => {
             return new Promise((resolve) => {
+                const dom = document.querySelector(selector) || document;
                 const onEnd = () => {
-                    document.removeEventListener('transitionend', onEnd);
+                    dom.removeEventListener('transitionend', onEnd);
                     resolve(false);
                 };
                 if(!timeout || typeof timeout !== 'number'){
@@ -149,9 +140,9 @@ class Automator extends AutomatorProxy {
                 setTimeout(() => {
                     resolve(true);
                 }, timeout);
-                document.addEventListener('transitionend', onEnd);
+                dom.addEventListener('transitionend', onEnd);
             });
-        }, timeout);
+        }, timeout, selector);
     }
 
     async makePDF(content, coverPath, cssPath, outputFilePath) {

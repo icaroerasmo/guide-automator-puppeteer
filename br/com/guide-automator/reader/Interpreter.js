@@ -143,7 +143,7 @@ class Interpreter extends InterpreterProxy{
 
                     output +=   `<p class="img-wrapper">`+
                                 `   <img src="data:image/png;base64,${await base64Converter(printName)}">`+
-                                `   <em>${params[5] || params[2] || params[1]}</em>`+
+                                `   <em>${params[2] || params[1]}</em>`+
                                 `</p>`;
 
                     break;
