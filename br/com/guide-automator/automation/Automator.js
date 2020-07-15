@@ -2,6 +2,7 @@ const AutomatorProxy = require('./AutomatorProxy');
 const puppeteer = require('puppeteer');
 const md = require('markdown-it')({ html: true });
 const wkhtmltopdf = require('wkhtmltopdf');
+const mouseHelper = require('../libs/MouseHelper');
 const measure = /^\-?\d+(\.\d+)?$/g;
 
 class Automator extends AutomatorProxy {
@@ -11,20 +12,17 @@ class Automator extends AutomatorProxy {
     }
 
     async init() {
-        // const width = 1366;
-        // const height = 768;
         this.browser = await puppeteer.launch({
             headless: true,
             args: [
                 '--no-sandbox',
                 '--disable-setuid-sandbox',
-                // `--window-size=${width},${height}`
             ],
             defaultViewport: null
         });
         this.page = await this.browser.newPage();
         this.page.setCacheEnabled(false);
-        // this.page.setViewport({ width: width, height: height });
+        await mouseHelper(this.page);
         this.log("initialized");
         return this;
     }
@@ -32,6 +30,7 @@ class Automator extends AutomatorProxy {
     async viewport(width, height) {
         this.log(`setting viewport: width(${width}) height(${height})`);
         await this.page.setViewport({ width: Number(width), height: Number(height) });
+        await this.page.mouse.move(5, 5);
         return this;
      }
 
