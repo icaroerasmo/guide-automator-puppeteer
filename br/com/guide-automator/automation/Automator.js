@@ -22,7 +22,6 @@ class Automator extends AutomatorProxy {
         });
         this.page = await this.browser.newPage();
         this.page.setCacheEnabled(false);
-        await mouseHelper(this.page);
         this.log("initialized");
         return this;
     }
@@ -30,7 +29,7 @@ class Automator extends AutomatorProxy {
     async viewport(width, height) {
         this.log(`setting viewport: width(${width}) height(${height})`);
         await this.page.setViewport({ width: Number(width), height: Number(height) });
-        await this.page.mouse.move(5, 5);
+        await mouseHelper(this.page);
         return this;
      }
 

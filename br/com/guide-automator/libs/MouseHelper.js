@@ -5,6 +5,8 @@ async function MouseHelper(page) {
     // Install mouse helper only for top-level frame.
     if (window !== window.parent)
       return;
+    console.log(window.innerWidth);
+    console.log(window.innerHeight);
     window.addEventListener('DOMContentLoaded', () => {
       const box = document.createElement('puppeteer-mouse-pointer');
       const styleElement = document.createElement('style');
@@ -12,14 +14,14 @@ async function MouseHelper(page) {
         puppeteer-mouse-pointer {
           pointer-events: none;
           position: absolute;
-          top: 0;
+          top: ${window.innerHeight/2}px;
           z-index: 10000;
-          left: 0;
-          width: 50px;
-          height: 50px;
+          left: ${window.innerWidth/2}px;
+          width: 2vw;
+          height: 2vw;
           background: rgba(0,0,0,.4);
           border: 1px solid white;
-          border-radius: 25px;
+          border-radius: 1vw;
           margin: -10px 0 0 -10px;
           padding: 0;
           transition: background .2s, border-radius .2s, border-color .2s;
@@ -34,7 +36,7 @@ async function MouseHelper(page) {
         }
         puppeteer-mouse-pointer.button-3 {
           transition: none;
-          border-radius: 10px;
+          border-radius: 0,04vw;
         }
         puppeteer-mouse-pointer.button-4 {
           transition: none;
