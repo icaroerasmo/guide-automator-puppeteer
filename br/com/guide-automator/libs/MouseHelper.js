@@ -15,7 +15,7 @@ async function MouseHelper(page) {
         pointer-events: none;
         position: absolute;
         top: ${window.innerHeight/2}px;
-        z-index: 10000;
+        z-index: 1000000;
         left: ${window.innerWidth/2}px;
         width: 2vw;
         height: 2vw;
@@ -28,7 +28,7 @@ async function MouseHelper(page) {
       }
       puppeteer-mouse-pointer.button-1 {
         transition: none;
-        background: rgba(0,0,0,0.9);
+        background: rgba(0,0,0,0.9) !important;
       }
       puppeteer-mouse-pointer.button-2 {
         transition: none;
@@ -63,7 +63,7 @@ async function MouseHelper(page) {
         box.classList.remove('button-' + event.which);
       }, true);
       document.addEventListener('scroll', event => {
-        box.style.left = (window.innerWidth/2) + document.scrollingElement.scrollLeft + 'px';
+        //box.style.left = (window.innerWidth/2) + document.scrollingElement.scrollLeft + 'px';
         box.style.top = (window.innerHeight/2) + document.scrollingElement.scrollTop + 'px';
         updateButtons(event.buttons);
       }, true);

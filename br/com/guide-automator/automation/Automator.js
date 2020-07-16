@@ -29,12 +29,12 @@ class Automator extends AutomatorProxy {
     async viewport(width, height) {
         this.log(`setting viewport: width(${width}) height(${height})`);
         await this.page.setViewport({ width: Number(width), height: Number(height) });
-        await mouseHelper(this.page);
         return this;
      }
 
     async goToPage(url) {
         this.log(`going to page: "${url}"`);
+        await mouseHelper(this.page);
         await this.page.goto(url, {waitUntil: 'networkidle2'});
         return this;
     }
