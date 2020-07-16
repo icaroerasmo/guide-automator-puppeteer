@@ -9,7 +9,5 @@
 ```
   viewport 1920 1009
   go-to-page 'https://g1.globo.com/'
-  click 'body > div.glb-grid > main'
-  click '#cookie-banner-lgpd > div > div.cookie-banner-lgpd_button-box > button'
-  screenshot 'Image 1'
+  screenshot '.medium-centered' 'Image 1'
 ```

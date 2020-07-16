@@ -73,22 +73,13 @@ class Automator extends AutomatorProxy {
             element.scrollIntoView();
         }, arguments[0]);
         await this.waitForTransitionEnd(null, arguments[0]);
+        await this.moveCursorToSelector(arguments[0]);
         return this.screenshotImpl(arguments[2]);
-    }
-
-    async autoScroll(){
-        await this.page.evaluate(async () => {
-            const distance = 100;
-            const delay = 100;
-            while (document.scrollingElement.scrollTop + window.innerHeight < document.scrollingElement.scrollHeight) {
-              document.scrollingElement.scrollBy(0, distance);
-              await new Promise(resolve => { setTimeout(resolve, delay); });
-            }
-        });
     }
 
     async fillField(selector, content) {
         this.log(`setting text to input: selector("${selector}") text("${content}")`)
+        await this.moveCursorToSelector(selector);
         await this.page.type(selector, content);
         return this;
     }
@@ -122,6 +113,28 @@ class Automator extends AutomatorProxy {
         this.log(`setting value to select: selector("${selector}") value("${value}")`)
         await this.page.select(selector, value);
         return this;
+    }
+
+    async moveCursorToSelector(selector) {
+        const el = await this.page.$(selector);
+        const boundingBox = await el.boundingBox();
+        return await this.moveCursorToCoordinates(boundingBox);
+    }
+
+    async moveCursorToCoordinates(boundingBox) {
+        await this.page.mouse.move(boundingBox.x + (boundingBox.width/2), boundingBox.y + (boundingBox.height/2));
+        return this;
+    }
+
+    async autoScroll(){
+        await this.page.evaluate(async () => {
+            const distance = 100;
+            const delay = 100;
+            while (document.scrollingElement.scrollTop + window.innerHeight < document.scrollingElement.scrollHeight) {
+              document.scrollingElement.scrollBy(0, distance);
+              await new Promise(resolve => { setTimeout(resolve, delay); });
+            }
+        });
     }
 
     async waitForTransitionEnd(timeout, selector) {
