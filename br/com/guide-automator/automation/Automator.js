@@ -92,7 +92,9 @@ class Automator extends AutomatorProxy {
     }
 
     async click(clickSelector, timeout) {
-        this.log(`clicking: selector("${clickSelector}")`)
+        this.log(`waiting for selector ("${clickSelector}")`);
+        await this.page.waitForSelector(clickSelector);
+        this.log(`clicking: selector("${clickSelector}")`);
         let href = await this.page.$eval(clickSelector,
              href => href.getAttribute('href'));
         if(!href || href === '#') {
@@ -140,15 +142,20 @@ class Automator extends AutomatorProxy {
     async waitForTransitionEnd(timeout, selector) {
         return this.page.evaluate((timeout, selector) => {
             return new Promise((resolve) => {
+                let counter = 0;
                 const dom = document.querySelector(selector) || document;
                 const onEnd = () => {
-                    dom.removeEventListener('transitionend', onEnd);
-                    resolve(false);
+                    counter = counter+1;
+                    if(counter > 1){
+                        dom.removeEventListener('transitionend', onEnd);
+                        resolve(false);
+                    }
                 };
                 if(!timeout || typeof timeout !== 'number'){
                     timeout = 10000;
                 }
                 setTimeout(() => {
+                    dom.removeEventListener('transitionend', onEnd);
                     resolve(true);
                 }, timeout);
                 dom.addEventListener('transitionend', onEnd);

@@ -9,6 +9,7 @@
 ```
 viewport 1365 982
 go-to-page https://g1.globo.com/
+click '.cookie-banner-lgpd_button-box'
 screenshot "Página principal"
 click "div.header-principal:nth-child(3) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1)" #menu-container
 screenshot "Menu principal"
