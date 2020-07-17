@@ -36,6 +36,10 @@ class Automator extends AutomatorProxy {
         this.log(`going to page: "${url}"`);
         await mouseHelper(this.page);
         await this.page.goto(url, {waitUntil: 'networkidle2'});
+        const center = await this.page.evaluate(() => {
+            return { x: window.innerWidth/2, y: window.innerHeight/2 };
+        });
+        await this.page.mouse.move(center.x, center.y);
         return this;
     }
 
@@ -79,6 +83,7 @@ class Automator extends AutomatorProxy {
 
     async fillField(selector, content) {
         this.log(`setting text to input: selector("${selector}") text("${content}")`)
+        await this.page.waitForSelector(selector);
         await this.moveCursorToSelector(selector);
         await this.page.type(selector, content);
         return this;
@@ -92,8 +97,8 @@ class Automator extends AutomatorProxy {
     }
 
     async click(clickSelector, timeout) {
-        this.log(`waiting for selector ("${clickSelector}")`);
         await this.page.waitForSelector(clickSelector);
+        await this.moveCursorToSelector(clickSelector);
         this.log(`clicking: selector("${clickSelector}")`);
         let href = await this.page.$eval(clickSelector,
              href => href.getAttribute('href'));
@@ -113,6 +118,8 @@ class Automator extends AutomatorProxy {
 
     async select(selector, value) {
         this.log(`setting value to select: selector("${selector}") value("${value}")`)
+        await this.page.waitForSelector(selector);
+        await this.moveCursorToSelector(selector);
         await this.page.select(selector, value);
         return this;
     }
@@ -124,7 +131,73 @@ class Automator extends AutomatorProxy {
     }
 
     async moveCursorToCoordinates(boundingBox) {
-        await this.page.mouse.move(boundingBox.x + (boundingBox.width/2), boundingBox.y + (boundingBox.height/2));
+        const destX = boundingBox.x + (boundingBox.width/2);
+        const destY = boundingBox.y + (boundingBox.height/2);
+
+        const getCoordinates = async () => {
+            return await this.page.evaluate(() => {
+                const cursor = document.querySelector('puppeteer-mouse-pointer');
+                return { currentX: Number(cursor.style.left.replace(/px/g, '')),
+                 currentY: Number(cursor.style.top.replace(/px/g, '')) };
+            });
+        }
+
+        const getDxDy = async () => {
+            let coord = await getCoordinates();
+
+            let dX = destX - coord.currentX;
+            let dY = destY - coord.currentY;
+
+            return { dX, dY };
+        }
+
+        const calcDistance = async () => {
+
+            const coord = await getDxDy();
+
+            if(coord.dX < 0) {
+                coord.dX = coord.dX * -1;
+            }
+
+            if(coord.dY < 0) {
+                coord.dY = coord.dY * -1;
+            }
+
+            return coord.dX + coord.dY;
+        };
+
+        this.log(`Distance = ${await calcDistance()}`);
+
+        while(await calcDistance() > 0) {
+
+            this.log(`Distance BEFORE = ${await calcDistance()}`);
+
+            const currCoord = await getCoordinates();
+            const diffCoord = await getDxDy();
+
+            let movX = 0, movY = 0;
+
+            this.log(`CURRENT ${currCoord.currentX} ${currCoord.currentY}`); 
+
+            if(diffCoord.dX < 0) {
+                movX = currCoord.currentX - 10;
+            } else if(diffCoord.dX > 0) {
+                movX = currCoord.currentX + 10;
+            }
+
+            if(diffCoord.dY < 0) {
+                movY = currCoord.currentY - 10;
+            } else if(diffCoord.dY > 0) {
+                movY = currCoord.currentY + 10;
+            }
+
+            this.log(`moving to (${movX}, ${movY})`);
+
+            await this.page.mouse.move(Number(movX), Number(movY));
+
+            this.log(`Distance AFTER = ${await calcDistance()}`);
+
+        }
         return this;
     }
 
