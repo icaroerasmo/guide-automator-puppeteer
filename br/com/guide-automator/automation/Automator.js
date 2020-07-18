@@ -36,10 +36,6 @@ class Automator extends AutomatorProxy {
         this.log(`going to page: "${url}"`);
         await mouseHelper(this.page);
         await this.page.goto(url, {waitUntil: 'networkidle2'});
-        const center = await this.page.evaluate(() => {
-            return { x: window.innerWidth/2, y: window.innerHeight/2 };
-        });
-        await this.page.mouse.move(center.x, center.y);
         return this;
     }
 
@@ -131,16 +127,34 @@ class Automator extends AutomatorProxy {
     }
 
     async moveCursorToCoordinates(boundingBox) {
+        const query = 'puppeteer-mouse-pointer';
         const destX = boundingBox.x + (boundingBox.width/2);
         const destY = boundingBox.y + (boundingBox.height/2);
 
+        const screenSizes = await this.page.evaluate(() => {
+            return { width: window.innerWidth, height: window.innerHeight };
+        });
+
         const getCoordinates = async () => {
-            return await this.page.evaluate(() => {
-                const cursor = document.querySelector('puppeteer-mouse-pointer');
-                return { currentX: Number(cursor.style.left.replace(/px/g, '')),
-                 currentY: Number(cursor.style.top.replace(/px/g, '')) };
-            });
+            await this.page.waitForSelector(query)
+            return await this.page.evaluate((query) => {
+                const cursor = document.querySelector(query);
+                    return { currentX: Number(cursor.style.left.replace(/px/g, '').trim()),
+                        currentY: Number(cursor.style.top.replace(/px/g, '').trim()) };
+            }, query);
         }
+
+        const setPosition = async (x, y) => {
+            await this.page.evaluate((selector, x, y) => {
+                let el = document.querySelector(selector, x, y);
+                el.style.left = `${x}px`;
+                el.style.top = `${y}px`;
+            }, query, x, y);
+        }
+
+        const initialSpot = await getCoordinates();
+
+        await setPosition(initialSpot.currentX, initialSpot.currentY);
 
         const getDxDy = async () => {
             let coord = await getCoordinates();
@@ -163,40 +177,46 @@ class Automator extends AutomatorProxy {
                 coord.dY = coord.dY * -1;
             }
 
-            return coord.dX + coord.dY;
+            return Math.floor(coord.dX) + Math.floor(coord.dY);
         };
 
         this.log(`Distance = ${await calcDistance()}`);
 
-        while(await calcDistance() > 0) {
+        const initDiff = await getDxDy();
+        let diffCoord = initDiff;
 
-            this.log(`Distance BEFORE = ${await calcDistance()}`);
+        const stepSize = 10;
+
+        while(await calcDistance() > stepSize) {
+
+            this.log(`Distance = ${await calcDistance()}`);
 
             const currCoord = await getCoordinates();
-            const diffCoord = await getDxDy();
+            diffCoord = await getDxDy();
 
-            let movX = 0, movY = 0;
+            let movX = currCoord.currentX, movY = currCoord.currentY;
 
             this.log(`CURRENT ${currCoord.currentX} ${currCoord.currentY}`); 
 
-            if(diffCoord.dX < 0) {
-                movX = currCoord.currentX - 10;
-            } else if(diffCoord.dX > 0) {
-                movX = currCoord.currentX + 10;
+            if(diffCoord.dX < 0 && initDiff.dX < 0 && movX - 1 >= 0) {
+                movX = movX - stepSize;
+            } else if(diffCoord.dX > 0 && initDiff.dX > 0 && movX + 1 < screenSizes.width) {
+                movX = movX + stepSize;
             }
 
-            if(diffCoord.dY < 0) {
-                movY = currCoord.currentY - 10;
-            } else if(diffCoord.dY > 0) {
-                movY = currCoord.currentY + 10;
+            if(diffCoord.dY < 0 && initDiff.dY < 0 && movY - 1 >= 0) {
+                movY = movY - stepSize;
+            } else if(diffCoord.dY > 0 && initDiff.dY > 0 && movY + 1 < screenSizes.height) {
+                movY = movY + stepSize;
             }
 
             this.log(`moving to (${movX}, ${movY})`);
 
-            await this.page.mouse.move(Number(movX), Number(movY));
+            if(currCoord.currentX === movX || currCoord.currentY === movY) {
+                break;
+            }
 
-            this.log(`Distance AFTER = ${await calcDistance()}`);
-
+            await setPosition(movX, movY);
         }
         return this;
     }

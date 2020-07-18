@@ -49,11 +49,6 @@ async function MouseHelper(page) {
     `;
       document.head.appendChild(styleElement);
       document.body.appendChild(box);
-      document.addEventListener('mousemove', event => {
-        box.style.left = event.pageX + 'px';
-        box.style.top = event.pageY + 'px';
-        updateButtons(event.buttons);
-      }, true);
       document.addEventListener('mousedown', event => {
         updateButtons(event.buttons);
         box.classList.add('button-' + event.which);
@@ -63,7 +58,6 @@ async function MouseHelper(page) {
         box.classList.remove('button-' + event.which);
       }, true);
       document.addEventListener('scroll', event => {
-        //box.style.left = (window.innerWidth/2) + document.scrollingElement.scrollLeft + 'px';
         box.style.top = (window.innerHeight/2) + document.scrollingElement.scrollTop + 'px';
         updateButtons(event.buttons);
       }, true);
