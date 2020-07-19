@@ -1,9 +1,9 @@
 const AutomatorProxy = require('./AutomatorProxy');
+const MouseSimulator = require('./MouseSimulator');
 const puppeteer = require('puppeteer');
 const md = require('markdown-it')({ html: true });
 const wkhtmltopdf = require('wkhtmltopdf');
 const mouseHelper = require('../libs/MouseHelper');
-const measure = /^\-?\d+(\.\d+)?$/g;
 
 class Automator extends AutomatorProxy {
 
@@ -123,102 +123,8 @@ class Automator extends AutomatorProxy {
     async moveCursorToSelector(selector) {
         const el = await this.page.$(selector);
         const boundingBox = await el.boundingBox();
-        return await this.moveCursorToCoordinates(boundingBox);
-    }
-
-    async moveCursorToCoordinates(boundingBox) {
-        const query = 'puppeteer-mouse-pointer';
-        const destX = boundingBox.x + (boundingBox.width/2);
-        const destY = boundingBox.y + (boundingBox.height/2);
-
-        const screenSizes = await this.page.evaluate(() => {
-            return { width: window.innerWidth, height: window.innerHeight };
-        });
-
-        const getCoordinates = async () => {
-            await this.page.waitForSelector(query)
-            return await this.page.evaluate((query) => {
-                const cursor = document.querySelector(query);
-                    return { currentX: Number(cursor.style.left.replace(/px/g, '').trim()),
-                        currentY: Number(cursor.style.top.replace(/px/g, '').trim()) };
-            }, query);
-        }
-
-        const setPosition = async (x, y) => {
-            await this.page.evaluate((selector, x, y) => {
-                let el = document.querySelector(selector, x, y);
-                el.style.left = `${x}px`;
-                el.style.top = `${y}px`;
-            }, query, x, y);
-        }
-
-        const initialSpot = await getCoordinates();
-
-        await setPosition(initialSpot.currentX, initialSpot.currentY);
-
-        const getDxDy = async () => {
-            let coord = await getCoordinates();
-
-            let dX = destX - coord.currentX;
-            let dY = destY - coord.currentY;
-
-            return { dX, dY };
-        }
-
-        const calcDistance = async () => {
-
-            const coord = await getDxDy();
-
-            if(coord.dX < 0) {
-                coord.dX = coord.dX * -1;
-            }
-
-            if(coord.dY < 0) {
-                coord.dY = coord.dY * -1;
-            }
-
-            return Math.floor(coord.dX) + Math.floor(coord.dY);
-        };
-
-        this.log(`Distance = ${await calcDistance()}`);
-
-        const initDiff = await getDxDy();
-        let diffCoord = initDiff;
-
-        const stepSize = 10;
-
-        while(await calcDistance() > stepSize) {
-
-            this.log(`Distance = ${await calcDistance()}`);
-
-            const currCoord = await getCoordinates();
-            diffCoord = await getDxDy();
-
-            let movX = currCoord.currentX, movY = currCoord.currentY;
-
-            this.log(`CURRENT ${currCoord.currentX} ${currCoord.currentY}`); 
-
-            if(diffCoord.dX < 0 && initDiff.dX < 0 && movX - 1 >= 0) {
-                movX = movX - stepSize;
-            } else if(diffCoord.dX > 0 && initDiff.dX > 0 && movX + 1 < screenSizes.width) {
-                movX = movX + stepSize;
-            }
-
-            if(diffCoord.dY < 0 && initDiff.dY < 0 && movY - 1 >= 0) {
-                movY = movY - stepSize;
-            } else if(diffCoord.dY > 0 && initDiff.dY > 0 && movY + 1 < screenSizes.height) {
-                movY = movY + stepSize;
-            }
-
-            this.log(`moving to (${movX}, ${movY})`);
-
-            if(currCoord.currentX === movX || currCoord.currentY === movY) {
-                break;
-            }
-
-            await setPosition(movX, movY);
-        }
-        return this;
+        return await new MouseSimulator(this.page).
+            moveCursorToCoordinates(boundingBox);
     }
 
     async autoScroll(){
