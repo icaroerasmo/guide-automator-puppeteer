@@ -19,7 +19,7 @@ async function MouseHelper(page) {
         left: ${window.innerWidth/2}px;
         width: 2vw;
         height: 2vw;
-        background: rgba(0,0,0,.4) url("/resources/img/cursor.svg") no-repeat fixed center;
+        background: rgba(0,0,0,.4) url("./resources/img/cursor.svg") no-repeat fixed center;
         border: 1px solid white;
         border-radius: 1vw;
         margin: -10px 0 0 -10px;
