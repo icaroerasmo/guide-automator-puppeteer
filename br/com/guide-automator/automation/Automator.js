@@ -142,7 +142,7 @@ class Automator extends AutomatorProxy {
         return this.page.evaluate((timeout, selector) => {
             return new Promise((resolve) => {
                 let counter = 0;
-                const dom = document.querySelector(selector) || document;
+                const dom = document.querySelector(selector) || document.body;
                 const onEnd = () => {
                     counter = counter+1;
                     if(counter > 1){

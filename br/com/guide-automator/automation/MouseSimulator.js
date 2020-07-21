@@ -28,18 +28,19 @@ class MouseSimulator{
             const x = Number(cursor.style.left.replace(/px/g, '').trim());
             const y = Number(cursor.style.top.replace(/px/g, '').trim());
             
-            if(x === 0 && y === 0) {
+            if( x === 0 && y === 0 ) {
                 return { 
                     currentX: Math.floor(window.innerWidth/2),
                     currentY: Math.floor(window.innerHeight/2) 
                 }
             }
             
-            return { currentX: x,currentY: y };
+            return { currentX: x, currentY: y };
         }, query);
     }
 
     async getDxDy(boundingBox) {
+        console.log(JSON.stringify(boundingBox));
 
         const destX = Math.floor(boundingBox.x + (boundingBox.width/2));
         const destY = Math.floor(boundingBox.y + (boundingBox.height/2));
@@ -70,8 +71,6 @@ class MouseSimulator{
     }
 
     async moveCursorToCoordinates(boundingBox) {
-
-        const screenSizes = await this.getScreenSizes();
 
         console.log(`Distance = ${await this.calcDistance(boundingBox)}`);
 
