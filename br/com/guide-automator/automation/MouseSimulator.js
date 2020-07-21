@@ -40,7 +40,6 @@ class MouseSimulator{
     }
 
     async getDxDy(boundingBox) {
-        console.log(JSON.stringify(boundingBox));
 
         const destX = Math.floor(boundingBox.x + (boundingBox.width/2));
         const destY = Math.floor(boundingBox.y + (boundingBox.height/2));
@@ -72,20 +71,18 @@ class MouseSimulator{
 
     async moveCursorToCoordinates(boundingBox) {
 
-        console.log(`Distance = ${await this.calcDistance(boundingBox)}`);
+        if(boundingBox == null) {
+            return;
+        }
 
         const stepSize = 10;
 
         while(await this.calcDistance(boundingBox) > stepSize) {
 
-            console.log(`Distance = ${await this.calcDistance(boundingBox)}`);
-
             const currCoord = await this.getCursorPosition();
             let diffCoord = await this.getDxDy(boundingBox);
 
             let movX = currCoord.currentX, movY = currCoord.currentY;
-
-            console.log(`CURRENT ${currCoord.currentX} ${currCoord.currentY}`);
 
             if(diffCoord.dX < 0) {
                 movX = movX - stepSize;
@@ -99,11 +96,8 @@ class MouseSimulator{
                 movY = movY + stepSize;
             }
 
-            console.log(`moving to (${movX}, ${movY})`);
-
             await this.setPosition(movX, movY);
         }
-        return this;
     }
 }
 

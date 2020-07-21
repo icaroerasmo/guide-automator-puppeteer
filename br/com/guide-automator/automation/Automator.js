@@ -122,9 +122,11 @@ class Automator extends AutomatorProxy {
 
     async moveCursorToSelector(selector) {
         const el = await this.page.$(selector);
+        const curs = await this.page.$("puppeteer-mouse-pointer");
         const boundingBox = await el.boundingBox();
-        return await new MouseSimulator(this.page).
-            moveCursorToCoordinates(boundingBox);
+        await new MouseSimulator(this.page).
+            moveCursorToCoordinates(boundingBox);        
+        return this;
     }
 
     async autoScroll(){
