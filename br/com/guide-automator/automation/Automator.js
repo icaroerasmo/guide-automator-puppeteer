@@ -22,6 +22,7 @@ class Automator extends AutomatorProxy {
         });
         this.page = await this.browser.newPage();
         this.page.setCacheEnabled(false);
+        await mouseHelper(this.page);
         this.log("initialized");
         return this;
     }
@@ -34,7 +35,6 @@ class Automator extends AutomatorProxy {
 
     async goToPage(url) {
         this.log(`going to page: "${url}"`);
-        await mouseHelper(this.page);
         await this.page.goto(url, {waitUntil: 'networkidle2'});
         return this;
     }
@@ -100,10 +100,10 @@ class Automator extends AutomatorProxy {
              href => href.getAttribute('href'));
         if(!href || href === '#') {
             await this.page.click(clickSelector);
-            let hasTimedOut = await this.waitForTransitionEnd(timeout);
-            if(hasTimedOut) {
-                this.log(`click action has timed out!!! selector: "${clickSelector}"`);
-            }
+            // let hasTimedOut = await this.waitForTransitionEnd(timeout);
+            // if(hasTimedOut) {
+            //     this.log(`click action has timed out!!! selector: "${clickSelector}"`);
+            // }
         } else {
             this.debug(`href attribute found: ${href}`);
             this.debug(`going to page: ${href}`);
@@ -153,13 +153,13 @@ class Automator extends AutomatorProxy {
                     }
                 };
                 if(!timeout || typeof timeout !== 'number'){
-                    timeout = 10000;
+                    timeout = 50000;
                 }
                 setTimeout(() => {
                     dom.removeEventListener('transitionend', onEnd);
                     resolve(true);
                 }, timeout);
-                dom.addEventListener('transitionend', onEnd);
+                //dom.addEventListener('transitionend', onEnd);
             });
         }, timeout, selector);
     }

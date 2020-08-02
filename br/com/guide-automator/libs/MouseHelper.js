@@ -17,18 +17,16 @@ async function MouseHelper(page) {
         top: ${window.innerHeight/2}px;
         z-index: 1000000;
         left: ${window.innerWidth/2}px;
-        width: 2vw;
-        height: 2vw;
-        background: rgba(0,0,0,.4) url("./resources/img/cursor.svg") no-repeat fixed center;
-        border: 1px solid white;
-        border-radius: 1vw;
+        width: 5vw;
+        height: 5vw;
+        border-radius: 2.5vw;
         margin: -10px 0 0 -10px;
         padding: 0;
         transition: background .2s, border-radius .2s, border-color .2s;
       }
       puppeteer-mouse-pointer.button-1 {
         transition: none;
-        background: rgba(0,0,0,0.9) !important;
+        background-color: rgba(0,0,0,0.9) !important;
       }
       puppeteer-mouse-pointer.button-2 {
         transition: none;
@@ -36,7 +34,7 @@ async function MouseHelper(page) {
       }
       puppeteer-mouse-pointer.button-3 {
         transition: none;
-        border-radius: 0,04vw;
+        border-radius: 0.1vw;
       }
       puppeteer-mouse-pointer.button-4 {
         transition: none;
@@ -58,7 +56,8 @@ async function MouseHelper(page) {
         box.classList.remove('button-' + event.which);
       }, true);
       document.addEventListener('scroll', event => {
-        box.style.top = (window.innerHeight/2) + document.scrollingElement.scrollTop + 'px';
+        box.style.top = (window.innerHeight/2) + 
+          document.scrollingElement.scrollTop + 'px';
         updateButtons(event.buttons);
       }, true);
       function updateButtons(buttons) {
