@@ -15,5 +15,12 @@ click "div.header-principal:nth-child(3) > div:nth-child(1) > div:nth-child(1) >
 screenshot "Menu principal"
 click "#menu-1-regioes a" #menu-container
 screenshot "Menu regiões"
+click "#menu-2-nordeste" #menu-container
+screenshot "Menu Nordeste"
+click "#menu-3-bahia" #menu-container
+screenshot "Menu Bahia"
+click '#menu-3-bahia > .menu-level > #menu-4-primeira-pagina > .menu-item-link > .menu-item-title'
+screenshot "G1 Bahia"
+click 'main.glb-grid'
 screenshot '.medium-centered' 'Image 1'
 ```

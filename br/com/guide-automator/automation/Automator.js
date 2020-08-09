@@ -100,10 +100,10 @@ class Automator extends AutomatorProxy {
              href => href.getAttribute('href'));
         if(!href || href === '#') {
             await this.page.click(clickSelector);
-            // let hasTimedOut = await this.waitForTransitionEnd(timeout);
-            // if(hasTimedOut) {
-            //     this.log(`click action has timed out!!! selector: "${clickSelector}"`);
-            // }
+            let hasTimedOut = await this.waitForTransitionEnd(timeout);
+            if(hasTimedOut) {
+                this.log(`click action has timed out!!! selector: "${clickSelector}"`);
+            }
         } else {
             this.debug(`href attribute found: ${href}`);
             this.debug(`going to page: ${href}`);
@@ -159,7 +159,7 @@ class Automator extends AutomatorProxy {
                     dom.removeEventListener('transitionend', onEnd);
                     resolve(true);
                 }, timeout);
-                //dom.addEventListener('transitionend', onEnd);
+                dom.addEventListener('transitionend', onEnd);
             });
         }, timeout, selector);
     }
