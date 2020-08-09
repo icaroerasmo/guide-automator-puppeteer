@@ -5,8 +5,6 @@ async function MouseHelper(page) {
     // Install mouse helper only for top-level frame.
     if (window !== window.parent)
       return;
-    console.log(window.innerWidth);
-    console.log(window.innerHeight);
     window.addEventListener('DOMContentLoaded', () => {
       const box = document.createElement('puppeteer-mouse-pointer');
       const styleElement = document.createElement('style');
