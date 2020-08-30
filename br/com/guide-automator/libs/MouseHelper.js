@@ -13,7 +13,6 @@ async function MouseHelper(page) {
         pointer-events: none;
         position: absolute;
         top: ${window.innerHeight/2}px;
-        z-index: 1000000;
         left: ${window.innerWidth/2}px;
         width: 5vw;
         height: 5vw;

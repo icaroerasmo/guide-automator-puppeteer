@@ -7,6 +7,8 @@ const mouseHelper = require('../libs/MouseHelper');
 
 class Automator extends AutomatorProxy {
 
+    mouseSimulator;
+
     constructor(isDebugEnabled, isVerboseEnabled) {
         super(isDebugEnabled, isVerboseEnabled)
     }
@@ -22,6 +24,8 @@ class Automator extends AutomatorProxy {
         });
         this.page = await this.browser.newPage();
         this.page.setCacheEnabled(false);
+        this.mouseSimulator =
+         new MouseSimulator(this.page);
         await mouseHelper(this.page);
         this.log("initialized");
         return this;
@@ -122,9 +126,8 @@ class Automator extends AutomatorProxy {
 
     async moveCursorToSelector(selector) {
         const el = await this.page.$(selector);
-        const curs = await this.page.$("puppeteer-mouse-pointer");
         const boundingBox = await el.boundingBox();
-        await new MouseSimulator(this.page).
+        await this.mouseSimulator.
             moveCursorToCoordinates(boundingBox);        
         return this;
     }
@@ -133,7 +136,9 @@ class Automator extends AutomatorProxy {
         await this.page.evaluate(async () => {
             const distance = 100;
             const delay = 100;
-            while (document.scrollingElement.scrollTop + window.innerHeight < document.scrollingElement.scrollHeight) {
+            while (document.scrollingElement.scrollTop +
+                 window.innerHeight <
+                 document.scrollingElement.scrollHeight) {
               document.scrollingElement.scrollBy(0, distance);
               await new Promise(resolve => { setTimeout(resolve, delay); });
             }
