@@ -1,4 +1,4 @@
-GUIDE_AUTOMATOR_LIBS=./resources/libs/
+GUIDE_AUTOMATOR_LIBS=$(pwd)/resources/libs
 export PATH=$GUIDE_AUTOMATOR_LIBS/wkhtmltox/bin:$PATH
 
 if [ ! -e "./node_modules" ]; then
