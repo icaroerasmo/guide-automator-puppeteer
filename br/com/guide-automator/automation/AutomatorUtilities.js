@@ -1,7 +1,7 @@
 const MouseSimulator = require('./MouseSimulator');
 
 class AutomatorUtilities {
-    page;
+
     constructor (page) {
         this.page = page;
         this.mouseSimulator = new MouseSimulator(this.page);
