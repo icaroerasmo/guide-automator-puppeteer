@@ -11,4 +11,4 @@ if [ ! -e "./node_modules" ]; then
     npm i  > /dev/null 2>&1
 fi
 
-node main $@
+./main.js $@
