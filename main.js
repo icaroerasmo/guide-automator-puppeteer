@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-;(function () {
+;(() => {
     const Interpreter = require('./br/com/guide-automator/reader/Interpreter');
 
     let mdFile = null;
