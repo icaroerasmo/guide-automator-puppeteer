@@ -35,7 +35,9 @@ class AutomatorUtilities {
     }
 
     async waitForTransitionEnd(timeout, selector) {
-        await this.page.waitForSelector(selector);
+        if(selector){
+            await this.page.waitForSelector(selector);
+        }
         return this.page.evaluate((timeout, selector) => {
             return new Promise((resolve) => {
                 let counter = 0;
