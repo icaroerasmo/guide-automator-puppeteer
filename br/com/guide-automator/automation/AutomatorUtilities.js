@@ -35,10 +35,14 @@ class AutomatorUtilities {
     }
 
     async waitForTransitionEnd(timeout, selector) {
+        await this.page.waitForSelector(selector);
         return this.page.evaluate((timeout, selector) => {
             return new Promise((resolve) => {
                 let counter = 0;
                 const dom = document.querySelector(selector) || document.body;
+                if(!dom) {
+                    throw new Error('Failed to find DOM');
+                }
                 const onEnd = () => {
                     counter = counter+1;
                     if(counter > 1){
