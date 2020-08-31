@@ -1,4 +1,4 @@
-const Proxy = require('main/libs/Proxy')
+const Proxy = require('../libs/Proxy')
 
 class AutomatorProxy extends Proxy{
 

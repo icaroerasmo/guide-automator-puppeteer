@@ -1,4 +1,4 @@
-const Interpreter = require('main/reader/Interpreter');
+const Interpreter = require('./br/com/guide-automator/reader/Interpreter');
 
 let mdFile = null;
 let coverPath = null;
