@@ -2,13 +2,13 @@ const fs = require('fs');
 const InterpreterProxy = require('./InterpreterProxy')
 const Automator = require('../automation/Automator');
 const Util = require('../libs/Util');
-const nodePuppeteerApng = require('node-puppeteer-apng');
+const Recorder = require('../libs/Recorder');
 const base64Converter = require('image-to-base64');
-const videoshow = require('videoshow');
 const codeMarker = "```"
 
 class Interpreter extends InterpreterProxy{
     
+    viewport;
     printCounter = 1
 
     constructor(
@@ -45,13 +45,11 @@ class Interpreter extends InterpreterProxy{
                 this.coverPath,
                 `${this.resourcesFolder}/styles.css`,
                 `${this.outputFolder}/${this.outputFileName}.pdf`);
-            stop();
+            stop(this.viewport);
         };
-        const buffer = await nodePuppeteerApng(runner);
-        const apngFilePath = `${this.outputFolder}/video_${this.outputFileName}.png`;
-        fs.writeFile(apngFilePath, buffer, ()=>{
-            this.createVideoTutorial(apngFilePath);
-        });
+        this.log('Started Recording');
+        const videoPath = await Recorder(runner, this.tmpFolder);
+        this.log('Finished Recording');
     }
     
     checkParameters() {
@@ -140,7 +138,7 @@ class Interpreter extends InterpreterProxy{
                     break;
                 case 'screenshot':
                     const printName =
-                     `${this.tmpFolder}/print${this.printCounter++}.png`;
+                     `${this.tmpFolder}/print_${this.printCounter++}.png`;
                     
                     await this.instance.screenshot(
                         ...params.slice(1), printName);
@@ -165,6 +163,7 @@ class Interpreter extends InterpreterProxy{
                     await this.instance.select(params[1], params[2])
                     break;
                 case 'viewport':
+                    this.viewport = {width: params[1], height: params[2]};
                     await this.instance.viewport(params[1], params[2])
                     break;
                 default:
@@ -172,44 +171,6 @@ class Interpreter extends InterpreterProxy{
             }
         }
         return output;
-    }
-
-    createVideoTutorial(apngFilePath) {
-
-        var images = [
-            '/home/icaroerasmo/guide-automator-puppeteer/resources/tmp/print1.png',
-            '/home/icaroerasmo/guide-automator-puppeteer/resources/tmp/print2.png',
-            '/home/icaroerasmo/guide-automator-puppeteer/resources/tmp/print3.png',
-            '/home/icaroerasmo/guide-automator-puppeteer/resources/tmp/print4.png'
-        ]
-
-        var videoOptions = {
-            fps: 25,
-            loop: 5, // seconds
-            transition: true,
-            transitionDuration: 1, // seconds
-            videoBitrate: 1024,
-            videoCodec: 'libx264',
-            size: '640x?',
-            audioBitrate: '128k',
-            audioChannels: 2,
-            format: 'mp4',
-            pixelFormat: 'yuv420p'
-        }
-
-        videoshow([apngFilePath], videoOptions)
-        // .audio('song.mp3')
-        .save('video.mp4')
-        .on('start', function (command) {
-            console.log('ffmpeg process started:', command)
-        })
-        .on('error', function (err, stdout, stderr) {
-            console.error('Error:', err)
-            console.error('ffmpeg stderr:', stderr)
-        })
-        .on('end', function (output) {
-            console.error('Video created in:', output)
-        })
     }
 }
 module.exports = Interpreter;
