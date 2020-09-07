@@ -1,5 +1,9 @@
 #!/usr/bin/env node
+
 ;(() => {
+    const os = require('os');
+    const fs = require('fs');
+    const path = require('path');
     const Interpreter = require('./br/com/guide-automator/reader/Interpreter');
 
     let mdFile = null;
@@ -9,7 +13,6 @@
     let outputFolder = './';
     let outputFileName = 'output';
     let resourcesFolder = './resources';
-    let tmpFolder = `${resourcesFolder}/tmp`;
 
     readParameters = (argv) => {
         for(let i = 2; i < argv.length; i++) {
@@ -52,14 +55,19 @@
 
     readParameters(process.argv);
 
-    new Interpreter(
-        mdFile,
-        coverPath,
-        outputFolder,
-        outputFileName,
-        resourcesFolder,
-        tmpFolder,
-        isDebugEnabled,
-        isVerboseEnabled
-    ).run();
+    fs.mkdtemp(path.join(os.tmpdir(), '/'),
+        (err, tmpFolder) => {
+            if (err) throw err;
+            new Interpreter(
+                mdFile,
+                coverPath,
+                outputFolder,
+                outputFileName,
+                resourcesFolder,
+                tmpFolder,
+                isDebugEnabled,
+                isVerboseEnabled
+            ).run();
+        }
+    );
 })()
