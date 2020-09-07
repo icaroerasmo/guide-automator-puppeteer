@@ -4,6 +4,7 @@ const Automator = require('../automation/Automator');
 const Util = require('../libs/Util');
 const nodePuppeteerApng = require('node-puppeteer-apng');
 const base64Converter = require('image-to-base64');
+const videoshow = require('videoshow');
 const codeMarker = "```"
 
 class Interpreter extends InterpreterProxy{
@@ -47,7 +48,10 @@ class Interpreter extends InterpreterProxy{
             stop();
         };
         const buffer = await nodePuppeteerApng(runner);
-        fs.writeFile(`${this.outputFolder}/video_${this.outputFileName}.png`, buffer, ()=>{});
+        const apngFilePath = `${this.outputFolder}/video_${this.outputFileName}.png`;
+        fs.writeFile(apngFilePath, buffer, ()=>{
+            this.createVideoTutorial(apngFilePath);
+        });
     }
     
     checkParameters() {
@@ -168,6 +172,44 @@ class Interpreter extends InterpreterProxy{
             }
         }
         return output;
+    }
+
+    createVideoTutorial(apngFilePath) {
+
+        var images = [
+            '/home/icaroerasmo/guide-automator-puppeteer/resources/tmp/print1.png',
+            '/home/icaroerasmo/guide-automator-puppeteer/resources/tmp/print2.png',
+            '/home/icaroerasmo/guide-automator-puppeteer/resources/tmp/print3.png',
+            '/home/icaroerasmo/guide-automator-puppeteer/resources/tmp/print4.png'
+        ]
+
+        var videoOptions = {
+            fps: 25,
+            loop: 5, // seconds
+            transition: true,
+            transitionDuration: 1, // seconds
+            videoBitrate: 1024,
+            videoCodec: 'libx264',
+            size: '640x?',
+            audioBitrate: '128k',
+            audioChannels: 2,
+            format: 'mp4',
+            pixelFormat: 'yuv420p'
+        }
+
+        videoshow([apngFilePath], videoOptions)
+        // .audio('song.mp3')
+        .save('video.mp4')
+        .on('start', function (command) {
+            console.log('ffmpeg process started:', command)
+        })
+        .on('error', function (err, stdout, stderr) {
+            console.error('Error:', err)
+            console.error('ffmpeg stderr:', stderr)
+        })
+        .on('end', function (output) {
+            console.error('Video created in:', output)
+        })
     }
 }
 module.exports = Interpreter;

@@ -28,6 +28,7 @@
     "markdown-it": "^10.0.0",
     "node-puppeteer-apng": "git+https://github.com/TomasHubelbauer/node-puppeteer-apng.git",
     "puppeteer": "^2.1.1",
+    "videoshow": "^0.1.12",
     "wkhtmltopdf": "^0.3.4"
   }
 }
