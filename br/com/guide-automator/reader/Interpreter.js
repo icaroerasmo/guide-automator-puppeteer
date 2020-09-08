@@ -47,9 +47,9 @@ class Interpreter extends InterpreterProxy{
                 `${this.outputFolder}/${this.outputFileName}.pdf`);
             stop(this.viewport);
         };
-        this.log('Started Recording');
+        this.log('started Recording');
         const videoPath = await Recorder(runner, this.tmpFolder);
-        this.log('Finished Recording');
+        this.log('finished Recording');
     }
     
     checkParameters() {
