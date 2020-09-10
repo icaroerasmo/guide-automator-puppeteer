@@ -176,7 +176,7 @@ class Interpreter extends InterpreterProxy{
     async generateSubtitles() {
         let sub = await this.instance.getSubtitles();
         let counter = 1;
-        let epsilon = 500;
+        let epsilon = 250;
         let buffer = '';
         let previous;
         for(let i = 0; i < sub.length; i++) {
