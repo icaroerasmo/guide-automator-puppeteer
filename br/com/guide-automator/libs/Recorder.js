@@ -17,7 +17,7 @@ const videoRenderer = (viewport, outputFolder) => {
 
     let args = [
         '-y',
-        '-r', '5',
+        '-r', '10',
         '-f', 'image2',
         '-s', `${viewport.width}x${viewport.height}`,
         '-i', `${outputFolder}/${framePrefix}%d.png`, 
