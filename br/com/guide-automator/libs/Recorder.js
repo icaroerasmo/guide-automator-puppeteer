@@ -23,7 +23,8 @@ const videoRenderer = (viewport, outputFolder) => {
         '-i', `${outputFolder}/${framePrefix}%d.png`, 
         '-vcodec', 'libx264',
         '-crf', '25',
-        '-pix_fmt', 'yuv420p', 
+        '-pix_fmt', 'yuv420p',
+        '-vf', `subtitles=${outputFolder}/subtitles.srt`,
         outputPath
     ];
 

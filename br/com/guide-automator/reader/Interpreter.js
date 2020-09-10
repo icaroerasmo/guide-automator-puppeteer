@@ -1,4 +1,6 @@
 const fs = require('fs');
+const md = require('markdown-it')({ html: true });
+const wkhtmltopdf = require('wkhtmltopdf');
 const InterpreterProxy = require('./InterpreterProxy')
 const Automator = require('../automation/Automator');
 const Util = require('../libs/Util');
@@ -41,10 +43,8 @@ class Interpreter extends InterpreterProxy{
         const runner = async (start, stop) => {
             start(await this.instance.getPage());
             await this.parseFile();
-            await this.instance.makePDF(this.mdContent,
-                this.coverPath,
-                `${this.resourcesFolder}/styles.css`,
-                `${this.outputFolder}/${this.outputFileName}.pdf`);
+            await this.makePDF();
+            await this.generateSubtitles();
             stop(this.viewport);
         };
         this.log('started Recording');
@@ -171,6 +171,53 @@ class Interpreter extends InterpreterProxy{
             }
         }
         return output;
+    }
+
+    async generateSubtitles() {
+        let sub = await this.instance.getSubtitles();
+        let counter = 1;
+        let epsilon = 500;
+        let buffer = '';
+        let previous;
+        for(let i = 0; i < sub.length; i++) {
+
+            let s = sub[i];
+            let offset = s.sub.length * epsilon;
+
+            if(previous && previous.finalChk > s.checkpoint) {
+                s.checkpoint = Number(previous.finalChk) + epsilon;
+            }
+
+            s.finalChk = Number(s.checkpoint) + offset;
+
+            let _beginning = Util.formattedTime(s.checkpoint);
+            let _end = Util.formattedTime(s.finalChk);
+            buffer += `${counter++}\n${_beginning} --> ${_end}\n${s.sub}\n\n`;
+
+            previous = s;
+        }
+
+        fs.writeFile(`${this.tmpFolder}/subtitles.srt`, buffer, 'utf8', function (err) {});
+    }
+
+    makePDF() {
+
+        const options = {
+            encoding: 'UTF-8',
+            cover: this.coverPath,
+            pageSize: 'A4',
+            toc: true,
+            tocHeaderText: 'Índice',
+            output: `${this.outputFolder}/${this.outputFileName}.pdf`,
+            'user-style-sheet': `${this.resourcesFolder}/styles.css`,
+            footerLeft: '[page]'
+        };
+
+        this.log('rendering HTML...');
+        const html = md.render(this.mdContent);
+
+        this.log('building PDF...');
+        wkhtmltopdf(html, options);
     }
 }
 module.exports = Interpreter;

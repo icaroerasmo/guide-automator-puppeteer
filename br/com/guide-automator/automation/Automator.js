@@ -1,11 +1,11 @@
 const AutomatorProxy = require('./AutomatorProxy');
 const AutomatorUtilities = require('./AutomatorUtilities');
 const puppeteer = require('puppeteer');
-const md = require('markdown-it')({ html: true });
-const wkhtmltopdf = require('wkhtmltopdf');
 const mouseHelper = require('../libs/MouseHelper');
 
 class Automator extends AutomatorProxy {
+
+    subtitles = [];
 
     constructor(isDebugEnabled, isVerboseEnabled) {
         super(isDebugEnabled, isVerboseEnabled)
@@ -25,6 +25,7 @@ class Automator extends AutomatorProxy {
         this.automatorUtilities = new AutomatorUtilities(this.page);
          await mouseHelper(this.page);
         this.log("initialized");
+        this.start = Date.now()
         return this;
     }
 
@@ -42,10 +43,12 @@ class Automator extends AutomatorProxy {
 
     async screenshot() {
         if(arguments[0] && arguments[2]){
+            this.subtitles.push({sub: arguments[1], checkpoint: Date.now() - this.start });
             this.log(`screenshot from selector: selector("${arguments[0]}")` +
             ` path("${arguments[2]}")`);
             return this.automatorUtilities.screenshotFromSelector(...arguments);
         } else {
+            this.subtitles.push({sub: arguments[0], checkpoint: Date.now() - this.start})
             this.log(`screenshot of whole page: path("${arguments[1]}")`);
             return this.automatorUtilities.screenshotOfEntire(arguments[1]);
         }
@@ -94,28 +97,12 @@ class Automator extends AutomatorProxy {
         return this;
     }
 
-    getPage(){
-        return this.page;
+    getSubtitles() {
+        return this.subtitles;
     }
 
-    async makePDF(content, coverPath, cssPath, outputFilePath) {
-
-        const options = {
-            encoding: 'UTF-8',
-            cover: coverPath,
-            pageSize: 'A4',
-            toc: true,
-            tocHeaderText: 'Índice',
-            output: outputFilePath,
-            'user-style-sheet': cssPath,
-            footerLeft: '[page]'
-        };
-
-        this.log('rendering HTML...');
-        const html = md.render(content);
-
-        this.log('building PDF...');
-        wkhtmltopdf(html, options);
+    getPage(){
+        return this.page;
     }
 
     async close() {
