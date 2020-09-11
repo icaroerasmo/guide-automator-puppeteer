@@ -1,3 +1,4 @@
+const { performance } = require('perf_hooks');
 const fs = require('fs');
 const md = require('markdown-it')({ html: true });
 const wkhtmltopdf = require('wkhtmltopdf');
@@ -42,10 +43,15 @@ class Interpreter extends InterpreterProxy{
             this.isDebugEnabled, this.isVerboseEnabled);
         const runner = async (start, stop) => {
             start(await this.instance.getPage());
+            const startTime = performance.now();
+            await this.instance.setStartTime(startTime);
             await this.parseFile();
+            const endTime = performance.now();
             await this.makePDF();
             await this.generateSubtitles();
-            stop(this.viewport);
+            let elapsedTime = (endTime - startTime)/1000;
+            this.log(`Total time: ${elapsedTime} seconds`);
+            stop(this.viewport, elapsedTime);
         };
         this.log('started Recording');
         const videoPath = await Recorder(runner, this.tmpFolder);
@@ -183,10 +189,6 @@ class Interpreter extends InterpreterProxy{
 
             let s = sub[i];
             let offset = s.sub.length * epsilon;
-
-            if(previous && previous.finalChk > s.checkpoint) {
-                s.checkpoint = Number(previous.finalChk) + epsilon;
-            }
 
             s.finalChk = Number(s.checkpoint) + offset;
 

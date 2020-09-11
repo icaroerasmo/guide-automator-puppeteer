@@ -1,3 +1,4 @@
+const { performance } = require('perf_hooks');
 const AutomatorProxy = require('./AutomatorProxy');
 const AutomatorUtilities = require('./AutomatorUtilities');
 const puppeteer = require('puppeteer');
@@ -25,7 +26,6 @@ class Automator extends AutomatorProxy {
         this.automatorUtilities = new AutomatorUtilities(this.page);
          await mouseHelper(this.page);
         this.log("initialized");
-        this.start = Date.now()
         return this;
     }
 
@@ -43,12 +43,12 @@ class Automator extends AutomatorProxy {
 
     async screenshot() {
         if(arguments[0] && arguments[2]){
-            this.subtitles.push({sub: arguments[1], checkpoint: Date.now() - this.start });
+            this.subtitles.push({sub: arguments[1], checkpoint: performance.now() - this.start });
             this.log(`screenshot from selector: selector("${arguments[0]}")` +
             ` path("${arguments[2]}")`);
             return this.automatorUtilities.screenshotFromSelector(...arguments);
         } else {
-            this.subtitles.push({sub: arguments[0], checkpoint: Date.now() - this.start})
+            this.subtitles.push({sub: arguments[0], checkpoint: performance.now() - this.start})
             this.log(`screenshot of whole page: path("${arguments[1]}")`);
             return this.automatorUtilities.screenshotOfEntire(arguments[1]);
         }
@@ -101,8 +101,12 @@ class Automator extends AutomatorProxy {
         return this.subtitles;
     }
 
-    getPage(){
+    getPage() {
         return this.page;
+    }
+
+    setStartTime(start) {
+        this.start = start;
     }
 
     async close() {
