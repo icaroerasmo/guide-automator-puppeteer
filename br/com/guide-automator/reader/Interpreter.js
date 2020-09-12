@@ -44,21 +44,16 @@ class Interpreter extends InterpreterProxy{
             this.isDebugEnabled, this.isVerboseEnabled);
         const runner = async (start, stop) => {
             start(await this.instance.getPage());
-            const startTime = performance.now();
-            await this.instance.setStartTime(startTime);
             await this.parseFile();
-            const endTime = performance.now();
             await this.makePDF();
             await this.generateSubtitles();
-            let elapsedTime = (endTime - startTime)/1000;
-            this.log(`Total time: ${elapsedTime} seconds`);
-            stop(this.viewport, elapsedTime);
+            stop();
         };
         this.log('started Recording');
         const videoPngBuffer = await nodePuppeteerApng(runner);
         const filePath = `${this.tmpFolder}/video.png`;
         fs.writeFileSync(filePath, videoPngBuffer, () => {});
-        const videoPath = await converter(this.tmpFolder, filePath);
+        await converter(this.tmpFolder, filePath);
         this.log('finished Recording');
     }
     
@@ -99,8 +94,8 @@ class Interpreter extends InterpreterProxy{
     async parseFile() {
         let stack = [];
         this.mdContent = fs.readFileSync(this.mdFile, 'utf8');
+        let startTime = performance.now();
         for(let i = 0; i < this.mdContent.length; i++){
-            
             const j = i + codeMarker.length;
 
             let substring = this.mdContent.substring(i, j);
@@ -120,6 +115,10 @@ class Interpreter extends InterpreterProxy{
                 }
             }
         }
+        let endTime = performance.now();
+
+        let elapsedTime = (endTime - startTime)/1000;
+        this.log(`Total time: ${elapsedTime} seconds`);
     }
 
     async viewportAdjustment(lines) {
@@ -180,6 +179,7 @@ class Interpreter extends InterpreterProxy{
                     throw new Error('Command not recognized');
             }
         }
+
         return output;
     }
 
@@ -195,6 +195,13 @@ class Interpreter extends InterpreterProxy{
             let offset = s.sub.length * epsilon;
 
             s.finalChk = Number(s.checkpoint) + offset;
+
+            if(i < sub.length - 1) {
+                let next = sub[i+1];
+                if(s.finalChk > next.checkpoint) {
+                    s.finalChk = next.checkpoint - 1;
+                }
+            } 
 
             let _beginning = Util.formattedTime(s.checkpoint);
             let _end = Util.formattedTime(s.finalChk);

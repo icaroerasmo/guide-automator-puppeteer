@@ -12,11 +12,10 @@ class AutomatorUtilities {
             {
                 path: path
             });
-        return this;
     }
 
-    screenshotOfEntire(path) {
-        return this.screenshotImpl(path);
+    async screenshotOfEntire(path) {
+        await this.screenshotImpl(path);
     }
 
     async screenshotFromSelector() {
@@ -31,7 +30,7 @@ class AutomatorUtilities {
         }, arguments[0]);
         await this.waitForTransitionEnd(null, arguments[0]);
         await this.moveCursorToSelector(arguments[0]);
-        return this.screenshotImpl(arguments[2]);
+        await this.screenshotImpl(arguments[2]);
     }
 
     async waitForTransitionEnd(timeout, selector) {
@@ -68,8 +67,7 @@ class AutomatorUtilities {
         const el = await this.page.$(selector);
         const boundingBox = await el.boundingBox();
         await this.mouseSimulator.
-            moveCursorToCoordinates(boundingBox);        
-        return this;
+            moveCursorToCoordinates(boundingBox);
     }
 
     async autoScroll(){

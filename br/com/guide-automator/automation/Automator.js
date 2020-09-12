@@ -26,6 +26,7 @@ class Automator extends AutomatorProxy {
         this.automatorUtilities = new AutomatorUtilities(this.page);
          await mouseHelper(this.page);
         this.log("initialized");
+        this.start = performance.now();
         return this;
     }
 
@@ -42,16 +43,19 @@ class Automator extends AutomatorProxy {
     }
 
     async screenshot() {
+        let sub;
         if(arguments[0] && arguments[2]){
-            this.subtitles.push({sub: arguments[1], checkpoint: performance.now() - this.start });
+            sub = arguments[1];
             this.log(`screenshot from selector: selector("${arguments[0]}")` +
             ` path("${arguments[2]}")`);
-            return this.automatorUtilities.screenshotFromSelector(...arguments);
+            await this.automatorUtilities.screenshotFromSelector(...arguments);
         } else {
-            this.subtitles.push({sub: arguments[0], checkpoint: performance.now() - this.start})
+            sub = arguments[0];
             this.log(`screenshot of whole page: path("${arguments[1]}")`);
-            return this.automatorUtilities.screenshotOfEntire(arguments[1]);
+            await this.automatorUtilities.screenshotOfEntire(arguments[1]);
         }
+        this.subtitles.push({sub, checkpoint: performance.now() - this.start });
+        return this;
     }
 
     async fillField(selector, content) {
@@ -103,10 +107,6 @@ class Automator extends AutomatorProxy {
 
     getPage() {
         return this.page;
-    }
-
-    setStartTime(start) {
-        this.start = start;
     }
 
     async close() {
