@@ -1,11 +1,12 @@
 const { performance } = require('perf_hooks');
 const fs = require('fs');
 const md = require('markdown-it')({ html: true });
+const nodePuppeteerApng = require('node-puppeteer-apng');
 const wkhtmltopdf = require('wkhtmltopdf');
 const InterpreterProxy = require('./InterpreterProxy')
 const Automator = require('../automation/Automator');
 const Util = require('../libs/Util');
-const Recorder = require('../libs/Recorder');
+const converter = require('../libs/apngToMp4Converter');
 const base64Converter = require('image-to-base64');
 const codeMarker = "```"
 
@@ -54,7 +55,10 @@ class Interpreter extends InterpreterProxy{
             stop(this.viewport, elapsedTime);
         };
         this.log('started Recording');
-        const videoPath = await Recorder(runner, this.tmpFolder);
+        const videoPngBuffer = await nodePuppeteerApng(runner);
+        const filePath = `${this.tmpFolder}/video.png`;
+        fs.writeFileSync(filePath, videoPngBuffer, () => {});
+        const videoPath = await converter(this.tmpFolder, filePath);
         this.log('finished Recording');
     }
     
