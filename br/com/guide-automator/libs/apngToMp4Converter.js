@@ -21,13 +21,6 @@ module.exports = (outputFolder, filePath) => {
 
   let proc = spawn('ffmpeg', args);
 
-  proc.stdin.end();
-
-  proc.stdout.on('data', function(data) {});
-
-  proc.stderr.setEncoding("utf8")
-  proc.stderr.on('data', function(data) {});
-
   proc.on('close', function() {
       resolve(outputPath);
   });
