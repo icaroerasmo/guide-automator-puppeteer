@@ -14,7 +14,8 @@ class AutomatorUtilities {
             });
     }
 
-    async screenshotOfEntire(path) {
+    async
+     screenshotOfEntire(path) {
         await this.screenshotImpl(path);
     }
 
