@@ -6,7 +6,7 @@ const wkhtmltopdf = require('wkhtmltopdf');
 const InterpreterProxy = require('./InterpreterProxy')
 const Automator = require('../automation/Automator');
 const Util = require('../libs/Util');
-const converter = require('../libs/apngToMp4Converter');
+const converter = require('../libs/ApngToMp4Converter');
 const base64Converter = require('image-to-base64');
 const codeMarker = "```"
 
