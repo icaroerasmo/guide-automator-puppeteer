@@ -43,7 +43,6 @@ class Automator extends AutomatorProxy {
     }
 
     async screenshot() {
-        let sub;
         if(arguments[0] && arguments[2]){
             this.subtitles.push({sub:arguments[1], checkpoint: performance.now() - this.start });
             this.log(`screenshot from selector: selector("${arguments[0]}")` +
