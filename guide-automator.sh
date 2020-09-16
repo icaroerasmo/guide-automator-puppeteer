@@ -19,4 +19,4 @@ if [ ! -e "./node_modules" ]; then
     npm i  > /dev/null 2>&1
 fi
 
-./main.js $@
+$CONTAINING_FOLDER/main.js $@
