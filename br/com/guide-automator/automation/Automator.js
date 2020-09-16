@@ -45,16 +45,15 @@ class Automator extends AutomatorProxy {
     async screenshot() {
         let sub;
         if(arguments[0] && arguments[2]){
-            sub = arguments[1];
+            this.subtitles.push({sub:arguments[1], checkpoint: performance.now() - this.start });
             this.log(`screenshot from selector: selector("${arguments[0]}")` +
             ` path("${arguments[2]}")`);
             await this.automatorUtilities.screenshotFromSelector(...arguments);
         } else {
-            sub = arguments[0];
+            this.subtitles.push({sub:arguments[0], checkpoint: performance.now() - this.start });
             this.log(`screenshot of whole page: path("${arguments[1]}")`);
             await this.automatorUtilities.screenshotOfEntire(arguments[1]);
         }
-        this.subtitles.push({sub, checkpoint: performance.now() - this.start });
         return this;
     }
 
