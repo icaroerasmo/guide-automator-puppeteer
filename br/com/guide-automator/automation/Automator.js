@@ -44,12 +44,10 @@ class Automator extends AutomatorProxy {
 
     async screenshot() {
         if(arguments[0] && arguments[2]){
-            this.subtitles.push({sub:arguments[1], checkpoint: performance.now() - this.start });
             this.log(`screenshot from selector: selector("${arguments[0]}")` +
             ` path("${arguments[2]}")`);
             await this.automatorUtilities.screenshotFromSelector(...arguments);
         } else {
-            this.subtitles.push({sub:arguments[0], checkpoint: performance.now() - this.start });
             this.log(`screenshot of whole page: path("${arguments[1]}")`);
             await this.automatorUtilities.screenshotOfEntire(arguments[1]);
         }
@@ -97,6 +95,31 @@ class Automator extends AutomatorProxy {
         await this.automatorUtilities.moveCursorToSelector(selector);
         await this.page.select(selector, value);
         return this;
+    }
+
+    async speak(sub) {
+
+        let getTime = () => performance.now() - this.start;
+
+        const self = this;
+        let checkpoint = getTime();
+        let offset = sub.length * 250;
+        let finalChk;
+        let timeout;
+        return await new Promise(
+            timeout = (resolve) => {
+                        setTimeout(() => {
+                            finalChk = getTime();
+                            self.subtitles.push({
+                                sub,
+                                checkpoint,
+                                finalChk
+                            });
+                            clearTimeout(timeout);
+                            resolve(this);
+                        }, offset)
+                }
+        );
     }
 
     getSubtitles() {

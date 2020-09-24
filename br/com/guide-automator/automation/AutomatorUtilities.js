@@ -52,7 +52,7 @@ class AutomatorUtilities {
                     }
                 };
                 if(!timeout || typeof timeout !== 'number'){
-                    timeout = 50000;
+                    timeout = 30000;
                 }
                 setTimeout(() => {
                     dom.removeEventListener('transitionend', onEnd);

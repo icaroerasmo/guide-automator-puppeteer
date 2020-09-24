@@ -175,6 +175,9 @@ class Interpreter extends InterpreterProxy{
                     this.viewport = {width: params[1], height: params[2]};
                     await this.instance.viewport(params[1], params[2])
                     break;
+                case 'speak':
+                    await this.instance.speak(params[1]);
+                    break;
                 default:
                     throw new Error('Command not recognized');
             }
@@ -185,29 +188,12 @@ class Interpreter extends InterpreterProxy{
 
     async generateSubtitles() {
         let sub = await this.instance.getSubtitles();
-        let counter = 1;
-        let epsilon = 250;
         let buffer = '';
-        let previous;
         for(let i = 0; i < sub.length; i++) {
-
             let s = sub[i];
-            let offset = s.sub.length * epsilon;
-
-            s.finalChk = Number(s.checkpoint) + offset;
-
-            if(i < sub.length - 1) {
-                let next = sub[i+1];
-                if(s.finalChk > next.checkpoint) {
-                    s.finalChk = next.checkpoint - 1;
-                }
-            } 
-
             let _beginning = Util.formattedTime(s.checkpoint);
             let _end = Util.formattedTime(s.finalChk);
-            buffer += `${counter++}\n${_beginning} --> ${_end}\n${s.sub}\n\n`;
-
-            previous = s;
+            buffer += `${i+1}\n${_beginning} --> ${_end}\n${s.sub}\n\n`;
         }
 
         fs.writeFile(`${this.tmpFolder}/subtitles.srt`, buffer, 'utf8', function (err) {});
