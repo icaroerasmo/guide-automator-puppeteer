@@ -100,23 +100,20 @@ class Automator extends AutomatorProxy {
     async speak(sub) {
 
         let getTime = () => performance.now() - this.start;
-
-        const self = this;
         let checkpoint = getTime();
         let offset = sub.length * 250;
         let finalChk;
-        return await new Promise(
+        return new Promise(
             (resolve) => {
-                let timeout = setTimeout(() => {
-                            finalChk = getTime();
-                            self.subtitles.push({
-                                sub,
-                                checkpoint,
-                                finalChk
-                            });
-                            clearTimeout(timeout);
-                            resolve(this);
-                        }, offset)
+                    setTimeout(() => {
+                        finalChk = getTime();
+                        this.subtitles.push({
+                            sub,
+                            checkpoint,
+                            finalChk
+                        });
+                        resolve(this);
+                    }, offset);
                 }
         );
     }
