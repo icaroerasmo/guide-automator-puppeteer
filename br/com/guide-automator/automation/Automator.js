@@ -77,7 +77,7 @@ class Automator extends AutomatorProxy {
              href => href.getAttribute('href'));
         if(!href || href === '#') {
             await this.page.click(clickSelector);
-            let hasTimedOut = await this.automatorUtilities.waitForTransitionEnd(timeout);
+            let hasTimedOut = await this.automatorUtilities.waitForTransitionEnd();
             if(hasTimedOut) {
                 this.log(`click action has timed out!!! selector: "${clickSelector}"`);
             }
@@ -105,10 +105,9 @@ class Automator extends AutomatorProxy {
         let checkpoint = getTime();
         let offset = sub.length * 250;
         let finalChk;
-        let timeout;
         return await new Promise(
-            timeout = (resolve) => {
-                        setTimeout(() => {
+            (resolve) => {
+                let timeout = setTimeout(() => {
                             finalChk = getTime();
                             self.subtitles.push({
                                 sub,
