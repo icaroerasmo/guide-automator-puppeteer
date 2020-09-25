@@ -26,7 +26,6 @@ class Automator extends AutomatorProxy {
         this.automatorUtilities = new AutomatorUtilities(this.page);
          await mouseHelper(this.page);
         this.log("initialized");
-        this.start = performance.now();
         return this;
     }
 
@@ -69,7 +68,7 @@ class Automator extends AutomatorProxy {
         return this;
     }
 
-    async click(clickSelector, timeout) {
+    async click(clickSelector) {
         await this.page.waitForSelector(clickSelector);
         await this.automatorUtilities.moveCursorToSelector(clickSelector);
         this.log(`clicking: selector("${clickSelector}")`);
@@ -77,10 +76,7 @@ class Automator extends AutomatorProxy {
              href => href.getAttribute('href'));
         if(!href || href === '#') {
             await this.page.click(clickSelector);
-            let hasTimedOut = await this.automatorUtilities.waitForTransitionEnd();
-            if(hasTimedOut) {
-                this.log(`click action has timed out!!! selector: "${clickSelector}"`);
-            }
+            await this.automatorUtilities.waitForTransitionEnd();
         } else {
             this.debug(`href attribute found: ${href}`);
             this.debug(`going to page: ${href}`);
@@ -99,11 +95,11 @@ class Automator extends AutomatorProxy {
 
     async speak(sub) {
 
-        let getTime = () => performance.now() - this.start;
+        let getTime = () => (performance.now() - this.start) / 2;
         let checkpoint = getTime();
         let offset = sub.length * 250;
         let finalChk;
-        return new Promise(
+        await new Promise(
             (resolve) => {
                     setTimeout(() => {
                         finalChk = getTime();

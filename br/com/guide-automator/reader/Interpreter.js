@@ -94,7 +94,7 @@ class Interpreter extends InterpreterProxy{
     async parseFile() {
         let stack = [];
         this.mdContent = fs.readFileSync(this.mdFile, 'utf8');
-        let startTime = performance.now();
+        this.instance.start = performance.now();
         for(let i = 0; i < this.mdContent.length; i++){
             const j = i + codeMarker.length;
 
@@ -115,9 +115,9 @@ class Interpreter extends InterpreterProxy{
                 }
             }
         }
-        let endTime = performance.now();
+        this.instance.end = performance.now();
 
-        let elapsedTime = (endTime - startTime)/1000;
+        let elapsedTime = (this.instance.end - this.instance.start)/1000;
         this.log(`Total time: ${elapsedTime} seconds`);
     }
 
@@ -166,7 +166,7 @@ class Interpreter extends InterpreterProxy{
                     await this.instance.submitForm(params[1]);
                     break;
                 case 'click':
-                    await this.instance.click(params[1], params[2]);
+                    await this.instance.click(params[1]);
                     break;
                 case 'select':
                     await this.instance.select(params[1], params[2])
@@ -196,7 +196,7 @@ class Interpreter extends InterpreterProxy{
             buffer += `${i+1}\n${_beginning} --> ${_end}\n${s.sub}\n\n`;
         }
 
-        fs.writeFile(`${this.tmpFolder}/subtitles.srt`, buffer, 'utf8', function (err) {});
+        fs.writeFileSync(`${this.tmpFolder}/subtitles.srt`, buffer, 'utf8', function (err) {});
     }
 
     makePDF() {
