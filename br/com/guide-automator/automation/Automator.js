@@ -95,7 +95,7 @@ class Automator extends AutomatorProxy {
 
     async speak(sub) {
 
-        let getTime = () => (performance.now() - this.start) / 2;
+        let getTime = () => performance.now() - this.start;
         let checkpoint = getTime();
         let offset = sub.length * 250;
         let finalChk;

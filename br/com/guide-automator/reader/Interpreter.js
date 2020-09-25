@@ -117,8 +117,8 @@ class Interpreter extends InterpreterProxy{
         }
         this.instance.end = performance.now();
 
-        let elapsedTime = (this.instance.end - this.instance.start)/1000;
-        this.log(`Total time: ${elapsedTime} seconds`);
+        this.instance.elapsedTime = (this.instance.end - this.instance.start);
+        this.log(`Total time: ${this.instance.elapsedTime / 1000} seconds`);
     }
 
     async viewportAdjustment(lines) {
