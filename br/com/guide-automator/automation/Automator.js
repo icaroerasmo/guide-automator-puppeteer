@@ -94,7 +94,6 @@ class Automator extends AutomatorProxy {
     }
 
     async speak(sub) {
-
         let getTime = () => performance.now() - this.start;
         let checkpoint = getTime();
         let offset = sub.length * 250;
@@ -112,6 +111,8 @@ class Automator extends AutomatorProxy {
                     }, offset);
                 }
         );
+
+        return this;
     }
 
     getSubtitles() {
