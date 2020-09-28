@@ -41,5 +41,8 @@ module.exports = {
         }
 
         return `${this.twoDigits(horas)}:${this.twoDigits(minutos)}:${this.twoDigits(segundos)},${this.twoDigits(mili)}`;
+    },
+    sleep(millis) {
+        return new Promise((resolve) => {setTimeout(resolve, millis);});
     }
 };

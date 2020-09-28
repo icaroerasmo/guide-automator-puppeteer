@@ -1,10 +1,12 @@
 const MouseSimulator = require('./MouseSimulator');
+const util = require('../libs/Util');
 
 class AutomatorUtilities {
 
     constructor (page) {
         this.page = page;
         this.mouseSimulator = new MouseSimulator(this.page);
+        this.page.exposeFunction("sleep", util.sleep);
     }
 
     async screenshotImpl(path) {
@@ -57,6 +59,7 @@ class AutomatorUtilities {
     }
 
     async autoScroll(){
+        console.log(typeof util.sleep)
         await this.page.evaluate(async () => {
             const distance = 100;
             const delay = 100;
@@ -64,7 +67,7 @@ class AutomatorUtilities {
                  window.innerHeight <
                  document.scrollingElement.scrollHeight) {
               document.scrollingElement.scrollBy(0, distance);
-              await new Promise(resolve => { setTimeout(resolve, delay); });
+              await sleep(delay);
             }
         });
     }
