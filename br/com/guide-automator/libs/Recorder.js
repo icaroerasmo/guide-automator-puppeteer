@@ -38,11 +38,16 @@ class Recorder {
 
         const self = this;
       
-        async function stop() {
+        async function stop(end) {
           await session.send('Page.stopScreencast');
           // Drop the first frame because it always has wrong dimensions
-        //   buffers.shift(0);
-        //   cuts.shift(0);
+          buffers.shift(0);
+          cuts.shift(0);
+
+          // Repeats the last frame once it had changed
+          buffers.push(buffers[buffers.length-1]);
+          cuts.push(end);
+
           resolve(self.makeApng(buffers, cuts, self.timestamp));
         }
       

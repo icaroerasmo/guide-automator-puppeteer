@@ -98,19 +98,15 @@ class Automator extends AutomatorProxy {
         let checkpoint = getTime();
         let offset = sub.length * 250;
         let finalChk;
-        await new Promise(
-            (resolve) => {
-                    setTimeout(() => {
-                        finalChk = getTime();
-                        this.subtitles.push({
-                            sub,
-                            checkpoint,
-                            finalChk
-                        });
-                        resolve(this);
-                    }, offset);
-                }
-        );
+        
+        await new Promise((resolve) => {setTimeout(resolve, offset);});
+
+        finalChk = getTime();
+        this.subtitles.push({
+            sub,
+            checkpoint,
+            finalChk
+        });
 
         return this;
     }

@@ -41,17 +41,18 @@ class Interpreter extends InterpreterProxy{
         if(!fs.existsSync(this.tmpFolder)) {
             fs.mkdirSync(this.tmpFolder);
         }
-        let start = performance.now();
+
         this.instance = await Automator.instance(
             this.isDebugEnabled, this.isVerboseEnabled);
-        this.instance.start = start;
+
         const runner = async (start, stop) => {
             start(await this.instance.getPage());
+            this.instance.start = performance.now();
             await this.parseFile();
             await this.makePDF();
             await this.generateSubtitles();
             this.instance.end = performance.now();
-            stop();
+            stop(this.instance.end);
         };
         this.log('started Recording');
         const videoPngBuffer = await recorder(runner, this.instance.start);
