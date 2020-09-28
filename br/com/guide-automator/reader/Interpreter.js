@@ -6,6 +6,7 @@ const wkhtmltopdf = require('wkhtmltopdf');
 const InterpreterProxy = require('./InterpreterProxy')
 const Automator = require('../automation/Automator');
 const Util = require('../libs/Util');
+const recorder = require('../libs/Recorder');
 const converter = require('../libs/ApngToMp4Converter');
 const base64Converter = require('image-to-base64');
 const codeMarker = "```"
@@ -40,21 +41,26 @@ class Interpreter extends InterpreterProxy{
         if(!fs.existsSync(this.tmpFolder)) {
             fs.mkdirSync(this.tmpFolder);
         }
+        let start = performance.now();
         this.instance = await Automator.instance(
             this.isDebugEnabled, this.isVerboseEnabled);
+        this.instance.start = start;
         const runner = async (start, stop) => {
             start(await this.instance.getPage());
             await this.parseFile();
             await this.makePDF();
             await this.generateSubtitles();
+            this.instance.end = performance.now();
             stop();
         };
         this.log('started Recording');
-        const videoPngBuffer = await nodePuppeteerApng(runner);
+        const videoPngBuffer = await recorder(runner, this.instance.start);
         const filePath = `${this.tmpFolder}/video.png`;
         fs.writeFileSync(filePath, videoPngBuffer, () => {});
         await converter(this.tmpFolder, filePath);
         this.log('finished Recording');
+        this.instance.elapsedTime = (this.instance.end - this.instance.start);
+        this.log(`Total time: ${this.instance.elapsedTime / 1000} seconds`);
     }
     
     checkParameters() {
@@ -94,7 +100,6 @@ class Interpreter extends InterpreterProxy{
     async parseFile() {
         let stack = [];
         this.mdContent = fs.readFileSync(this.mdFile, 'utf8');
-        this.instance.start = performance.now();
         for(let i = 0; i < this.mdContent.length; i++){
             const j = i + codeMarker.length;
 
@@ -115,10 +120,6 @@ class Interpreter extends InterpreterProxy{
                 }
             }
         }
-        this.instance.end = performance.now();
-
-        this.instance.elapsedTime = (this.instance.end - this.instance.start);
-        this.log(`Total time: ${this.instance.elapsedTime / 1000} seconds`);
     }
 
     async viewportAdjustment(lines) {
