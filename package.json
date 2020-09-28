@@ -26,7 +26,6 @@
     "bower": "^1.8.8",
     "image-to-base64": "^2.0.1",
     "markdown-it": "^10.0.0",
-    "node-puppeteer-apng": "git+https://github.com/TomasHubelbauer/node-puppeteer-apng.git",
     "node-apng": "git+https://github.com/TomasHubelbauer/node-apng.git",
     "puppeteer": "^5.2.1",
     "wkhtmltopdf": "^0.3.4"

@@ -6,7 +6,6 @@ class AutomatorUtilities {
     constructor (page) {
         this.page = page;
         this.mouseSimulator = new MouseSimulator(this.page);
-        this.page.exposeFunction("sleep", util.sleep);
     }
 
     async screenshotImpl(path) {
@@ -59,7 +58,7 @@ class AutomatorUtilities {
     }
 
     async autoScroll(){
-        console.log(typeof util.sleep)
+        await this.page.exposeFunction("sleep", util.sleep);
         await this.page.evaluate(async () => {
             const distance = 100;
             const delay = 100;

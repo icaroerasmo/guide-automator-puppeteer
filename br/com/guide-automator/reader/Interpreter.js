@@ -1,7 +1,6 @@
 const { performance } = require('perf_hooks');
 const fs = require('fs');
 const md = require('markdown-it')({ html: true });
-const nodePuppeteerApng = require('node-puppeteer-apng');
 const wkhtmltopdf = require('wkhtmltopdf');
 const InterpreterProxy = require('./InterpreterProxy')
 const Automator = require('../automation/Automator');
