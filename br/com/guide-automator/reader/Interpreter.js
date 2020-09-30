@@ -59,8 +59,6 @@ class Interpreter extends InterpreterProxy{
         fs.writeFileSync(filePath, videoPngBuffer, () => {});
         await converter(this.tmpFolder, filePath);
         this.log('finished Recording');
-        this.instance.elapsedTime = (this.instance.end - this.instance.start);
-        this.log(`Total time: ${this.instance.elapsedTime / 1000} seconds`);
     }
     
     checkParameters() {
