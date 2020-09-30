@@ -1,4 +1,5 @@
 const MouseSimulator = require('./MouseSimulator');
+const util = require('../libs/Util');
 
 class AutomatorUtilities {
 
@@ -28,39 +29,25 @@ class AutomatorUtilities {
             }
             element.scrollIntoView();
         }, arguments[0]);
-        await this.waitForTransitionEnd(null, arguments[0]);
+        await this.waitForTransitionEnd(arguments[0]);
         await this.moveCursorToSelector(arguments[0]);
         await this.screenshotImpl(arguments[2]);
     }
 
-    async waitForTransitionEnd(timeout, selector) {
+    async waitForTransitionEnd(selector) {
         if(selector){
             await this.page.waitForSelector(selector);
         }
-        return this.page.evaluate((timeout, selector) => {
-            return new Promise((resolve) => {
-                let counter = 0;
+        await this.page.evaluate((selector) => {
                 const dom = document.querySelector(selector) || document.body;
                 if(!dom) {
                     throw new Error('Failed to find DOM');
                 }
                 const onEnd = () => {
-                    counter = counter+1;
-                    if(counter > 1){
-                        dom.removeEventListener('transitionend', onEnd);
-                        resolve(false);
-                    }
-                };
-                if(!timeout || typeof timeout !== 'number'){
-                    timeout = 50000;
-                }
-                setTimeout(() => {
                     dom.removeEventListener('transitionend', onEnd);
-                    resolve(true);
-                }, timeout);
+                };
                 dom.addEventListener('transitionend', onEnd);
-            });
-        }, timeout, selector);
+        }, selector);
     }
 
     async moveCursorToSelector(selector) {
@@ -71,6 +58,7 @@ class AutomatorUtilities {
     }
 
     async autoScroll(){
+        await this.page.exposeFunction("sleep", util.sleep);
         await this.page.evaluate(async () => {
             const distance = 100;
             const delay = 100;
@@ -78,7 +66,7 @@ class AutomatorUtilities {
                  window.innerHeight <
                  document.scrollingElement.scrollHeight) {
               document.scrollingElement.scrollBy(0, distance);
-              await new Promise(resolve => { setTimeout(resolve, delay); });
+              await sleep(delay);
             }
         });
     }

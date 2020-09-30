@@ -3,6 +3,8 @@ const AutomatorProxy = require('./AutomatorProxy');
 const AutomatorUtilities = require('./AutomatorUtilities');
 const puppeteer = require('puppeteer');
 const mouseHelper = require('../libs/MouseHelper');
+const util = require('../libs/Util');
+const { sleep: wait } = require('../libs/Util');
 
 class Automator extends AutomatorProxy {
 
@@ -26,7 +28,6 @@ class Automator extends AutomatorProxy {
         this.automatorUtilities = new AutomatorUtilities(this.page);
          await mouseHelper(this.page);
         this.log("initialized");
-        this.start = performance.now();
         return this;
     }
 
@@ -44,12 +45,10 @@ class Automator extends AutomatorProxy {
 
     async screenshot() {
         if(arguments[0] && arguments[2]){
-            this.subtitles.push({sub:arguments[1], checkpoint: performance.now() - this.start });
             this.log(`screenshot from selector: selector("${arguments[0]}")` +
             ` path("${arguments[2]}")`);
             await this.automatorUtilities.screenshotFromSelector(...arguments);
         } else {
-            this.subtitles.push({sub:arguments[0], checkpoint: performance.now() - this.start });
             this.log(`screenshot of whole page: path("${arguments[1]}")`);
             await this.automatorUtilities.screenshotOfEntire(arguments[1]);
         }
@@ -71,7 +70,7 @@ class Automator extends AutomatorProxy {
         return this;
     }
 
-    async click(clickSelector, timeout) {
+    async click(clickSelector) {
         await this.page.waitForSelector(clickSelector);
         await this.automatorUtilities.moveCursorToSelector(clickSelector);
         this.log(`clicking: selector("${clickSelector}")`);
@@ -79,10 +78,7 @@ class Automator extends AutomatorProxy {
              href => href.getAttribute('href'));
         if(!href || href === '#') {
             await this.page.click(clickSelector);
-            let hasTimedOut = await this.automatorUtilities.waitForTransitionEnd(timeout);
-            if(hasTimedOut) {
-                this.log(`click action has timed out!!! selector: "${clickSelector}"`);
-            }
+            await this.automatorUtilities.waitForTransitionEnd();
         } else {
             this.debug(`href attribute found: ${href}`);
             this.debug(`going to page: ${href}`);
@@ -96,6 +92,25 @@ class Automator extends AutomatorProxy {
         await this.page.waitForSelector(selector);
         await this.automatorUtilities.moveCursorToSelector(selector);
         await this.page.select(selector, value);
+        return this;
+    }
+
+    async speak(sub) {
+        this.log(`speaking: '${sub}'`)
+        let getTime = () => performance.now() - this.start;
+        let checkpoint = getTime();
+        let offset = sub.length * 250;
+        let finalChk;
+        
+        await util.sleep(offset);
+
+        finalChk = getTime();
+        this.subtitles.push({
+            sub,
+            checkpoint,
+            finalChk
+        });
+
         return this;
     }
 

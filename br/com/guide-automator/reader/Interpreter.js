@@ -1,11 +1,11 @@
 const { performance } = require('perf_hooks');
 const fs = require('fs');
 const md = require('markdown-it')({ html: true });
-const nodePuppeteerApng = require('node-puppeteer-apng');
 const wkhtmltopdf = require('wkhtmltopdf');
 const InterpreterProxy = require('./InterpreterProxy')
 const Automator = require('../automation/Automator');
 const Util = require('../libs/Util');
+const recorder = require('../libs/Recorder');
 const converter = require('../libs/ApngToMp4Converter');
 const base64Converter = require('image-to-base64');
 const codeMarker = "```"
@@ -40,17 +40,21 @@ class Interpreter extends InterpreterProxy{
         if(!fs.existsSync(this.tmpFolder)) {
             fs.mkdirSync(this.tmpFolder);
         }
+
         this.instance = await Automator.instance(
             this.isDebugEnabled, this.isVerboseEnabled);
+
         const runner = async (start, stop) => {
             start(await this.instance.getPage());
+            this.instance.start = performance.now();
             await this.parseFile();
             await this.makePDF();
             await this.generateSubtitles();
-            stop();
+            this.instance.end = performance.now();
+            stop(this.instance.end);
         };
         this.log('started Recording');
-        const videoPngBuffer = await nodePuppeteerApng(runner);
+        const videoPngBuffer = await recorder(runner, this.instance.start);
         const filePath = `${this.tmpFolder}/video.png`;
         fs.writeFileSync(filePath, videoPngBuffer, () => {});
         await converter(this.tmpFolder, filePath);
@@ -94,7 +98,6 @@ class Interpreter extends InterpreterProxy{
     async parseFile() {
         let stack = [];
         this.mdContent = fs.readFileSync(this.mdFile, 'utf8');
-        let startTime = performance.now();
         for(let i = 0; i < this.mdContent.length; i++){
             const j = i + codeMarker.length;
 
@@ -115,10 +118,6 @@ class Interpreter extends InterpreterProxy{
                 }
             }
         }
-        let endTime = performance.now();
-
-        let elapsedTime = (endTime - startTime)/1000;
-        this.log(`Total time: ${elapsedTime} seconds`);
     }
 
     async viewportAdjustment(lines) {
@@ -166,7 +165,7 @@ class Interpreter extends InterpreterProxy{
                     await this.instance.submitForm(params[1]);
                     break;
                 case 'click':
-                    await this.instance.click(params[1], params[2]);
+                    await this.instance.click(params[1]);
                     break;
                 case 'select':
                     await this.instance.select(params[1], params[2])
@@ -174,6 +173,9 @@ class Interpreter extends InterpreterProxy{
                 case 'viewport':
                     this.viewport = {width: params[1], height: params[2]};
                     await this.instance.viewport(params[1], params[2])
+                    break;
+                case 'speak':
+                    await this.instance.speak(params[1]);
                     break;
                 default:
                     throw new Error('Command not recognized');
@@ -185,32 +187,15 @@ class Interpreter extends InterpreterProxy{
 
     async generateSubtitles() {
         let sub = await this.instance.getSubtitles();
-        let counter = 1;
-        let epsilon = 250;
         let buffer = '';
-        let previous;
         for(let i = 0; i < sub.length; i++) {
-
             let s = sub[i];
-            let offset = s.sub.length * epsilon;
-
-            s.finalChk = Number(s.checkpoint) + offset;
-
-            if(i < sub.length - 1) {
-                let next = sub[i+1];
-                if(s.finalChk > next.checkpoint) {
-                    s.finalChk = next.checkpoint - 1;
-                }
-            } 
-
             let _beginning = Util.formattedTime(s.checkpoint);
             let _end = Util.formattedTime(s.finalChk);
-            buffer += `${counter++}\n${_beginning} --> ${_end}\n${s.sub}\n\n`;
-
-            previous = s;
+            buffer += `${i+1}\n${_beginning} --> ${_end}\n${s.sub}\n\n`;
         }
 
-        fs.writeFile(`${this.tmpFolder}/subtitles.srt`, buffer, 'utf8', function (err) {});
+        fs.writeFileSync(`${this.tmpFolder}/subtitles.srt`, buffer, 'utf8', function (err) {});
     }
 
     makePDF() {

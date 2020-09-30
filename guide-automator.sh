@@ -9,6 +9,8 @@ PATH=$GUIDE_AUTOMATOR_LIBS/ffmpeg:$PATH
 
 export PATH
 
+cd $CONTAINING_FOLDER
+
 if ! [ -x "$(command -v git)" ]; then
   echo 'Error: git is not installed.' >&2
   exit 1
@@ -19,4 +21,4 @@ if [ ! -e "./node_modules" ]; then
     npm i  > /dev/null 2>&1
 fi
 
-$CONTAINING_FOLDER/main.js $@
+./main.js $@
