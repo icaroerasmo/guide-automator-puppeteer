@@ -36,10 +36,9 @@ class Proxy {
             this.debug(`PROXY APPLIED TO METHOD: ${m}`);
             const methodName = `_${m}`;
             thisPrototype[methodName] = thisPrototype[m];
-            thisPrototype[m] =
-             async (...args) => {
-                return await this.proxy(methodName, args)
-            }
+            thisPrototype[m] = async (...args) => {
+                    return await this.proxy(methodName, args)
+                };
         }
         Object.setPrototypeOf(this, thisPrototype);
     }

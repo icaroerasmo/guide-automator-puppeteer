@@ -409,8 +409,8 @@ class MouseSimulator{
             
             if( x === 0 && y === 0 ) {
                 return { 
-                    currentX: Math.floor(window.innerWidth/2),
-                    currentY: Math.floor(window.innerHeight/2) 
+                    currentX: Math.round(window.innerWidth/2),
+                    currentY: Math.round(window.innerHeight/2) 
                 }
             }
             
@@ -420,8 +420,8 @@ class MouseSimulator{
 
     async getDxDy(boundingBox) {
 
-        const destX = Math.floor(boundingBox.x + (boundingBox.width/2));
-        const destY = Math.floor(boundingBox.y + (boundingBox.height/2));
+        const destX = Math.round(boundingBox.x + (boundingBox.width/2));
+        const destY = Math.round(boundingBox.y + (boundingBox.height/2));
 
         let coord = await this.getCursorPosition();
 

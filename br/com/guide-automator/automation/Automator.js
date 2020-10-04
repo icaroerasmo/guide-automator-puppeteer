@@ -27,19 +27,16 @@ class Automator extends AutomatorProxy {
         this.automatorUtilities = new AutomatorUtilities(this.page);
          await mouseHelper(this.page);
         this.log("initialized");
-        return this;
     }
 
     async viewport(width, height) {
         this.log(`setting viewport: width(${width}) height(${height})`);
         await this.page.setViewport({ width: Number(width), height: Number(height) });
-        return this;
      }
 
     async goToPage(url) {
         this.log(`going to page: "${url}"`);
         await this.page.goto(url, {waitUntil: 'networkidle2'});
-        return this;
     }
 
     async screenshot() {
@@ -51,7 +48,6 @@ class Automator extends AutomatorProxy {
             this.log(`screenshot of whole page: path("${arguments[1]}")`);
             await this.automatorUtilities.screenshotOfEntire(arguments[1]);
         }
-        return this;
     }
 
     async fillField(selector, content) {
@@ -59,14 +55,12 @@ class Automator extends AutomatorProxy {
         await this.page.waitForSelector(selector);
         await this.automatorUtilities.moveCursorToSelector(selector);
         await this.page.type(selector, content);
-        return this;
     }
 
     async submitForm(selector) {
         this.log(`submitting form: selector("${selector}")`)
         await this.page.$eval(selector, form => form.submit());
         await this.page.waitForNavigation({ waitUntil: 'networkidle2' });
-        return this;
     }
 
     async click(clickSelector) {
@@ -83,7 +77,6 @@ class Automator extends AutomatorProxy {
             this.debug(`going to page: ${href}`);
             await this.page.goto(href, { waitUntil: 'networkidle2' });
         }
-        return this;
     }
 
     async select(selector, value) {
@@ -91,7 +84,6 @@ class Automator extends AutomatorProxy {
         await this.page.waitForSelector(selector);
         await this.automatorUtilities.moveCursorToSelector(selector);
         await this.page.select(selector, value);
-        return this;
     }
 
     async speak(sub) {
@@ -111,7 +103,6 @@ class Automator extends AutomatorProxy {
             finalChk
         });
 
-        return this;
     }
 
     async close() {
