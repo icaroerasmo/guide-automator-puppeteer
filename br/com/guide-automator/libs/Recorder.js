@@ -23,7 +23,7 @@ class Recorder {
           reject = _reject;
         });
       
-        async function start(page) {
+        const start = async (page) => {
           // Clear the buffers and cuts and reset the timestamp from the previous recording
           buffers = [];
           cuts = [];
@@ -38,7 +38,7 @@ class Recorder {
 
         const self = this;
       
-        async function stop(end) {
+        const stop = async (end) => {
           await session.send('Page.stopScreencast');
           // Drop the first frame because it always has wrong dimensions
           buffers.shift(0);

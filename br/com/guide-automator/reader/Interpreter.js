@@ -192,10 +192,13 @@ class Interpreter extends InterpreterProxy{
             let s = subs[i];
             let _beginning = Util.formattedTime(s.checkpoint);
             let _end = Util.formattedTime(s.finalChk);
-            buffer += `${i+1}\n${_beginning} --> ${_end}\n${s.sub}\n\n`;
+            buffer += `${i+1}\n${_beginning} --> ${_end}\n${s.sub}`;
+            if(i < subs.length - 1) {
+                buffer += '\n\n';
+            }
         }
 
-        fs.writeFileSync(`${this.tmpFolder}/subtitles.srt`, buffer, 'utf8', function (err) {});
+        fs.writeFileSync(`${this.tmpFolder}/subtitles.srt`, buffer, 'utf8', () => {});
     }
 
     makePDF() {

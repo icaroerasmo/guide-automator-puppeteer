@@ -21,7 +21,7 @@ module.exports = (outputFolder, filePath) => {
 
   let proc = spawn('ffmpeg', args);
 
-  proc.on('close', function() {
+  proc.on('close', () => {
       resolve(outputPath);
   });
 

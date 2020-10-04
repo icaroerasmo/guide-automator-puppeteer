@@ -1,6 +1,6 @@
 // This injects a box into the page that moves with the mouse;
 // Useful for debugging
-async function MouseHelper(page) {
+const MouseHelper = async (page) => {
   await page.evaluateOnNewDocument(() => {
     // Install mouse helper only for top-level frame.
     if (window !== window.parent)
@@ -57,7 +57,7 @@ async function MouseHelper(page) {
           document.scrollingElement.scrollTop + 'px';
         updateButtons(event.buttons);
       }, true);
-      function updateButtons(buttons) {
+      const updateButtons = (buttons) => {
         for (let i = 0; i < 5; i++)
           box.classList.toggle('button-' + i, buttons & (1 << i));
       }
