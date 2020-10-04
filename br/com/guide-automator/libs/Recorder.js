@@ -54,8 +54,8 @@ class Recorder {
         
       buffers.sort((a, b) => a.timestamp - b.timestamp);
         
-       const delays = buffers.reduce((a, c, i) => { a.push(c.timestamp
-          - (buffers[i - 1] ? buffers[i - 1].timestamp : timestamp)); return a; }, []);
+      const delays = buffers.reduce((a, c, i) => { a.push(c.timestamp
+        - (buffers[i - 1] ? buffers[i - 1].timestamp : timestamp)); return a; }, []);
         
       return apng(buffers.map(b => Buffer.from(b.data, 'base64')), 
         index => ({ numerator: delays[index] >= 0 ? delays[index] : delays[index] * -1, denominator: 1000 }));
