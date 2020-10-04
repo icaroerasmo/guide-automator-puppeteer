@@ -45,7 +45,7 @@ class Interpreter extends InterpreterProxy{
             this.isDebugEnabled, this.isVerboseEnabled);
 
         const runner = async (start, stop) => {
-            start(await this.instance.getPage());
+            start(await this.instance.page);
             this.instance.start = performance.now();
             await this.parseFile();
             await this.makePDF();
@@ -186,10 +186,10 @@ class Interpreter extends InterpreterProxy{
     }
 
     async generateSubtitles() {
-        let sub = await this.instance.getSubtitles();
+        let subs = await this.instance.subtitles;
         let buffer = '';
-        for(let i = 0; i < sub.length; i++) {
-            let s = sub[i];
+        for(let i = 0; i < subs.length; i++) {
+            let s = subs[i];
             let _beginning = Util.formattedTime(s.checkpoint);
             let _end = Util.formattedTime(s.finalChk);
             buffer += `${i+1}\n${_beginning} --> ${_end}\n${s.sub}\n\n`;

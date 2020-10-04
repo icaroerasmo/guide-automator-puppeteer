@@ -4,7 +4,6 @@ const AutomatorUtilities = require('./AutomatorUtilities');
 const puppeteer = require('puppeteer');
 const mouseHelper = require('../libs/MouseHelper');
 const util = require('../libs/Util');
-const { sleep: wait } = require('../libs/Util');
 
 class Automator extends AutomatorProxy {
 
@@ -105,6 +104,7 @@ class Automator extends AutomatorProxy {
         await util.sleep(offset);
 
         finalChk = getTime();
+
         this.subtitles.push({
             sub,
             checkpoint,
@@ -112,14 +112,6 @@ class Automator extends AutomatorProxy {
         });
 
         return this;
-    }
-
-    getSubtitles() {
-        return this.subtitles;
-    }
-
-    getPage() {
-        return this.page;
     }
 
     async close() {
