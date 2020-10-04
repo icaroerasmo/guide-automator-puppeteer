@@ -26,13 +26,10 @@ class Recorder {
         const start = async (page) => {
           // Clear the buffers and cuts and reset the timestamp from the previous recording
           buffers = [];
-          cuts = [];
           session = await page.target().createCDPSession();
           await session.send('Page.startScreencast');
           session.on('Page.screencastFrame', event => {
-            const buffer = Buffer.from(event.data, 'base64');
-            buffers.push(buffer);
-            cuts.push(performance.now());
+            buffers.push({data: event.data, timestamp: performance.now()});
           });
         }
 
@@ -41,27 +38,27 @@ class Recorder {
         const stop = async (end) => {
           await session.send('Page.stopScreencast');
           // Drop the first frame because it always has wrong dimensions
-          buffers.shift(0);
-          const extraTime = self.timestamp - cuts.shift(0);
+          const lastBuff = buffers.shift(0);
 
-          // Repeats the last frame once it hadn't changed
-          buffers.push(buffers[buffers.length-1]);
-          cuts.push(end);
+          //Adds last frame with delay of the first frame that have been removed
+          buffers.push({data: buffers[buffers.length-1].data, timestamp: end + (lastBuff.timestamp - self.timestamp)});
 
-          // Repeats the last frame with first frame delay
-          buffers.push(buffers[buffers.length-1]);
-          cuts.push(end + extraTime);
-
-          resolve(self.makeApng(buffers, cuts, self.timestamp));
+          resolve(self.makeApng(buffers, self.timestamp));
         }
       
         await setup(start, stop);
         return deffered;
     }
 
-    makeApng(buffers, cuts, timestamp) {
-        const delays = cuts.reduce((a, c, i) => { a.push(c - (cuts[i - 1] || timestamp)); return a; }, []);
-        return apng(buffers, index => ({ numerator: delays[index], denominator: 1000 }));
+    makeApng(buffers, timestamp) {
+        
+      buffers.sort((a, b) => a.timestamp - b.timestamp);
+        
+       const delays = buffers.reduce((a, c, i) => { a.push(c.timestamp
+          - (buffers[i - 1] ? buffers[i - 1].timestamp : timestamp)); return a; }, []);
+        
+      return apng(buffers.map(b => Buffer.from(b.data, 'base64')), 
+        index => ({ numerator: delays[index] >= 0 ? delays[index] : delays[index] * -1, denominator: 1000 }));
     }
 }
 
