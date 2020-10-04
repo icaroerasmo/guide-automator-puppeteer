@@ -44,17 +44,17 @@ class Interpreter extends InterpreterProxy{
         this.instance = await Automator.instance(
             this.isDebugEnabled, this.isVerboseEnabled);
 
+        this.instance.start = performance.now();
+
         const runner = async (start, stop) => {
             start(await this.instance.page);
-            this.instance.start = performance.now();
             await this.parseFile();
-            await this.makePDF();
             await this.generateSubtitles();
-            this.instance.end = performance.now();
-            stop(this.instance.end);
+            stop(this.instance.start);
         };
         this.log('started Recording');
-        const videoPngBuffer = await recorder(runner, this.instance.start);
+        const videoPngBuffer = await recorder(runner);
+        await this.makePDF();
         const filePath = `${this.tmpFolder}/video.png`;
         fs.writeFileSync(filePath, videoPngBuffer, () => {});
         await converter(this.tmpFolder, filePath);

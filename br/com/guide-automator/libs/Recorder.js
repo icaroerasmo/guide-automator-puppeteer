@@ -1,4 +1,4 @@
-// Took it from node-puppeteer apng to modify
+// Took it from node-puppeteer-apng to modify
 // https://github.com/TomasHubelbauer/node-puppeteer-apng
 
 const apng = require('node-apng');
@@ -6,8 +6,7 @@ const { performance } = require('perf_hooks');
 
 class Recorder {
 
-    constructor(start) {
-        this.timestamp = start;
+    constructor() {
     }
 
     async recordUsingScreencast(setup) {
@@ -35,15 +34,16 @@ class Recorder {
 
         const self = this;
       
-        const stop = async (end) => {
+        const stop = async (start) => {
           await session.send('Page.stopScreencast');
           // Drop the first frame because it always has wrong dimensions
           const firstFrame = buffers.shift(0);
 
-          //Adds last frame with delay of the first frame that have been removed
-          buffers.push({data: buffers[buffers.length-1].data, timestamp: end + (firstFrame.timestamp - self.timestamp)});
+          // Corrects video duration
+          const lastFrame = buffers[buffers.length-1];
+          buffers.push({data: lastFrame.data, timestamp: lastFrame.timestamp + (firstFrame.timestamp - self.timestamp)});
 
-          resolve(self.makeApng(buffers, self.timestamp));
+          resolve(self.makeApng(buffers, start));
         }
       
         await setup(start, stop);
@@ -62,7 +62,7 @@ class Recorder {
     }
 }
 
-module.exports = (setup, start) => {
-    const recorder = new Recorder(start);
+module.exports = (setup) => {
+    const recorder = new Recorder();
     return recorder.recordUsingScreencast(setup);
 }
