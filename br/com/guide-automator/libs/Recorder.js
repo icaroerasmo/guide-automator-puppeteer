@@ -38,10 +38,10 @@ class Recorder {
         const stop = async (end) => {
           await session.send('Page.stopScreencast');
           // Drop the first frame because it always has wrong dimensions
-          const lastBuff = buffers.shift(0);
+          const firstFrame = buffers.shift(0);
 
           //Adds last frame with delay of the first frame that have been removed
-          buffers.push({data: buffers[buffers.length-1].data, timestamp: end + (lastBuff.timestamp - self.timestamp)});
+          buffers.push({data: buffers[buffers.length-1].data, timestamp: end + (firstFrame.timestamp - self.timestamp)});
 
           resolve(self.makeApng(buffers, self.timestamp));
         }
