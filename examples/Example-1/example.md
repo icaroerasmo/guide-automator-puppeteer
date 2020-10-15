@@ -25,6 +25,6 @@ click "#menu-3-bahia"
 screenshot "Menu Bahia"
 speak 'Menu Bahia'
 click 'main.glb-grid'
-screenshot '.medium-centered' 'Image 1'
+screenshot '.load-more' 'Image 1'
 speak 'G1 Bahia'
 ```

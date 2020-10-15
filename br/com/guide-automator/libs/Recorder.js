@@ -1,4 +1,4 @@
-// Took it from node-puppeteer-apng to modify
+// Took it from node-puppeteer apng to modify
 // https://github.com/TomasHubelbauer/node-puppeteer-apng
 
 const apng = require('node-apng');
@@ -6,7 +6,8 @@ const { performance } = require('perf_hooks');
 
 class Recorder {
 
-    constructor() {
+    constructor(start) {
+        this.timestamp = start;
     }
 
     async recordUsingScreencast(setup) {
@@ -22,47 +23,52 @@ class Recorder {
           reject = _reject;
         });
       
-        const start = async (page) => {
+        async function start(page) {
           // Clear the buffers and cuts and reset the timestamp from the previous recording
           buffers = [];
+          cuts = [];
           session = await page.target().createCDPSession();
           await session.send('Page.startScreencast');
           session.on('Page.screencastFrame', event => {
-            buffers.push({data: event.data, timestamp: performance.now()});
+            const buffer = Buffer.from(event.data, 'base64');
+            buffers.push(buffer);
+            cuts.push(performance.now());
           });
         }
 
         const self = this;
       
-        const stop = async (start) => {
+        async function stop(end) {
           await session.send('Page.stopScreencast');
           // Drop the first frame because it always has wrong dimensions
-          const firstFrame = buffers.shift(0);
+          buffers.shift(0);
+          const extraTime = self.timestamp - cuts.shift(0);
 
-          // Corrects video duration
-          const lastFrame = buffers[buffers.length-1];
-          buffers.push({data: lastFrame.data, timestamp: lastFrame.timestamp + (firstFrame.timestamp - self.timestamp)});
+          // Repeats the last frame once it hadn't changed
+          buffers.push(buffers[buffers.length-1]);
+          cuts.push(end);
 
-          resolve(self.makeApng(buffers, start));
+          // Repeats the last frame with first frame delay
+          buffers.push(buffers[buffers.length-1]);
+          cuts.push(end + extraTime);
+
+          resolve(self.makeApng(buffers, cuts, self.timestamp));
         }
       
         await setup(start, stop);
         return deffered;
     }
 
-    makeApng(buffers, timestamp) {
-        
-      buffers.sort((a, b) => a.timestamp - b.timestamp);
-        
-      const delays = buffers.reduce((a, c, i) => { a.push(c.timestamp
-        - (buffers[i - 1] ? buffers[i - 1].timestamp : timestamp)); return a; }, []);
-        
-      return apng(buffers.map(b => Buffer.from(b.data, 'base64')), 
-        index => ({ numerator: delays[index] >= 0 ? delays[index] : delays[index] * -1, denominator: 1000 }));
+    makeApng(buffers, cuts, timestamp) {
+        const delays = cuts.reduce((a, c, i) => {
+          const delay = c - (cuts[i - 1] || timestamp);
+          a.push(delay >= 0 ? delay : 0); return a;
+        }, []);
+        return apng(buffers, index => ({ numerator: delays[index], denominator: 1000 }));
     }
 }
 
-module.exports = (setup) => {
-    const recorder = new Recorder();
+module.exports = (setup, start) => {
+    const recorder = new Recorder(start);
     return recorder.recordUsingScreencast(setup);
 }
