@@ -102,7 +102,6 @@ class Automator extends AutomatorProxy {
             checkpoint,
             finalChk
         });
-
     }
 
     async close() {
