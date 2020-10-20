@@ -197,7 +197,7 @@ class Interpreter extends InterpreterProxy{
             if(i < subs.length - 1) {
                 buffer += '\n\n';
             }
-            say(s.sub, `${this.tmpFolder}/audio_${i}.wav`);
+            await say(s.sub, i, (subs[i].checkpoint - (i > 0 ? subs[i - 1].checkpoint : this.instance.start))/1000, this.tmpFolder);
         }
 
         fs.writeFileSync(`${this.tmpFolder}/subtitles.srt`, buffer, 'utf8', () => {});
