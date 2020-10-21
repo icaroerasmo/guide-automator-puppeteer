@@ -15,6 +15,7 @@ module.exports = (outputFolder, filePath) => {
   const args = [
     '-y',
     '-i', filePath,
+    '-i', `${outputFolder}/final_audio.wav`,
     '-vf', `subtitles=${outputFolder}/subtitles.srt`,
     outputPath
   ];

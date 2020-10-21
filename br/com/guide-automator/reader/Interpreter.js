@@ -7,7 +7,7 @@ const Automator = require('../automation/Automator');
 const Util = require('../libs/Util');
 const recorder = require('../libs/Recorder');
 const converter = require('../libs/ApngToMp4Converter');
-const say = require('../libs/TextToSpeech');
+const { say, generateAudio } = require('../libs/TextToSpeech');
 const base64Converter = require('image-to-base64');
 const codeMarker = "```"
 
@@ -199,6 +199,8 @@ class Interpreter extends InterpreterProxy{
             }
             await say(s.sub, i, (subs[i].checkpoint - (i > 0 ? subs[i - 1].checkpoint : this.instance.start))/1000, this.tmpFolder);
         }
+
+        generateAudio(this.tmpFolder);
 
         fs.writeFileSync(`${this.tmpFolder}/subtitles.srt`, buffer, 'utf8', () => {});
     }

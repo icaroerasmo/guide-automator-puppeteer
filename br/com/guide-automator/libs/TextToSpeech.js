@@ -102,7 +102,18 @@ class TextToSpeech {
 }
 
 
-module.exports = async (text, index, silenceDuration, outputPath) => {
-  const tts = new TextToSpeech();
-  await tts.say(text, index, silenceDuration, outputPath);
+module.exports = {
+  say: async (text, index, silenceDuration, outputPath) => {
+    const tts = new TextToSpeech();
+    await tts.say(text, index, silenceDuration, outputPath);
+  },
+  generateAudio: (outputPath) => {
+    let files = fs.readdirSync(outputPath).
+      filter(fn => fn.match(/^audio_[0-9]+\.wav$/g));
+    
+    const tts = new TextToSpeech();
+    tts.concatAudios(
+      ...files.map(f => `${outputPath}/${f}`),
+      `${outputPath}/final_audio.wav`);
+  }
 }
