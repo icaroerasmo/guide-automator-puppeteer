@@ -4,7 +4,6 @@ const TMP_AUDIO_PREFIX = 'aux_';
 const FINAL_AUDIO_PREFIX = 'audio_';
 const AUDIO_FORMAT = 'wav'
 const SILENCE_FILE = `silence.${AUDIO_FORMAT}`
-const INPUT_FILE = 'input.txt';
 
 class TextToSpeech {
 
@@ -65,23 +64,13 @@ class TextToSpeech {
         reject = _reject;
     });
 
-    console.log(index);
-    console.log(outputPath);
-
-    const inputFileTxt = `file ${SILENCE_FILE}\n`+
-      `file ${TMP_AUDIO_PREFIX}${index}.${AUDIO_FORMAT}`
-
-    fs.writeFileSync(`${outputPath}/${INPUT_FILE}`, inputFileTxt, 'utf8', () => {});
-
     let spawn = require('child_process').spawn;
 
     let concatProc = spawn('ffmpeg', [
-      '-f', 'concat', '-i',  `${outputPath}/${INPUT_FILE}`, '-codec', 'copy',
+      '-i', `${outputPath}/${SILENCE_FILE}`, '-i', `${outputPath}/${TMP_AUDIO_PREFIX}${index}.${AUDIO_FORMAT}`,
+      '-filter_complex', '[0:0][1:0]concat=n=2:v=0:a=1[out]', '-map', '[out]',
       `${outputPath}/${FINAL_AUDIO_PREFIX}${index}.${AUDIO_FORMAT}`
     ]);
-
-    console.log(`${outputPath}/${INPUT_FILE}`)
-    console.log(`${outputPath}/${FINAL_AUDIO_PREFIX}${index}.${AUDIO_FORMAT}`);
 
     concatProc.on('close', () => {
       resolve();
@@ -100,5 +89,5 @@ class TextToSpeech {
 
 module.exports = async (text, index, silenceDuration, outputPath) => {
   const tts = new TextToSpeech();
-  return await tts.say(text, index, silenceDuration, outputPath);
+  await tts.say(text, index, silenceDuration, outputPath);
 }
