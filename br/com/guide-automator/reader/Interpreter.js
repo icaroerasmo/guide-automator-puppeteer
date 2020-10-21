@@ -197,7 +197,7 @@ class Interpreter extends InterpreterProxy{
             if(i < subs.length - 1) {
                 buffer += '\n\n';
             }
-            await say(s.sub, i, (subs[i].checkpoint - (i > 0 ? subs[i - 1].checkpoint : this.instance.start))/1000, this.tmpFolder);
+            await say(s.sub, i,  (i > 0 ? Math.round(subs[i].checkpoint - subs[i - 1].finalChk) : subs[i].checkpoint)/1000, this.tmpFolder);
         }
 
         generateAudio(this.tmpFolder);
