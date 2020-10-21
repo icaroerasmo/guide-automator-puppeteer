@@ -55,7 +55,7 @@ class TextToSpeech {
     return deffered;
   }
 
-  concatSilence(index, outputPath) {
+  concatAudios() {
 
     let resolve, reject;
 
@@ -66,11 +66,24 @@ class TextToSpeech {
 
     let spawn = require('child_process').spawn;
 
-    let concatProc = spawn('ffmpeg', [
-      '-i', `${outputPath}/${SILENCE_FILE}`, '-i', `${outputPath}/${TMP_AUDIO_PREFIX}${index}.${AUDIO_FORMAT}`,
-      '-filter_complex', '[0:0][1:0]concat=n=2:v=0:a=1[out]', '-map', '[out]',
-      `${outputPath}/${FINAL_AUDIO_PREFIX}${index}.${AUDIO_FORMAT}`
-    ]);
+    const filterPreffix = 'concat=n='
+    const filterSuffix = ':v=0:a=1[out]'
+
+    let filterBuff = '';
+    let args = [];
+
+    for(let i = 0; i < arguments.length-1; i++) {
+      filterBuff += `[${i}:0]`
+      args.push('-i', arguments[i]);
+    }
+
+    args.push('-filter_complex');
+    args.push(filterBuff+filterPreffix+(arguments.length-1)+filterSuffix);
+    args.push('-map');
+    args.push('[out]');
+    args.push(arguments[arguments.length-1]);
+
+    let concatProc = spawn('ffmpeg', args);
 
     concatProc.on('close', () => {
       resolve();
@@ -82,7 +95,9 @@ class TextToSpeech {
   async say(text, index, silenceDuration, outputPath) {
     await this.createSilence(silenceDuration, outputPath);
     await this.createAudio(text, index, outputPath);
-    await this.concatSilence(index, outputPath);
+    await this.concatAudios(`${outputPath}/${SILENCE_FILE}`,
+      `${outputPath}/${TMP_AUDIO_PREFIX}${index}.${AUDIO_FORMAT}`,
+      `${outputPath}/${FINAL_AUDIO_PREFIX}${index}.${AUDIO_FORMAT}`);
   }
 }
 
