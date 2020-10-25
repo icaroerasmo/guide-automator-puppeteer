@@ -31,30 +31,6 @@ class TextToSpeech {
     return deffered;
   }
 
-  createSilence(duration, outputPath) {
-    
-    let resolve, reject;
-
-    const deffered = new Promise((_resolve, _reject) => {
-        resolve = _resolve;
-        reject = _reject;
-    });
-    
-    let spawn = require('child_process').spawn;
-
-    let createProc = spawn('ffmpeg', [
-      '-y', '-f', 'lavfi', '-i',
-      'anullsrc=channel_layout=stereo:sample_rate=44100',
-      '-t', duration, `${outputPath}/${SILENCE_FILE}`
-    ]);
-
-    createProc.on('close', () => {
-      resolve();
-    });
-
-    return deffered;
-  }
-
   concatAudios() {
 
     let resolve, reject;
@@ -92,10 +68,33 @@ class TextToSpeech {
     return deffered;
   }
 
+  addSilence(silenceDuration, tmpAudio, finalAudio) {
+
+    let resolve, reject;
+
+    const deffered = new Promise((_resolve, _reject) => {
+        resolve = _resolve;
+        reject = _reject;
+    });
+
+    let spawn = require('child_process').spawn;
+
+    let concatProc = spawn('ffmpeg', [
+      '-i', tmpAudio, '-af',
+      `adelay=${silenceDuration}m:all=true`,
+      finalAudio
+    ]);
+
+    concatProc.on('close', () => {
+      resolve();
+    });
+
+    return deffered;
+  }
+
   async say(text, index, silenceDuration, outputPath) {
-    await this.createSilence(silenceDuration, outputPath);
     await this.createAudio(text, index, outputPath);
-    await this.concatAudios(`${outputPath}/${SILENCE_FILE}`,
+    await this.addSilence(silenceDuration,
       `${outputPath}/${TMP_AUDIO_PREFIX}${index}.${AUDIO_FORMAT}`,
       `${outputPath}/${FINAL_AUDIO_PREFIX}${index}.${AUDIO_FORMAT}`);
   }
