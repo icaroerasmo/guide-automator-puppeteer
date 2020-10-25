@@ -81,7 +81,7 @@ class TextToSpeech {
 
     let concatProc = spawn('ffmpeg', [
       '-i', tmpAudio, '-af',
-      `adelay=${silenceDuration}m:all=true`,
+      `adelay=${silenceDuration}|0`,
       finalAudio
     ]);
 
