@@ -198,7 +198,7 @@ class Interpreter extends InterpreterProxy{
                 buffer += '\n\n';
             }
 
-            let delay = i > 0 ? 1500 + (subs[i].checkpoint - subs[i - 1].finalChk) : subs[i].checkpoint
+            let delay = i > 0 ? 1700 + (subs[i].checkpoint - subs[i - 1].finalChk) : subs[i].checkpoint
 
             await say(s.sub, i, delay, this.tmpFolder);
         }
