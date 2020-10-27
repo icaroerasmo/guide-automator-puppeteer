@@ -88,14 +88,13 @@ class Automator extends AutomatorProxy {
 
     async speak(sub) {
         this.log(`speaking: '${sub}'`)
-        let getTime = () => performance.now() - this.start;
-        let checkpoint = getTime();
-        let offset = sub.length * 250;
-        let finalChk;
+        const getTime = () => performance.now() - this.start;
+        const checkpoint = getTime();
+        const offset = sub.length * 250;
         
         await util.sleep(offset);
 
-        finalChk = getTime();
+        const finalChk = getTime();
 
         this.subtitles.push({
             sub,
