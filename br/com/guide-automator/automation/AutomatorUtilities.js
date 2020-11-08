@@ -23,7 +23,7 @@ class AutomatorUtilities {
 
         for(let i = 0; i < text.length; i++) {
             await this.page.type(selector, text[i]);
-            await util.sleep(Math.floor(Math.random() * 5) + 250);
+            await util.sleep(util.randomNum(250, 500));
         }
     }
 

@@ -44,5 +44,8 @@ module.exports = {
     },
     sleep(millis) {
         return new Promise((resolve) => {setTimeout(resolve, millis);});
+    },
+    randomNum(min, max) {
+        return Math.floor(Math.random() * (max - min) ) + min
     }
 };
