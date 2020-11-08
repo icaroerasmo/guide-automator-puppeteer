@@ -19,6 +19,14 @@ class AutomatorUtilities {
         await this.screenshotImpl(path);
     }
 
+    async writeToInput(selector, text) {
+
+        for(let i = 0; i < text.length; i++) {
+            await this.page.type(selector, text[i]);
+            await util.sleep(Math.floor(Math.random() * 5) + 250);
+        }
+    }
+
     async screenshotFromSelector() {
         await this.autoScroll();
         await this.page.waitForSelector(arguments[0]);
@@ -35,7 +43,6 @@ class AutomatorUtilities {
     }
 
     async waitForTransitionEnd(selector) {
-
         
         if(selector){
             await this.page.waitForSelector(selector);

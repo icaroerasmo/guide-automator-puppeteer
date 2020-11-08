@@ -54,7 +54,7 @@ class Automator extends AutomatorProxy {
         this.log(`setting text to input: selector("${selector}") text("${content}")`)
         await this.page.waitForSelector(selector);
         await this.automatorUtilities.moveCursorToSelector(selector);
-        await this.page.type(selector, content);
+        await this.automatorUtilities.writeToInput(selector, content);
     }
 
     async submitForm(selector) {
