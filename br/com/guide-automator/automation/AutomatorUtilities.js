@@ -19,6 +19,16 @@ class AutomatorUtilities {
         await this.screenshotImpl(path);
     }
 
+    async writeToInput(selector, text) {
+
+        for(let i = 0; i < text.length; i++) {
+            await this.page.type(selector, text[i]);
+            if(i < text.length-1) {
+                await util.sleep(util.randomNum(250, 500));
+            }
+        }
+    }
+
     async screenshotFromSelector() {
         await this.autoScroll();
         await this.page.waitForSelector(arguments[0]);
@@ -35,18 +45,35 @@ class AutomatorUtilities {
     }
 
     async waitForTransitionEnd(selector) {
+        
         if(selector){
             await this.page.waitForSelector(selector);
         }
+
         await this.page.evaluate((selector) => {
+
+                let resolve, reject;
+
+                let deferred = new Promise((_resolve, _reject) => {
+                    resolve = _resolve;
+                    reject = _reject;
+                });
+
                 const dom = document.querySelector(selector) || document.body;
+                
                 if(!dom) {
                     throw new Error('Failed to find DOM');
                 }
                 const onEnd = () => {
                     dom.removeEventListener('transitionend', onEnd);
+                    resolve();
                 };
+
                 dom.addEventListener('transitionend', onEnd);
+
+                setTimeout(onEnd, 1000)
+
+                return deferred;
         }, selector);
     }
 

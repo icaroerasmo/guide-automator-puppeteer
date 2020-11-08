@@ -7,6 +7,7 @@ const Automator = require('../automation/Automator');
 const Util = require('../libs/Util');
 const recorder = require('../libs/Recorder');
 const converter = require('../libs/ApngToMp4Converter');
+const { say, generateAudio } = require('../libs/TextToSpeech');
 const base64Converter = require('image-to-base64');
 const codeMarker = "```"
 
@@ -55,9 +56,9 @@ class Interpreter extends InterpreterProxy{
         };
         this.log('started Recording');
         const videoPngBuffer = await recorder(runner);
-        const filePath = `${this.tmpFolder}/video.png`;
-        fs.writeFileSync(filePath, videoPngBuffer, () => {});
-        await converter(this.tmpFolder, filePath);
+        const fileName = 'video.png';
+        fs.writeFileSync(`${this.tmpFolder}/${fileName}`, videoPngBuffer, () => {});
+        await converter(fileName, this.tmpFolder, this.outputFolder);
         this.log('finished Recording');
     }
     
@@ -196,7 +197,14 @@ class Interpreter extends InterpreterProxy{
             if(i < subs.length - 1) {
                 buffer += '\n\n';
             }
+
+            const delay = i > 0 ? ((subs[i-1].finalChk - subs[i-1].checkpoint)/2) +
+                (subs[i].checkpoint - subs[i - 1].finalChk) : subs[i].checkpoint
+
+            await say(s.sub, i, delay, this.tmpFolder);
         }
+
+        generateAudio(this.tmpFolder);
 
         fs.writeFileSync(`${this.tmpFolder}/subtitles.srt`, buffer, 'utf8', () => {});
     }

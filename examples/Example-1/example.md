@@ -9,6 +9,7 @@
 ```
 viewport 1365 982
 go-to-page https://g1.globo.com/
+fill-field '#busca-campo' 'teste escrita no input';
 click '.cookie-banner-lgpd_button-box'
 screenshot "Página principal"
 speak 'Página principal'

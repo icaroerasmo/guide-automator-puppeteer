@@ -1,6 +1,6 @@
-const HORA = 3600000;
-const MINUTO = 60000;
-const SEGUNDO = 1000;
+const HOUR = 3600000;
+const MINUTE = 60000;
+const SECOND = 1000;
 
 module.exports = {
     replaceAt: (begin, end, str, replacement) => {
@@ -25,14 +25,14 @@ module.exports = {
         let mili = 0;
 
         while(time > 0) {
-            if(time >= HORA) {
-                time -= HORA;
+            if(time >= HOUR) {
+                time -= HOUR;
                 horas++;
-            } else if(time >= MINUTO) {
-                time -= MINUTO;
+            } else if(time >= MINUTE) {
+                time -= MINUTE;
                 minutos++;
-            } else if(time >= SEGUNDO) {
-                time -= SEGUNDO;
+            } else if(time >= SECOND) {
+                time -= SECOND;
                 segundos++;
             } else {
                 mili = time;
@@ -44,5 +44,8 @@ module.exports = {
     },
     sleep(millis) {
         return new Promise((resolve) => {setTimeout(resolve, millis);});
+    },
+    randomNum(min, max) {
+        return Math.floor(Math.random() * (max - min) ) + min
     }
 };
