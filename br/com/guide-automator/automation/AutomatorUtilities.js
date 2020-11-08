@@ -41,7 +41,7 @@ class AutomatorUtilities {
             await this.page.waitForSelector(selector);
         }
 
-        return this.page.evaluate((selector) => {
+        await this.page.evaluate((selector) => {
 
                 let resolve, reject;
 
