@@ -64,14 +64,23 @@ class AutomatorUtilities {
                 if(!dom) {
                     throw new Error('Failed to find DOM');
                 }
-                const onEnd = () => {
+
+                let counter = 0;
+
+                const goOn = () => {
                     dom.removeEventListener('transitionend', onEnd);
                     resolve();
+                }
+
+                const onEnd = () => {
+                    if(counter++ > 0){
+                        goOn();
+                    }
                 };
 
                 dom.addEventListener('transitionend', onEnd);
 
-                setTimeout(onEnd, 1000)
+                setTimeout(goOn, 5000);
 
                 return deferred;
         }, selector);
