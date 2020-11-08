@@ -23,7 +23,9 @@ class AutomatorUtilities {
 
         for(let i = 0; i < text.length; i++) {
             await this.page.type(selector, text[i]);
-            await util.sleep(util.randomNum(250, 500));
+            if(i < text.length-1) {
+                await util.sleep(util.randomNum(250, 500));
+            }
         }
     }
 
