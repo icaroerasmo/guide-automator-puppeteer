@@ -1,6 +1,4 @@
-const fs = require('fs');
-
-module.exports = (outputFolder, filePath) => {
+module.exports = (fileName, tmpFolder, outputFolder) => {
 
   let resolve, reject;
 
@@ -14,9 +12,9 @@ module.exports = (outputFolder, filePath) => {
 
   const args = [
     '-y',
-    '-i', filePath,
-    '-i', `${outputFolder}/final_audio.wav`,
-    '-vf', `subtitles=${outputFolder}/subtitles.srt`,
+    '-i', `${tmpFolder}/${fileName}`,
+    '-i', `${tmpFolder}/final_audio.wav`,
+    '-vf', `subtitles=${tmpFolder}/subtitles.srt`,
     outputPath
   ];
 

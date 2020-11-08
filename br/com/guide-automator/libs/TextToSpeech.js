@@ -3,7 +3,6 @@ const fs = require('fs');
 const TMP_AUDIO_PREFIX = 'aux_';
 const FINAL_AUDIO_PREFIX = 'audio_';
 const AUDIO_FORMAT = 'wav'
-const SILENCE_FILE = `silence.${AUDIO_FORMAT}`
 
 class TextToSpeech {
 

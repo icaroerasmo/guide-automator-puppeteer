@@ -56,9 +56,9 @@ class Interpreter extends InterpreterProxy{
         };
         this.log('started Recording');
         const videoPngBuffer = await recorder(runner);
-        const filePath = `${this.tmpFolder}/video.png`;
-        fs.writeFileSync(filePath, videoPngBuffer, () => {});
-        await converter(this.tmpFolder, filePath);
+        const fileName = 'video.png';
+        fs.writeFileSync(`${this.tmpFolder}/${fileName}`, videoPngBuffer, () => {});
+        await converter(fileName, this.tmpFolder, this.outputFolder);
         this.log('finished Recording');
     }
     
