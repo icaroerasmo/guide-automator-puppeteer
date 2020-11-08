@@ -35,18 +35,36 @@ class AutomatorUtilities {
     }
 
     async waitForTransitionEnd(selector) {
+
+        
         if(selector){
             await this.page.waitForSelector(selector);
         }
-        await this.page.evaluate((selector) => {
+
+        return this.page.evaluate((selector) => {
+
+                let resolve, reject;
+
+                let deferred = new Promise((_resolve, _reject) => {
+                    resolve = _resolve;
+                    reject = _reject;
+                });
+
                 const dom = document.querySelector(selector) || document.body;
+                
                 if(!dom) {
                     throw new Error('Failed to find DOM');
                 }
                 const onEnd = () => {
                     dom.removeEventListener('transitionend', onEnd);
+                    resolve();
                 };
+
                 dom.addEventListener('transitionend', onEnd);
+
+                setTimeout(onEnd, 1000)
+
+                return deferred;
         }, selector);
     }
 
