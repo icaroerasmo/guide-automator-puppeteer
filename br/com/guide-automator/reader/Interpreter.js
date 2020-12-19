@@ -139,8 +139,8 @@ class Interpreter extends InterpreterProxy{
         let output = '';
         let lines = Util.splitCodeIntoLines(code);
         lines = await this.viewportAdjustment(lines);
-        for(let line of lines) {
-            const params = Util.splitCommandLine(line);
+        for(let i = 0; i < lines.length; i++) {
+            const params = Util.splitCommandLine(lines[i]);
             switch(params[0]) {
                 case 'go-to-page':
                     await this.instance.goToPage(params[1]);

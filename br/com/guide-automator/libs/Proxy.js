@@ -32,7 +32,8 @@ class Proxy {
             filter(m => m !== 'constructor');
         this.debug(`IDENTIFIED METHODS: ${methods.reduce(
             (buff, meth) => buff + (buff.length <= 0 ? "" : ", ") + meth)}`);
-        for(let m of methods) {
+        for(let i = 0; i < methods.length; i++) {
+            let m = methods[i];
             this.debug(`PROXY APPLIED TO METHOD: ${m}`);
             const methodName = `_${m}`;
             thisPrototype[methodName] = thisPrototype[m];
