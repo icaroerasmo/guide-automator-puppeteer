@@ -50,7 +50,7 @@ class Interpreter extends InterpreterProxy{
             this.instance.start = performance.now();
             await this.parseFile();
             await this.makePDF();
-            await this.generateSubtitles();
+            await this.renderEffects();
             this.instance.end = performance.now();
             stop(this.instance.end);
         };
@@ -186,7 +186,7 @@ class Interpreter extends InterpreterProxy{
         return output;
     }
 
-    async generateSubtitles() {
+    async renderEffects() {
         let subIndex = 0;
         let effects = await this.instance.effectsTimeline;
         let buffer = '';
@@ -196,7 +196,7 @@ class Interpreter extends InterpreterProxy{
             let _end = Util.formattedTime(s.finalChk);
 
             const delay = i > 0 ? ((effects[i-1].finalChk - effects[i-1].checkpoint)/2) +
-                (effects[i].checkpoint - effects[i - 1].finalChk) : effects[i].checkpoint
+                (effects[i].checkpoint - effects[i - 1].finalChk) : effects[i].checkpoint - this.instance.start
 
             if(s.sub) {
 
