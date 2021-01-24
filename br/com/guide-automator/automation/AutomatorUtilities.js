@@ -22,13 +22,14 @@ class AutomatorUtilities {
     }
 
     async writeToInput(selector, text) {
+        const getTime = () => performance.now() - this.instance.start;
         for(let i = 0; i < text.length; i++) {
+            const checkpoint = getTime();
             await this.page.type(selector, text[i]);
-            const checkpoint = performance.now();
             if(i < text.length-1) {
                 await util.sleep(util.randomNum(250, 500));
             }
-            const finalChk = performance.now();
+            const finalChk = getTime();
             await this.instance.effectsTimeline.push({
                 checkpoint,
                 finalChk
