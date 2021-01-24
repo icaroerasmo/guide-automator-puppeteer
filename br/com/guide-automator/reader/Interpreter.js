@@ -195,8 +195,13 @@ class Interpreter extends InterpreterProxy{
             let _beginning = Util.formattedTime(s.checkpoint);
             let _end = Util.formattedTime(s.finalChk);
 
-            const delay = i > 0 ? ((effects[i-1].finalChk - effects[i-1].checkpoint)/2) +
-                (effects[i].checkpoint - effects[i - 1].finalChk) : effects[i].checkpoint - this.instance.start
+            let delay;
+            
+            if(i == 0) {
+                delay = effects[i].checkpoint;
+            } else if(i > 0) {
+                delay = (effects[i].checkpoint - effects[i - 1].finalChk) + (effects[i].offset / 2);
+            }
 
             if(s.sub) {
 

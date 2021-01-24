@@ -88,10 +88,13 @@ class Automator extends AutomatorProxy {
 
     async speak(sub) {
         this.log(`speaking: '${sub}'`)
+
         const getTime = () => performance.now() - this.start;
-        const checkpoint = getTime();
+        
         const offset = sub.length * 250;
         
+        const checkpoint = getTime();
+
         await util.sleep(offset);
 
         const finalChk = getTime();
@@ -99,7 +102,8 @@ class Automator extends AutomatorProxy {
         this.effectsTimeline.push({
             sub,
             checkpoint,
-            finalChk
+            finalChk,
+            offset
         });
     }
 

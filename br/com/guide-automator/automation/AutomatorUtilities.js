@@ -26,13 +26,15 @@ class AutomatorUtilities {
         for(let i = 0; i < text.length; i++) {
             const checkpoint = getTime();
             await this.page.type(selector, text[i]);
+            const offset = util.randomNum(250, 500);
             if(i < text.length-1) {
-                await util.sleep(util.randomNum(250, 500));
+                await util.sleep(offset);
             }
             const finalChk = getTime();
             await this.instance.effectsTimeline.push({
                 checkpoint,
-                finalChk
+                finalChk,
+                offset
             });
         }
     }
