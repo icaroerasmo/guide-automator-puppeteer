@@ -7,7 +7,7 @@ const Automator = require('../automation/Automator');
 const Util = require('../libs/Util');
 const recorder = require('../libs/Recorder');
 const converter = require('../libs/ApngToMp4Converter');
-const { say, generateAudio } = require('../libs/TextToSpeech');
+const { say, keyPressNoise, generateAudio } = require('../libs/SoundEffects');
 const base64Converter = require('image-to-base64');
 const codeMarker = "```"
 
@@ -187,24 +187,32 @@ class Interpreter extends InterpreterProxy{
     }
 
     async generateSubtitles() {
-        let subs = await this.instance.subtitles;
+        let subIndex = 0;
+        let effects = await this.instance.effectsTimeline;
         let buffer = '';
-        for(let i = 0; i < subs.length; i++) {
-            let s = subs[i];
+        for(let i = 0; i < effects.length; i++) {
+            let s = effects[i];
             let _beginning = Util.formattedTime(s.checkpoint);
             let _end = Util.formattedTime(s.finalChk);
-            buffer += `${i+1}\n${_beginning} --> ${_end}\n${s.sub}`;
-            if(i < subs.length - 1) {
-                buffer += '\n\n';
+
+            const delay = i > 0 ? ((effects[i-1].finalChk - effects[i-1].checkpoint)/2) +
+                (effects[i].checkpoint - effects[i - 1].finalChk) : effects[i].checkpoint
+
+            if(s.sub) {
+
+                buffer += `${++subIndex}\n${_beginning} --> ${_end}\n${s.sub}`;
+
+                if(i < effects.length - 1) {
+                    buffer += '\n\n';
+                }
+
+                await say(s.sub, i, delay, this.tmpFolder);
+            } else {
+                await keyPressNoise(i, delay, this.resourcesFolder, this.tmpFolder);
             }
-
-            const delay = i > 0 ? ((subs[i-1].finalChk - subs[i-1].checkpoint)/2) +
-                (subs[i].checkpoint - subs[i - 1].finalChk) : subs[i].checkpoint
-
-            await say(s.sub, i, delay, this.tmpFolder);
         }
 
-        generateAudio(this.tmpFolder);
+        await generateAudio(this.tmpFolder);
 
         fs.writeFileSync(`${this.tmpFolder}/subtitles.srt`, buffer, 'utf8', () => {});
     }

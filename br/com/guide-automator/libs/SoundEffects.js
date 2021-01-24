@@ -8,7 +8,27 @@ class TextToSpeech {
 
   constructor() {}
 
-  createAudio(text, index, outputPath) {
+  createKeyboardNoise(index, resourcesFolder, outputPath) {
+    let resolve, reject;
+
+    const deffered = new Promise((_resolve, _reject) => {
+        resolve = _resolve;
+        reject = _reject;
+    });
+
+    `${resourcesFolder}/keysound.${AUDIO_FORMAT}`
+    
+    fs.copyFileSync(
+      `${resourcesFolder}/keysound.${AUDIO_FORMAT}`,
+      `${outputPath}/${TMP_AUDIO_PREFIX}${index}.${AUDIO_FORMAT}`,
+      () => {});
+    
+    resolve();
+
+    return deffered;
+  }
+
+  createVoiceFromText(text, index, outputPath) {
 
     let resolve, reject;
 
@@ -92,7 +112,14 @@ class TextToSpeech {
   }
 
   async say(text, index, silenceDuration, outputPath) {
-    await this.createAudio(text, index, outputPath);
+    await this.createVoiceFromText(text, index, outputPath);
+    await this.addSilence(silenceDuration,
+      `${outputPath}/${TMP_AUDIO_PREFIX}${index}.${AUDIO_FORMAT}`,
+      `${outputPath}/${FINAL_AUDIO_PREFIX}${index}.${AUDIO_FORMAT}`);
+  }
+
+  async keyboard(index, silenceDuration, resourcesFolder, outputPath) {
+    await this.createKeyboardNoise(index, resourcesFolder, outputPath);
     await this.addSilence(silenceDuration,
       `${outputPath}/${TMP_AUDIO_PREFIX}${index}.${AUDIO_FORMAT}`,
       `${outputPath}/${FINAL_AUDIO_PREFIX}${index}.${AUDIO_FORMAT}`);
@@ -101,17 +128,28 @@ class TextToSpeech {
 
 
 module.exports = {
+  keyPressNoise: async (index, silenceDuration, resourcesFolder, outputPath) => {
+    const tts = new TextToSpeech();
+    await tts.keyboard(index, silenceDuration, resourcesFolder, outputPath);
+  },
   say: async (text, index, silenceDuration, outputPath) => {
     const tts = new TextToSpeech();
     await tts.say(text, index, silenceDuration, outputPath);
   },
-  generateAudio: (outputPath) => {
+  generateAudio: async (outputPath) => {
+
+    const getPosition = (fileName) => Number(
+      fileName.replace(FINAL_AUDIO_PREFIX, '').
+      replace(AUDIO_FORMAT, ''));
+
     let files = fs.readdirSync(outputPath).
-      filter(fn => fn.match(/^audio_[0-9]+\.wav$/g));
+      filter(fn => fn.match(/^audio_[0-9]+\.wav$/g)).
+      sort((file1, file2) => {
+          return getPosition(file1) - getPosition(file2);
+        }).
+      map(f => `${outputPath}/${f}`);
     
     const tts = new TextToSpeech();
-    tts.concatAudios(
-      ...files.map(f => `${outputPath}/${f}`),
-      `${outputPath}/final_audio.wav`);
+    await tts.concatAudios(...files, `${outputPath}/final_audio.wav`);
   }
 }

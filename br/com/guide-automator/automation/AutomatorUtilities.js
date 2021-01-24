@@ -1,10 +1,12 @@
+const { performance } = require('perf_hooks');
 const MouseSimulator = require('./MouseSimulator');
 const util = require('../libs/Util');
 
 class AutomatorUtilities {
 
-    constructor (page) {
-        this.page = page;
+    constructor (instance) {
+        this.instance = instance;
+        this.page = this.instance.page;
         this.mouseSimulator = new MouseSimulator(this.page);
     }
 
@@ -20,12 +22,17 @@ class AutomatorUtilities {
     }
 
     async writeToInput(selector, text) {
-
         for(let i = 0; i < text.length; i++) {
             await this.page.type(selector, text[i]);
+            const checkpoint = performance.now();
             if(i < text.length-1) {
                 await util.sleep(util.randomNum(250, 500));
             }
+            const finalChk = performance.now();
+            await this.instance.effectsTimeline.push({
+                checkpoint,
+                finalChk
+            });
         }
     }
 

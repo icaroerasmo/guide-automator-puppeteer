@@ -7,7 +7,7 @@ const util = require('../libs/Util');
 
 class Automator extends AutomatorProxy {
 
-    subtitles = [];
+    effectsTimeline = [];
 
     constructor(isDebugEnabled, isVerboseEnabled) {
         super(isDebugEnabled, isVerboseEnabled)
@@ -24,7 +24,7 @@ class Automator extends AutomatorProxy {
         });
         this.page = await this.browser.newPage();
         this.page.setCacheEnabled(false);
-        this.automatorUtilities = new AutomatorUtilities(this.page);
+        this.automatorUtilities = new AutomatorUtilities(this);
          await mouseHelper(this.page);
         this.log("initialized");
     }
@@ -96,7 +96,7 @@ class Automator extends AutomatorProxy {
 
         const finalChk = getTime();
 
-        this.subtitles.push({
+        this.effectsTimeline.push({
             sub,
             checkpoint,
             finalChk
