@@ -200,7 +200,7 @@ class Interpreter extends InterpreterProxy{
             if(i == 0) {
                 delay = effects[i].checkpoint;
             } else if(i > 0) {
-                delay = (effects[i].checkpoint - effects[i - 1].finalChk);
+                delay = (effects[i].checkpoint - effects[i - 1].finalChk) + (effects[i].offset / 2);
             }
 
             if(s.sub) {
@@ -211,9 +211,9 @@ class Interpreter extends InterpreterProxy{
                     buffer += '\n\n';
                 }
 
-                await say(s.sub, i, delay + (effects[i - 1].offset / 2), this.tmpFolder);
+                await say(s.sub, i, delay, this.tmpFolder);
             } else {
-                await keyPressNoise(i, delay + (effects[i - 1].offset), this.resourcesFolder, this.tmpFolder);
+                await keyPressNoise(i, delay, this.resourcesFolder, this.tmpFolder);
             }
         }
 
