@@ -1,4 +1,5 @@
 const fs = require('fs');
+const Util = require('./Util');
 
 const TMP_AUDIO_PREFIX = 'aux_';
 const FINAL_AUDIO_PREFIX = 'audio_';
@@ -8,6 +9,30 @@ class TextToSpeech {
 
   constructor() {}
 
+  checkAudioDuration(index, outputPath) {
+    let resolve, reject;
+
+    const deffered = new Promise((_resolve, _reject) => {
+        resolve = _resolve;
+        reject = _reject;
+    });
+    
+    let spawn = require('child_process').spawn;
+
+    let fantProc = spawn('sh', [
+      '-c', `ffmpeg -i ${outputPath}/${TMP_AUDIO_PREFIX}${index}.${AUDIO_FORMAT} 2>&1 `+
+      "| sed 's/Duration: \\(.*\\), start/\\1/gp'"
+    ]);
+
+    fantProc.stdout.on('data', (data) => {
+      let duration = data.toString().
+        match(/(?!Duration: )\d{2}:\d{2}:\d{2}\.\d{1,3}/g)[0];
+      resolve(Util.unformattedTime(duration));
+    });
+
+    return deffered;
+  }
+
   createKeyboardNoise(index, resourcesFolder, outputPath) {
     let resolve, reject;
 
@@ -15,8 +40,6 @@ class TextToSpeech {
         resolve = _resolve;
         reject = _reject;
     });
-
-    `${resourcesFolder}/keysound.${AUDIO_FORMAT}`
     
     fs.copyFileSync(
       `${resourcesFolder}/keysound.${AUDIO_FORMAT}`,
@@ -113,14 +136,20 @@ class TextToSpeech {
 
   async say(text, index, silenceDuration, outputPath) {
     await this.createVoiceFromText(text, index, outputPath);
-    await this.addSilence(silenceDuration,
+
+    let effectDelay = await this.checkAudioDuration(index, outputPath);
+
+    await this.addSilence(silenceDuration+effectDelay,
       `${outputPath}/${TMP_AUDIO_PREFIX}${index}.${AUDIO_FORMAT}`,
       `${outputPath}/${FINAL_AUDIO_PREFIX}${index}.${AUDIO_FORMAT}`);
   }
 
   async keyboard(index, silenceDuration, resourcesFolder, outputPath) {
     await this.createKeyboardNoise(index, resourcesFolder, outputPath);
-    await this.addSilence(silenceDuration,
+
+    let effectDelay = await this.checkAudioDuration(index, outputPath);
+    
+    await this.addSilence(silenceDuration+effectDelay,
       `${outputPath}/${TMP_AUDIO_PREFIX}${index}.${AUDIO_FORMAT}`,
       `${outputPath}/${FINAL_AUDIO_PREFIX}${index}.${AUDIO_FORMAT}`);
   }
@@ -151,5 +180,9 @@ module.exports = {
     
     const tts = new TextToSpeech();
     await tts.concatAudios(...files, `${outputPath}/final_audio.wav`);
+  },
+  getAudioDuration: (index, outputPath) => {
+    const tts = new TextToSpeech();
+    return tts.checkAudioDuration(index, outputPath);
   }
 }

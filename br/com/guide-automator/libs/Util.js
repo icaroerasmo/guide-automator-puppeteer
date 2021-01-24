@@ -49,6 +49,17 @@ module.exports = {
 
         return `${this.twoDigits(horas)}:${this.twoDigits(minutos)}:${this.twoDigits(segundos)},${this.threeDigits(mili)}`;
     },
+    unformattedTime(time) {
+      let splt1 = time.split(".")
+      let splt2 = splt1[0].split(":");
+
+      let hours = Number(splt2[0]) * HOUR;
+      let minutes = Number(splt2[1]) * MINUTE;
+      let seconds = Number(splt2[2]) * SECOND;
+      let millisseconds = Number(splt1[1])*10;
+
+      return hours + minutes + seconds + millisseconds;
+    },
     sleep(millis) {
         return new Promise((resolve) => {setTimeout(resolve, millis);});
     },

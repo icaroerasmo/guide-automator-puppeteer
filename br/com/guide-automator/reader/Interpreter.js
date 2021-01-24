@@ -7,7 +7,7 @@ const Automator = require('../automation/Automator');
 const Util = require('../libs/Util');
 const recorder = require('../libs/Recorder');
 const converter = require('../libs/ApngToMp4Converter');
-const { say, keyPressNoise, generateAudio } = require('../libs/SoundEffects');
+const { say, keyPressNoise, generateAudio, getAudioDuration } = require('../libs/SoundEffects');
 const base64Converter = require('image-to-base64');
 const codeMarker = "```"
 
@@ -196,11 +196,11 @@ class Interpreter extends InterpreterProxy{
             let _end = Util.formattedTime(s.finalChk);
 
             let delay;
-            
-            if(i == 0) {
+
+            if(i == 0){
                 delay = effects[i].checkpoint;
-            } else if(i > 0) {
-                delay = (effects[i].checkpoint - effects[i - 1].finalChk) + (effects[i].offset / 2);
+            } else {
+                delay = effects[i].checkpoint - effects[i - 1].finalChk
             }
 
             if(s.sub) {
@@ -213,6 +213,7 @@ class Interpreter extends InterpreterProxy{
 
                 await say(s.sub, i, delay, this.tmpFolder);
             } else {
+
                 await keyPressNoise(i, delay, this.resourcesFolder, this.tmpFolder);
             }
         }
