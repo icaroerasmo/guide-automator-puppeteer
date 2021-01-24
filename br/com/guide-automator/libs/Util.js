@@ -14,8 +14,15 @@ module.exports = {
             filter(w => w != null && !w.match(/^\s*$/g)).
             map(w => w.replace(/"/g, "").replace(/'/g, ""));
     },
+    leadingZeros(num, numberOfZeros) {
+        let zeros = "0".repeat(numberOfZeros - 1);
+        return (zeros + num).slice(-1*numberOfZeros);
+    },
     twoDigits(num){
-        return ("0" + num).slice(-2);
+        return this.leadingZeros(num, 2);
+    },
+    threeDigits(num){
+        return this.leadingZeros(num, 3);
     },
     formattedTime(time) {
 
@@ -40,7 +47,7 @@ module.exports = {
             }
         }
 
-        return `${this.twoDigits(horas)}:${this.twoDigits(minutos)}:${this.twoDigits(segundos)},${this.twoDigits(mili)}`;
+        return `${this.twoDigits(horas)}:${this.twoDigits(minutos)}:${this.twoDigits(segundos)},${this.threeDigits(mili)}`;
     },
     sleep(millis) {
         return new Promise((resolve) => {setTimeout(resolve, millis);});
