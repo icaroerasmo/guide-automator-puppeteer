@@ -56,7 +56,18 @@ module.exports = {
       let hours = Number(splt2[0]) * HOUR;
       let minutes = Number(splt2[1]) * MINUTE;
       let seconds = Number(splt2[2]) * SECOND;
-      let millisseconds = Number(splt1[1])*10;
+
+      let multiplyFactor;
+
+      if(splt1[1].length == 1) {
+          multiplyFactor = 100;
+      } else if(splt1[1].length == 2) {
+          multiplyFactor = 10;
+      } else {
+          multiplyFactor = 1;
+      }
+
+      let millisseconds = Number(splt1[1]) * multiplyFactor;
 
       return hours + minutes + seconds + millisseconds;
     },

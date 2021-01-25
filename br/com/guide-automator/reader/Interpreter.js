@@ -7,7 +7,7 @@ const Automator = require('../automation/Automator');
 const Util = require('../libs/Util');
 const recorder = require('../libs/Recorder');
 const converter = require('../libs/ApngToMp4Converter');
-const { say, keyPressNoise, generateAudio, getAudioDuration } = require('../libs/SoundEffects');
+const { say, keyPressNoise, generateAudio } = require('../libs/SoundEffects');
 const base64Converter = require('image-to-base64');
 const codeMarker = "```"
 

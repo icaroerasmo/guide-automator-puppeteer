@@ -137,8 +137,12 @@ class TextToSpeech {
   async say(text, index, silenceDuration, outputPath) {
     await this.createVoiceFromText(text, index, outputPath);
 
-    let effectDelay = await this.checkAudioDuration(index, outputPath);
+    let effectDelay = 0;
 
+    if(index > 0) {
+      effectDelay = await this.checkAudioDuration(index - 1, outputPath);
+    }
+    
     await this.addSilence(silenceDuration+effectDelay,
       `${outputPath}/${TMP_AUDIO_PREFIX}${index}.${AUDIO_FORMAT}`,
       `${outputPath}/${FINAL_AUDIO_PREFIX}${index}.${AUDIO_FORMAT}`);
@@ -147,7 +151,11 @@ class TextToSpeech {
   async keyboard(index, silenceDuration, resourcesFolder, outputPath) {
     await this.createKeyboardNoise(index, resourcesFolder, outputPath);
 
-    let effectDelay = await this.checkAudioDuration(index, outputPath);
+    let effectDelay = 0;
+
+    if(index > 0) {
+      effectDelay = await this.checkAudioDuration(index - 1, outputPath);
+    }
     
     await this.addSilence(silenceDuration+effectDelay,
       `${outputPath}/${TMP_AUDIO_PREFIX}${index}.${AUDIO_FORMAT}`,
@@ -180,9 +188,5 @@ module.exports = {
     
     const tts = new TextToSpeech();
     await tts.concatAudios(...files, `${outputPath}/final_audio.wav`);
-  },
-  getAudioDuration: (index, outputPath) => {
-    const tts = new TextToSpeech();
-    return tts.checkAudioDuration(index, outputPath);
   }
 }
