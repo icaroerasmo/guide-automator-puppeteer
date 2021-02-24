@@ -40,3 +40,25 @@ Se tiver instalado as dependências manualmente você deverá executar o comando
 main.js -d -i examples/Example-1/example.md -cv examples/Example-1/cover.html
 ```
 Observe que os caminhos dos arquivos nos exemplos acima são relativos à pasta corrente. Para executar a partir de outra pasta que não seja a do guide automator você deve anexar o caminho desta como prefixo tanto ao comando quanto aos parâmetros que definem os caminhos dos arquivos que são passados como entrada.
+
+## Docker
+
+Você também pode executar o Guide Automator Puppeteer via Docker.
+
+Construindo a imagem:
+
+```shell
+docker build -t guide-automator-puppeteer .
+```
+
+Executando o exemplo:
+
+```shell
+docker run --rm -it \
+  -v $PWD:/tmp/user \
+  -w /tmp/user \
+  guide-automator-puppeteer \
+  -d -i examples/Example-1/example.md -cv examples/Example-1/cover.html
+```
+
+A última linha corresponde aos parâmetros passados para o Guide Automator Puppeteer.
