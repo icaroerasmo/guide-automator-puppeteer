@@ -37,6 +37,6 @@ Se preferir reduzir a complexidade da montagem do ambiente em ambientes Linux ba
 
 Se tiver instalado as dependências manualmente você deverá executar o comando:
 ```
-node main.js -d -i examples/Example-1/example.md -cv examples/Example-1/cover.html
+main.js -d -i examples/Example-1/example.md -cv examples/Example-1/cover.html
 ```
 Observe que os caminhos dos arquivos nos exemplos acima são relativos à pasta corrente. Para executar a partir de outra pasta que não seja a do guide automator você deve anexar o caminho desta como prefixo tanto ao comando quanto aos parâmetros que definem os caminhos dos arquivos que são passados como entrada.
