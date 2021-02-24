@@ -1,4 +1,4 @@
-FROM node:15.10-buster
+FROM node:12.15.0-buster
 
 RUN apt update
 RUN apt install -y festival ffmpeg xvfb libfontconfig wkhtmltopdf
