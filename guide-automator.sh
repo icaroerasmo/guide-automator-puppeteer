@@ -16,6 +16,11 @@ if ! [ -x "$(command -v git)" ]; then
   exit 1
 fi
 
+if ! [ -x "$(command -v festival)" ]; then
+  echo 'Error: festival is not installed.' >&2
+  exit 1
+fi
+
 if [ ! -e "./node_modules" ]; then
     echo 'Installing dependencies...'
     npm i  > /dev/null 2>&1
