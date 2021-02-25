@@ -9,23 +9,23 @@
 
 ### Instalação
 
-O **Festival** e **FFMPEG** podem ser instalados facilmente em ambientes Debian-like (Distribuições que utilizem o apt como gerenciador de pacotes como o próprio Debian, o Ubuntu, Mint e etc) executando o comando:
+O **Festival**, **FFMPEG** e **WkHtmlToPdf** podem ser instalados facilmente em ambientes Debian-like (Distribuições que utilizem o apt como gerenciador de pacotes como o próprio Debian, o Ubuntu, Mint e etc) executando o comando:
 
 ```console
-foo@bar:~$ sudo apt install festival ffmpeg
+foo@bar:~$ sudo apt install festival ffmpeg wkhtmltopdf
 ```
 
 Há também uma forma de se instalar o **Festival** em MacOS ou Linux compilando o código fonte como descrito nessa [thread](https://apple.stackexchange.com/questions/128635/installing-the-festival-speech-synthesis-system-with-mavericks) do Apple StackExchange.
 
 Para instalação do **FFMPEG** em outros Sistemas operacionais ou do **Festival** compilando o código fonte, por favor consultar as documentações das respectivas ferramentas.
 
+Se preferir instalar a versão mais atual do **WkHtmlToPdf** ou utiliza um sistema operacional diferente do Linux, vá ao [site oficial](https://wkhtmltopdf.org/downloads.html) onde é possível encontrar versões para os mais diversos sistemas operacionais.
+
 Já o node é recomendável que se installe através do [NVM](https://github.com/nvm-sh/nvm) a versão v12.15.0:
 
 ```console
 foo@bar:~$ nvm install v12.15.0
 ```
-
-O **WkHtmlToPdf** possui versões para os mais diversos sistemas operacionais e é possível realizar o download do binário correspondente ao seu Sistema operacional nesse [link](https://wkhtmltopdf.org/downloads.html).
 
 ## Executando
 
