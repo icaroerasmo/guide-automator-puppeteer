@@ -52,7 +52,6 @@ RUN wget https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6-1/wkh
 
 COPY . .
 
-RUN rm -Rf node_modules
 RUN npm install
 
 ENTRYPOINT ["node", "main.js"]
