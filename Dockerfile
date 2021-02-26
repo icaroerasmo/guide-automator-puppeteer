@@ -4,7 +4,10 @@ WORKDIR /usr/src/app
 
 RUN apt update
 RUN apt upgrade -y
-RUN apt install -y festival ffmpeg wkhtmltopdf \
+RUN apt install -y festival \
+    ffmpeg \
+    xfonts-75dpi \
+    xfonts-base \
     ca-certificates \
     fonts-liberation \
     libappindicator3-1 \
@@ -43,9 +46,13 @@ RUN apt install -y festival ffmpeg wkhtmltopdf \
     wget \
     xdg-utils
 
-COPY . .
-RUN chmod -R 755 /usr/src/app
+RUN wget https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6-1/wkhtmltox_0.12.6-1.buster_amd64.deb \
+    && dpkg -i wkhtmltox_0.12.6-1.buster_amd64.deb \
+    && rm wkhtmltox_0.12.6-1.buster_amd64.deb
 
+COPY . .
+
+RUN rm -Rf node_modules
 RUN npm install
 
 ENTRYPOINT ["node", "main.js"]
