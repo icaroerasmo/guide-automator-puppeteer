@@ -21,7 +21,7 @@ Para instalação do **FFMPEG** em outros Sistemas operacionais ou do **Festival
 
 O **WkHtmlToPdf** possui versões para os mais diversos sistemas operacionais e é possível realizar o download do binário correspondente ao seu Sistema operacional nesse [link](https://wkhtmltopdf.org/downloads.html). 
 
-**NÃO instale em hipótese alguma o WkHtmlToPdf dos repositórios oficiais da sua distribuição Linux. O binário disponibilizado nos repositórios são compilados sem algumas dependências e a utilização destes resulta em FALHA na execução do Guide Automator Puppeteer.**
+**NÃO instale em hipótese alguma o WkHtmlToPdf dos repositórios oficiais da sua distribuição Linux. O binário disponibilizado nos repositórios são compilados sem algumas dependências e a utilização deste resulta em FALHA na execução do Guide Automator Puppeteer.**
 
 Já o node é recomendável que se installe através do [NVM](https://github.com/nvm-sh/nvm) a versão v12.15.0:
 
