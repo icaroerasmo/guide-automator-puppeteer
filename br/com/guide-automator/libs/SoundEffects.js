@@ -1,7 +1,7 @@
 const fs = require('fs');
 const Util = require('./Util');
 
-const TMP_AUDIO_PREFIX = 'aux_';
+const TMP_AUDIO_PREFIX = 'tmp_audio_file';
 const FINAL_AUDIO_PREFIX = 'audio_';
 const AUDIO_FORMAT = 'wav'
 
@@ -9,7 +9,7 @@ class TextToSpeech {
 
   constructor() {}
 
-  checkAudioDuration(index, outputPath) {
+  checkAudioDuration(path) {
     let resolve, reject;
 
     const deffered = new Promise((_resolve, _reject) => {
@@ -20,7 +20,7 @@ class TextToSpeech {
     let spawn = require('child_process').spawn;
 
     let fantProc = spawn('sh', [
-      '-c', `ffmpeg -i ${outputPath}/${TMP_AUDIO_PREFIX}${index}.${AUDIO_FORMAT} 2>&1 `+
+      '-c', `ffmpeg -i ${path} 2>&1 `+
       "| sed 's/Duration: \\(.*\\), start/\\1/gp'"
     ]);
 
@@ -33,25 +33,11 @@ class TextToSpeech {
     return deffered;
   }
 
-  createKeyboardNoise(index, resourcesFolder, outputPath) {
-    let resolve, reject;
-
-    const deffered = new Promise((_resolve, _reject) => {
-        resolve = _resolve;
-        reject = _reject;
-    });
-    
-    fs.copyFileSync(
-      `${resourcesFolder}/keysound.${AUDIO_FORMAT}`,
-      `${outputPath}/${TMP_AUDIO_PREFIX}${index}.${AUDIO_FORMAT}`,
-      () => {});
-    
-    resolve();
-
-    return deffered;
+  generateAudioFilePath(outputPath, index) {
+    return `${outputPath}/${FINAL_AUDIO_PREFIX}${index}.${AUDIO_FORMAT}`;
   }
 
-  createVoiceFromText(text, index, outputPath) {
+  createVoiceFromText(text, outputPath) {
 
     let resolve, reject;
 
@@ -63,7 +49,7 @@ class TextToSpeech {
     let spawn = require('child_process').spawn;
 
     let fantProc = spawn('sh', [
-      '-c', `echo ${text} | text2wave -o ${outputPath}/${TMP_AUDIO_PREFIX}${index}.${AUDIO_FORMAT}`
+      '-c', `echo ${text} | text2wave -o ${outputPath}`
     ]);
 
     fantProc.on('close', () => {
@@ -135,23 +121,25 @@ class TextToSpeech {
   }
 
   async say(text, index, silenceDuration, outputPath) {
-    await this.createVoiceFromText(text, index, outputPath);
 
-    let effectDelay = await this.checkAudioDuration(index, outputPath);
+    let tmpAudioFile = `${outputPath}/${TMP_AUDIO_PREFIX}.${AUDIO_FORMAT}`;
+
+    await this.createVoiceFromText(text, tmpAudioFile);
+    
+    let effectDelay = await this.checkAudioDuration(tmpAudioFile);
 
     await this.addSilence(silenceDuration+effectDelay,
-      `${outputPath}/${TMP_AUDIO_PREFIX}${index}.${AUDIO_FORMAT}`,
-      `${outputPath}/${FINAL_AUDIO_PREFIX}${index}.${AUDIO_FORMAT}`);
+      tmpAudioFile, this.generateAudioFilePath(outputPath, index));
   }
 
   async keyboard(index, silenceDuration, resourcesFolder, outputPath) {
-    await this.createKeyboardNoise(index, resourcesFolder, outputPath);
 
-    let effectDelay = await this.checkAudioDuration(index, outputPath);
+    let keySoundFile = `${resourcesFolder}/keysound.${AUDIO_FORMAT}`;
+
+    let effectDelay = await this.checkAudioDuration(keySoundFile);
     
     await this.addSilence(silenceDuration+effectDelay,
-      `${outputPath}/${TMP_AUDIO_PREFIX}${index}.${AUDIO_FORMAT}`,
-      `${outputPath}/${FINAL_AUDIO_PREFIX}${index}.${AUDIO_FORMAT}`);
+      keySoundFile, this.generateAudioFilePath(outputPath, index));
   }
 }
 
