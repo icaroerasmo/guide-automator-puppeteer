@@ -56,9 +56,9 @@
     readParameters(process.argv);
 
     fs.mkdtemp(path.join(os.tmpdir(), '/'),
-        (err, tmpFolder) => {
+        async (err, tmpFolder) => {
             if (err) throw err;
-            new Interpreter(
+            await new Interpreter(
                 mdFile,
                 coverPath,
                 outputFolder,
@@ -68,6 +68,7 @@
                 isDebugEnabled,
                 isVerboseEnabled
             ).run();
+            fs.rmdirSync(tmpFolder, { recursive: true });
         }
     );
 })()
