@@ -16,6 +16,7 @@ foo@bar:~$ sudo apt install festival ffmpeg
 ```
 
 O **WkHtmlToPdf** possui versões para os mais diversos sistemas operacionais e é possível realizar o download do binário correspondente ao seu Sistema operacional nesse [link](https://wkhtmltopdf.org/downloads.html). 
+
 **NÃO** instale em hipótese alguma o WkHtmlToPdf dos repositórios oficiais da sua distribuição Linux. O binário disponibilizado nos repositórios são compilados sem algumas dependências e a utilização destes resulta em **FALHA** na execução do Guide Automator Puppeteer.
 
 Há também uma forma de se instalar o **Festival** em MacOS ou Linux compilando o código fonte como descrito nessa [thread](https://apple.stackexchange.com/questions/128635/installing-the-festival-speech-synthesis-system-with-mavericks) do Apple StackExchange.
