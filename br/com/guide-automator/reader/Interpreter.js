@@ -198,7 +198,7 @@ class Interpreter extends InterpreterProxy{
             let delay;
 
             if(i == 0){
-                delay = effects[i].checkpoint;
+                delay = effects[i].checkpoint - this.instance.start;
             } else {
                 delay = effects[i].checkpoint - effects[i - 1].finalChk
             }

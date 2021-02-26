@@ -56,19 +56,38 @@
     readParameters(process.argv);
 
     fs.mkdtemp(path.join(os.tmpdir(), '/'),
-        async (err, tmpFolder) => {
+        async (err, tmpFolderPath) => {
+            
             if (err) throw err;
+            
+            function exitHandler(options, exitCode) {
+                fs.rmdirSync(tmpFolderPath, { recursive: true });
+            }
+
+            //do something when app is closing
+            process.on('exit', exitHandler.bind(null));
+
+            //catches ctrl+c event
+            process.on('SIGINT', exitHandler.bind(null));
+
+            // catches "kill pid" (for example: nodemon restart)
+            process.on('SIGUSR1', exitHandler.bind(null));
+            process.on('SIGUSR2', exitHandler.bind(null));
+
+            //catches uncaught exceptions
+            process.on('uncaughtException', exitHandler.bind(null, {exit:true}));
+
             await new Interpreter(
                 mdFile,
                 coverPath,
                 outputFolder,
                 outputFileName,
                 resourcesFolder,
-                tmpFolder,
+                tmpFolderPath,
                 isDebugEnabled,
                 isVerboseEnabled
             ).run();
-            fs.rmdirSync(tmpFolder, { recursive: true });
         }
     );
+
 })()
