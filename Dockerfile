@@ -46,6 +46,8 @@ RUN apt install -y festival \
     wget \
     xdg-utils
 
+RUN mkdir -p /usr/src/output && chmod -R 755 /usr/src/output 
+
 RUN wget https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6-1/wkhtmltox_0.12.6-1.buster_amd64.deb \
     && dpkg -i wkhtmltox_0.12.6-1.buster_amd64.deb \
     && rm wkhtmltox_0.12.6-1.buster_amd64.deb

@@ -56,9 +56,12 @@ foo@bar:~$ sudo docker build -t guide-automator-puppeteer .
 Executando o exemplo:
 
 ```console
-foo@bar:~$ docker run --rm -it \
+foo@bar:~$ sudo docker run --rm \
+  -v $(pwd)/output:/usr/src/output \
   guide-automator-puppeteer \
-  -d -i examples/Example-1/example.md -cv examples/Example-1/cover.html
+  -d -i examples/Example-1/example.md -cv examples/Example-1/cover.html -o /usr/src/output
 ```
 
 A última linha corresponde aos parâmetros passados para o Guide Automator Puppeteer.
+
+Observe o parâmetro -o que define a pasta de saída dos arquivos: este deve ser igual ao parâmetro -v que é inserido na execução do docker na segunda linha. Caso não sejam, não será possível visualizar os arquivos na pasta "output" dentro da pasta do guide-automator-puppeteer.
