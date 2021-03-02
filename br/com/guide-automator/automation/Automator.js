@@ -2,7 +2,6 @@ const { performance } = require('perf_hooks');
 const AutomatorProxy = require('./AutomatorProxy');
 const AutomatorUtilities = require('./AutomatorUtilities');
 const puppeteer = require('puppeteer');
-const mouseHelper = require('../libs/MouseHelper');
 const util = require('../libs/Util');
 
 class Automator extends AutomatorProxy {
@@ -25,7 +24,6 @@ class Automator extends AutomatorProxy {
         this.page = await this.browser.newPage();
         this.page.setCacheEnabled(false);
         this.automatorUtilities = new AutomatorUtilities(this);
-         await mouseHelper(this.page);
         this.log("initialized");
     }
 
@@ -88,14 +86,12 @@ class Automator extends AutomatorProxy {
 
     async speak(sub) {
         this.log(`speaking: '${sub}'`)
-
-        let getTime = () => performance.now() - this.start;
         
-        let checkpoint = getTime();
+        let checkpoint = performance.now();
 
         await util.sleep(sub.length * 250);
 
-        let finalChk = getTime();
+        let finalChk = performance.now();
 
         this.effectsTimeline.push({
             sub,

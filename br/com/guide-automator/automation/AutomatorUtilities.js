@@ -1,5 +1,6 @@
 const { performance } = require('perf_hooks');
 const MouseSimulator = require('./MouseSimulator');
+const mouseHelper = require('../libs/MouseHelper');
 const util = require('../libs/Util');
 
 class AutomatorUtilities {
@@ -8,6 +9,7 @@ class AutomatorUtilities {
         this.instance = instance;
         this.page = this.instance.page;
         this.mouseSimulator = new MouseSimulator(this.page);
+        mouseHelper(this.page);
     }
 
     async screenshotImpl(path) {
@@ -22,14 +24,13 @@ class AutomatorUtilities {
     }
 
     async writeToInput(selector, text) {
-        let getTime = () => performance.now() - this.instance.start;
         for(let i = 0; i < text.length; i++) {
             await this.page.type(selector, text[i]);
-            let checkpoint = getTime();
+            let checkpoint = performance.now();
             if(i < text.length-1) {
                 await util.sleep(util.randomNum(142, 500));
             }
-            let finalChk = getTime();
+            let finalChk = performance.now();
             await this.instance.effectsTimeline.push({
                 checkpoint,
                 finalChk,
