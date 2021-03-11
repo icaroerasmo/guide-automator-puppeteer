@@ -65,3 +65,6 @@ foo@bar:~$ sudo docker run --rm \
 A última linha corresponde aos parâmetros passados para o Guide Automator Puppeteer.
 
 Observe o parâmetro -o que define a pasta de saída dos arquivos: este deve ser igual ao parâmetro -v que é inserido na execução do docker na segunda linha. Caso não sejam, não será possível visualizar os arquivos na pasta "output" dentro da pasta do guide-automator-puppeteer.
+
+
+
