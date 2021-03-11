@@ -7,7 +7,7 @@
 - [FFMPEG](https://ffmpeg.org/)
 - [Festival](https://www.cstr.ed.ac.uk/projects/festival/)
 
-### Instalação
+## Instalação
 
 O **Festival**, **FFMPEG** podem ser instalados facilmente em ambientes Debian-like (Distribuições que utilizem o apt como gerenciador de pacotes como o próprio Debian, o Ubuntu, Mint e etc) executando o comando:
 
@@ -31,11 +31,7 @@ foo@bar:~$ nvm install v12.15.0
 
 ## Executando
 
-Se preferir reduzir a complexidade da montagem do ambiente em ambientes Linux basta somente ter o **Git** e o **Festival** instalados e executar o script guide-automator.sh passando os parâmetros de execução necessários. Como a seguir:
-
-```console
-foo@bar:~$ ./guide-automator.sh -d -i examples/Example-1/example.md -cv examples/Example-1/cover.html
-```
+#### Manualmente
 
 Se tiver instalado as dependências manualmente você deverá executar o comando:
 ```console
@@ -43,7 +39,7 @@ foo@bar:~$ main.js -d -i examples/Example-1/example.md -cv examples/Example-1/co
 ```
 Observe que os caminhos dos arquivos nos exemplos acima são relativos à pasta corrente. Para executar a partir de outra pasta que não seja a do guide automator você deve anexar o caminho desta como prefixo tanto ao comando quanto aos parâmetros que definem os caminhos dos arquivos que são passados como entrada.
 
-## Docker
+#### Através do Docker
 
 Você também pode executar o Guide Automator Puppeteer via Docker.
 
@@ -65,6 +61,3 @@ foo@bar:~$ sudo docker run --rm \
 A última linha corresponde aos parâmetros passados para o Guide Automator Puppeteer.
 
 Observe o parâmetro -o que define a pasta de saída dos arquivos: este deve ser igual ao parâmetro -v que é inserido na execução do docker na segunda linha. Caso não sejam, não será possível visualizar os arquivos na pasta "output" dentro da pasta do guide-automator-puppeteer.
-
-
-
