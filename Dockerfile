@@ -46,11 +46,13 @@ RUN apt install -y festival \
     wget \
     xdg-utils
 
-RUN mkdir -p /usr/src/output && chmod -R 755 /usr/src/output 
-
-RUN wget https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6-1/wkhtmltox_0.12.6-1.buster_amd64.deb \
-    && dpkg -i wkhtmltox_0.12.6-1.buster_amd64.deb \
-    && rm wkhtmltox_0.12.6-1.buster_amd64.deb
+RUN export WKHTML_LATEST_VERSION=$(\
+    wget -O - "https://api.github.com/repos/wkhtmltopdf/wkhtmltopdf/releases/latest" | \
+    grep '"tag_name":' | \
+    sed -E 's/.*"([^"]+)".*/\1/') && \
+    wget "https://github.com/wkhtmltopdf/packaging/releases/download/${WKHTML_LATEST_VERSION}-1/wkhtmltox_${WKHTML_LATEST_VERSION}-1.buster_amd64.deb" \
+    && dpkg -i wkhtmltox_${WKHTML_LATEST_VERSION}-1.buster_amd64.deb \
+    && rm wkhtmltox_${WKHTML_LATEST_VERSION}-1.buster_amd64.deb
 
 COPY . .
 
