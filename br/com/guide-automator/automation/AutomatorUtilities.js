@@ -74,17 +74,13 @@ class AutomatorUtilities {
                     throw new Error('Failed to find DOM');
                 }
 
-                let counter = 0;
-
                 const goOn = () => {
                     dom.removeEventListener('transitionend', onEnd);
                     resolve();
                 }
 
                 const onEnd = () => {
-                    if(counter++ > 0){
-                        goOn();
-                    }
+                    goOn();
                 };
 
                 dom.addEventListener('transitionend', onEnd);

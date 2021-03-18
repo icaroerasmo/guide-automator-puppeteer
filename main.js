@@ -11,8 +11,10 @@
     let isDebugEnabled = false;
     let isVerboseEnabled = false;
     let outputFolder = './';
-    let outputFileName = 'output';
-    let resourcesFolder = './resources';
+    let outputFileName = './output';
+    let resourcesFolder = `${__dirname}/resources`;
+
+    console.log('Resources ')
 
     readParameters = (argv) => {
         for(let i = 2; i < argv.length; i++) {
