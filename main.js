@@ -24,8 +24,8 @@
                 val = argv[++i];
             }
             parametersInterpreter(key, val);
-            checkFilesExistence();
         }
+        checkFilesExistence();
     };
 
     parametersInterpreter = (key, val) => {
