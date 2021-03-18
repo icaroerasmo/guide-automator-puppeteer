@@ -23,7 +23,6 @@
             }
             parametersInterpreter(key, val);
         }
-        checkFilesExistence();
     };
 
     parametersInterpreter = (key, val) => {
@@ -53,12 +52,6 @@
                 throw new Error(`Parameter \'${key}\' wasn\'t recognized`);
         }
     };
-
-    checkFilesExistence = () => {
-        if (!fs.existsSync(resourcesFolder)) {
-            throw new Error('Resources folder doesn\'t exist!');
-        }
-    }
 
     readParameters(process.argv);
 

@@ -63,8 +63,16 @@ class Interpreter extends InterpreterProxy{
     }
     
     checkParameters() {
+
+        let checkFilesExistence = (filePath) => {
+            if (!fs.existsSync(filePath)) {
+                throw new Error(`Path not found: ${filePath}`);
+            }
+        }
+
         if(this.mdFile){
             this.log(`MD file name: ${this.mdFile}`);
+            checkFilesExistence(this.mdFile);
         } else {
             throw new Error('MD file path was not defined.');
         }
@@ -79,10 +87,12 @@ class Interpreter extends InterpreterProxy{
 
         if(this.resourcesFolder){
             this.log(`resources folder: ${this.resourcesFolder}`);
+            checkFilesExistence(this.resourcesFolder);
         }
 
         if(this.coverPath){
             this.log(`cover path: ${this.coverPath}`);
+            checkFilesExistence(this.coverPath);
         } else {
             throw new Error('Cover file path was not defined.');
         }
