@@ -20,6 +20,7 @@ const MouseHelper = async (page) => {
         margin: -10px 0 0 -10px;
         padding: 0;
         transition: background .2s, border-radius .2s, border-color .2s;
+        z-index: 999999999999999999999;
       }
       puppeteer-mouse-pointer.button-1 {
         transition: none;
