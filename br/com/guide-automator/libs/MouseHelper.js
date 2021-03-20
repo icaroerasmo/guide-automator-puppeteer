@@ -46,11 +46,11 @@ const MouseHelper = async (page) => {
       document.body.appendChild(box);
       document.addEventListener('mousedown', event => {
         updateButtons(event.buttons);
-        box.classList.add('button-' + event.which);
+        box.classList.add('button-' + event.key);
       }, true);
       document.addEventListener('mouseup', event => {
         updateButtons(event.buttons);
-        box.classList.remove('button-' + event.which);
+        box.classList.remove('button-' + event.key);
       }, true);
       document.addEventListener('scroll', event => {
         box.style.top = (window.innerHeight/2) + 
