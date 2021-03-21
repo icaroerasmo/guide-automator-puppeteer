@@ -2,9 +2,15 @@ FROM node:12.15.0-buster
 
 WORKDIR /usr/src/app
 
+RUN sed -i 's/deb http:\/\/deb.debian.org\/debian buster main/deb http:\/\/deb.debian.org\/debian buster main contrib non-free/g' /etc/apt/sources.list
+
+RUN cat /etc/apt/sources.list
+
 RUN apt update
 RUN apt upgrade -y
-RUN apt install -y festival \
+RUN apt install -y \
+    espeak \
+    mbrola-br* \
     ffmpeg \
     xfonts-75dpi \
     xfonts-base \

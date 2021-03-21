@@ -49,7 +49,7 @@ class TextToSpeech {
     let spawn = require('child_process').spawn;
 
     let fantProc = spawn('sh', [
-      '-c', `echo ${text} | text2wave -o ${outputPath}`
+      '-c', `espeak -vbrazil-mbrola-4 "${text}" -s 130 --stdout > ${outputPath}`
     ]);
 
     fantProc.on('close', () => {
