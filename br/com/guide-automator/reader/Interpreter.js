@@ -197,41 +197,88 @@ class Interpreter extends InterpreterProxy{
     }
 
     async renderEffects() {
-        let subIndex = 0;
+        
         let effects = await this.instance.effectsTimeline;
+        
+        let index = 1;
         let buffer = '';
-        for(let i = 0; i < effects.length; i++) {
-            let s = effects[i];
-            let _beginning = Util.formattedTime(s.checkpoint);
-            let _end = Util.formattedTime(s.finalChk);
+        let lastEff = effects.shift();
 
-            let delay;
+        do {
 
-            if(i == 0){
-                delay = effects[i].checkpoint - this.instance.start;
+            let eff = effects.shift();
+
+            let delay = index == 1 ? lastEff.finalChk : eff ? eff.checkpoint - lastEff.finalChk : 0;
+
+            console.log(delay)
+
+            if(lastEff.sub) {
+
+                let _beginning = Util.formattedTime(lastEff.checkpoint);
+                let _end = Util.formattedTime(lastEff.finalChk);
+
+                console.log('beginning -> '+_beginning)
+                console.log('end -> '+_end)
+
+                buffer += `${index}\n${_beginning} --> ${_end}\n${lastEff.sub}\n\n`;
+
+                await say(lastEff.sub, index-1, delay, this.tmpFolder);
+
             } else {
-                delay = effects[i].checkpoint - effects[i - 1].finalChk
+                
+                await keyPressNoise(index-1, delay, this.resourcesFolder, this.tmpFolder);
+            
             }
+            
+            ++index;
 
-            if(s.sub) {
+            console.log(JSON.stringify(lastEff))
 
-                buffer += `${++subIndex}\n${_beginning} --> ${_end}\n${s.sub}`;
+            lastEff = eff;
 
-                if(i < effects.length - 1) {
-                    buffer += '\n\n';
-                }
-
-                await say(s.sub, i, delay, this.tmpFolder);
-            } else {
-
-                await keyPressNoise(i, delay, this.resourcesFolder, this.tmpFolder);
-            }
-        }
+        } while(lastEff != null);
 
         await generateAudio(this.tmpFolder);
 
         fs.writeFileSync(`${this.tmpFolder}/subtitles.srt`, buffer, 'utf8', () => {});
     }
+
+    // async renderEffects() {
+    //     let subIndex = 0;
+    //     let effects = await this.instance.effectsTimeline;
+    //     let buffer = '';
+    //     for(let i = 0; i < effects.length; i++) {
+    //         let s = effects[i];
+    //         let _beginning = Util.formattedTime(s.checkpoint);
+    //         let _end = Util.formattedTime(s.finalChk);
+
+    //         let delay;
+
+    //         if(i == 0){
+    //             delay = effects[i].checkpoint - this.instance.start;
+    //         } else {
+    //             delay = effects[i].checkpoint - effects[i - 1].finalChk
+    //         }
+
+    //         if(s.sub) {
+
+    //             buffer += `${++subIndex}\n${_beginning} --> ${_end}\n${s.sub}`;
+
+    //             if(i < effects.length - 1) {
+    //                 buffer += '\n\n';
+    //             }
+
+    //             await say(s.sub, i, delay, this.tmpFolder);
+    //         } else {
+
+    //             await keyPressNoise(i, delay, this.resourcesFolder, this.tmpFolder);
+    //         }
+    //     }
+
+    //     await generateAudio(this.tmpFolder);
+
+    //     fs.writeFileSync(`${this.tmpFolder}/subtitles.srt`, buffer, 'utf8', () => {});
+    // }
 
     makePDF() {
 

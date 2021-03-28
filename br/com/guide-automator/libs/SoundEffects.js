@@ -128,7 +128,7 @@ class TextToSpeech {
     
     let effectDelay = await this.checkAudioDuration(tmpAudioFile);
 
-    await this.addSilence(silenceDuration+effectDelay,
+    await this.addSilence(silenceDuration,
       tmpAudioFile, this.generateAudioFilePath(outputPath, index));
   }
 
@@ -138,7 +138,7 @@ class TextToSpeech {
 
     let effectDelay = await this.checkAudioDuration(keySoundFile);
     
-    await this.addSilence(silenceDuration+effectDelay,
+    await this.addSilence(silenceDuration,
       keySoundFile, this.generateAudioFilePath(outputPath, index));
   }
 }

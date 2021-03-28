@@ -42,15 +42,7 @@ class Recorder {
           await session.send('Page.stopScreencast');
           // Drop the first frame because it always has wrong dimensions
           buffers.shift(0);
-          const extraTime = self.timestamp - cuts.shift(0);
-
-          // Repeats the last frame once it hadn't changed
-          buffers.push(buffers[buffers.length-1]);
-          cuts.push(end);
-
-          // Repeats the last frame with first frame delay
-          buffers.push(buffers[buffers.length-1]);
-          cuts.push(end + extraTime);
+          cuts.shift(0);
 
           resolve(self.makeApng(buffers, cuts, self.timestamp));
         }
