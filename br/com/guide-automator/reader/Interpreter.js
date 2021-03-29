@@ -7,7 +7,6 @@ const Automator = require('../automation/Automator');
 const Util = require('../libs/Util');
 const recorder = require('../libs/Recorder');
 const converter = require('../libs/ApngToMp4Converter');
-const { say, keyPressNoise, generateAudio } = require('../libs/SoundEffects');
 const base64Converter = require('image-to-base64');
 const codeMarker = "```"
 
@@ -43,21 +42,25 @@ class Interpreter extends InterpreterProxy{
         }
 
         this.instance = await Automator.instance(
-            this.isDebugEnabled, this.isVerboseEnabled);
+            this.isDebugEnabled,
+            this.isVerboseEnabled,
+            this.resourcesFolder,
+            this.tmpFolder
+            );
 
         const runner = async (start, stop) => {
-            start(await this.instance.page);
+            start(await this.instance.page, this.tmpFolder);
             this.instance.start = performance.now();
             await this.parseFile();
             await this.makePDF();
             await this.renderEffects();
             this.instance.end = performance.now();
-            stop(this.instance.end);
+            stop();
         };
         this.log('started Recording');
         const videoPngBuffer = await recorder(runner);
-        const fileName = 'video.png';
-        fs.writeFileSync(`${this.tmpFolder}/${fileName}`, videoPngBuffer, () => {});
+        let fileName = `${this.tmpFolder}/video.png`;
+        fs.writeFileSync(fileName, videoPngBuffer.video, () => {});
         await converter(fileName, this.tmpFolder, this.outputFolder);
         this.log('finished Recording');
     }
@@ -208,77 +211,23 @@ class Interpreter extends InterpreterProxy{
 
             let eff = effects.shift();
 
-            let delay = index == 1 ? lastEff.finalChk : eff ? eff.checkpoint - lastEff.finalChk : 0;
-
-            console.log(delay)
-
             if(lastEff.sub) {
 
                 let _beginning = Util.formattedTime(lastEff.checkpoint);
                 let _end = Util.formattedTime(lastEff.finalChk);
 
-                console.log('beginning -> '+_beginning)
-                console.log('end -> '+_end)
-
                 buffer += `${index}\n${_beginning} --> ${_end}\n${lastEff.sub}\n\n`;
 
-                await say(lastEff.sub, index-1, delay, this.tmpFolder);
-
-            } else {
-                
-                await keyPressNoise(index-1, delay, this.resourcesFolder, this.tmpFolder);
-            
             }
             
             ++index;
-
-            console.log(JSON.stringify(lastEff))
 
             lastEff = eff;
 
         } while(lastEff != null);
 
-        await generateAudio(this.tmpFolder);
-
         fs.writeFileSync(`${this.tmpFolder}/subtitles.srt`, buffer, 'utf8', () => {});
     }
-
-    // async renderEffects() {
-    //     let subIndex = 0;
-    //     let effects = await this.instance.effectsTimeline;
-    //     let buffer = '';
-    //     for(let i = 0; i < effects.length; i++) {
-    //         let s = effects[i];
-    //         let _beginning = Util.formattedTime(s.checkpoint);
-    //         let _end = Util.formattedTime(s.finalChk);
-
-    //         let delay;
-
-    //         if(i == 0){
-    //             delay = effects[i].checkpoint - this.instance.start;
-    //         } else {
-    //             delay = effects[i].checkpoint - effects[i - 1].finalChk
-    //         }
-
-    //         if(s.sub) {
-
-    //             buffer += `${++subIndex}\n${_beginning} --> ${_end}\n${s.sub}`;
-
-    //             if(i < effects.length - 1) {
-    //                 buffer += '\n\n';
-    //             }
-
-    //             await say(s.sub, i, delay, this.tmpFolder);
-    //         } else {
-
-    //             await keyPressNoise(i, delay, this.resourcesFolder, this.tmpFolder);
-    //         }
-    //     }
-
-    //     await generateAudio(this.tmpFolder);
-
-    //     fs.writeFileSync(`${this.tmpFolder}/subtitles.srt`, buffer, 'utf8', () => {});
-    // }
 
     makePDF() {
 
