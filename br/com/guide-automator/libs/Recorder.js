@@ -118,8 +118,10 @@ class Recorder {
           buffers = [];
           cuts = [];
           session = await page.target().createCDPSession();
+          
           const fileStream = fs.createWriteStream(`${tmpFolder}/final_audio.wav`, { encoding: 'binary' });
           await self.audioRecorder.start().stream().pipe(fileStream);
+          
           await session.send('Page.startScreencast');
           session.on('Page.screencastFrame', event => {
             const buffer = Buffer.from(event.data, 'base64');
@@ -134,8 +136,7 @@ class Recorder {
           buffers.shift(0);
           cuts.shift(0);
 
-          // self.audioRecorder.stop();
-
+          self.audioRecorder.stop();
           self.removeFakeMic()
 
           resolve(self.makeApng(buffers, cuts, self.timestamp));
