@@ -5,16 +5,19 @@ const apng = require('node-apng');
 const { performance } = require('perf_hooks');
 const AudioRecorder = require('node-audiorecorder');
 
-
 const fakeMicName = 'gapFakeMic';
 
 class Recorder {
+
+    stdoutNum = null;
 
     constructor(start) {
         this.timestamp = start;
     }
 
     async setupFakeMic() {
+
+      const self = this;
 
       let resolve, reject;
   
@@ -25,14 +28,42 @@ class Recorder {
   
       let spawn = require('child_process').spawn;
   
-      let concatProc = spawn('pactl', [
-        'load-module',
-        'module-pipe-source',
-        `source_name=${fakeMicName}`,
-        `file=/tmp/${fakeMicName}`,
-        'format=s16le',
-        'rate=16000',
+      let concatProc = spawn('sh', [
+        '-c',
+        'pactl load-module ' +
+        'module-pipe-source ' +
+        `source_name=${fakeMicName} ` +
+        `file=/tmp/${fakeMicName} ` +
+        'format=s16le ' +
+        'rate=44100 ' +
         'channels=1'
+      ]);
+  
+      concatProc.on('close', () => {
+        resolve();
+      });
+
+      concatProc.stdout.on('data', (data) => {
+        self.stdoutNum = data;
+      });
+  
+      return deffered;
+    }
+
+    async removeFakeMic() {
+
+      let resolve, reject;
+  
+      const deffered = new Promise((_resolve, _reject) => {
+          resolve = _resolve;
+          reject = _reject;
+      });
+  
+      let spawn = require('child_process').spawn;
+  
+      let concatProc = spawn('sh', [
+        '-c',
+        `pactl unload-module ${this.stdoutNum}`
       ]);
   
       concatProc.on('close', () => {
@@ -44,16 +75,16 @@ class Recorder {
 
     async startAudioRecorder() {
 
-      await this.setupFakeMic
+      await this.setupFakeMic()
 
       this.audioRecorder = new AudioRecorder({
         program: `sox`,     // Which program to use, either `arecord`, `rec`, or `sox`.
-        device: fakeMicName,       // Recording device to use, e.g. `hw:1,0`
+        //device: fakeMicName,       // Recording device to use, e.g. `hw:1,0`
       
         bits: 16,           // Sample size. (only for `rec` and `sox`)
         channels: 1,        // Channel count.
         encoding: `signed-integer`,  // Encoding type. (only for `rec` and `sox`)
-        rate: 16000,        // Sample rate.
+        rate: 44100,        // Sample rate.
         type: `wav`,        // Format type.
       
         // Following options only available when using `rec` or `sox`.
@@ -103,12 +134,11 @@ class Recorder {
           buffers.shift(0);
           cuts.shift(0);
 
-          self.audioRecorder.stop();
+          // self.audioRecorder.stop();
 
-          resolve({
-            video: self.makeApng(buffers, cuts, self.timestamp),
-            audio: self.audioRecorder.stream()
-          });
+          self.removeFakeMic()
+
+          resolve(self.makeApng(buffers, cuts, self.timestamp));
         }
       
         await setup(start, stop);

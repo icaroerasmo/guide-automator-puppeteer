@@ -91,11 +91,11 @@ class Automator extends AutomatorProxy {
         this.log(`speaking: '${sub}'`)
         
         let checkpoint = performance.now();
-
-        await say(sub, this.tmpFolder);
         
         // Avaliar se devo remover isso
-        //await util.sleep(sub.length * 250);
+        await util.sleep(sub.length * 250);
+
+        await say(sub);
 
         let finalChk = performance.now();
 
