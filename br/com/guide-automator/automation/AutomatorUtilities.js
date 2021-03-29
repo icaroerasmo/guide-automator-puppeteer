@@ -29,8 +29,6 @@ class AutomatorUtilities {
                 await util.sleep(util.randomNum(142, 500));
             }
 
-            console.log(await this.instance.resourcesFolder);
-
             await keyPressNoise(await this.instance.resourcesFolder)
         }
     }
