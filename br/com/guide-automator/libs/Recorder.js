@@ -17,7 +17,7 @@ class Recorder {
 
     async setupFakeMic() {
 
-      const self = this;
+      const self = process.env;
 
       let resolve, reject;
   
@@ -63,7 +63,7 @@ class Recorder {
   
       let concatProc = spawn('sh', [
         '-c',
-        `pactl unload-module ${this.stdoutNum}`
+        `pactl unload-module ${process.env.stdoutNum}`
       ]);
   
       concatProc.on('close', () => {
@@ -137,7 +137,6 @@ class Recorder {
           cuts.shift(0);
 
           self.audioRecorder.stop();
-          self.removeFakeMic()
 
           resolve(self.makeApng(buffers, cuts, self.timestamp));
         }
@@ -155,7 +154,13 @@ class Recorder {
     }
 }
 
-module.exports = (setup, start) => {
+module.exports = {
+  recorder: (setup, start) => {
     const recorder = new Recorder(start);
     return recorder.recordUsingScreencast(setup);
+  },
+  removeFakeMic: () => {
+    const recorder = new Recorder();
+    return recorder.removeFakeMic();
+  }
 }

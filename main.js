@@ -4,6 +4,7 @@
     const os = require('os');
     const fs = require('fs');
     const path = require('path');
+    const { removeFakeMic } = require('./br/com/guide-automator/libs/Recorder');
     const Interpreter = require('./br/com/guide-automator/reader/Interpreter');
 
     let mdFile = null;
@@ -62,6 +63,7 @@
             
             function exitHandler(options, exitCode) {
                 //fs.rmdirSync(tmpFolderPath, { recursive: true });
+                removeFakeMic();
             }
 
             //do something when app is closing
