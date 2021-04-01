@@ -5,8 +5,6 @@ const apng = require('node-apng');
 const { performance } = require('perf_hooks');
 const AudioRecorder = require('node-audiorecorder');
 
-const fakeMicName = 'gapFakeMic';
-
 class Recorder {
 
     stdoutNum = null;
@@ -32,8 +30,8 @@ class Recorder {
         '-c',
         'pactl load-module ' +
         'module-pipe-source ' +
-        `source_name=${fakeMicName} ` +
-        `file=/tmp/${fakeMicName} ` +
+        `source_name=${process.env.fakeMicName} ` +
+        `file=${process.env.fakeMicPath} ` +
         'format=s16le ' +
         'rate=44100 ' +
         'channels=1'

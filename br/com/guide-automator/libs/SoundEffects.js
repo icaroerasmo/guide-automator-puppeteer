@@ -24,7 +24,7 @@ class TextToSpeech {
     let spawn = require('child_process').spawn;
 
     let fantProc = spawn('sh', [
-      '-c', `ffmpeg -f lavfi -i anullsrc=channel_layout=stereo:sample_rate=44100 -t ${delay} -f s16le - > /tmp/gapFakeMic`
+      '-c', `ffmpeg -f lavfi -i anullsrc=channel_layout=stereo:sample_rate=44100 -t ${delay} -f s16le - > ${process.env.fakeMicPath}`
     ]);
 
     fantProc.on('close', () => {
@@ -58,7 +58,7 @@ class TextToSpeech {
     let fantProc = spawn('sh', [
       '-c', `espeak -vbrazil-mbrola-4 "${text}" --stdout | `+
       'ffmpeg -fflags +discardcorrupt -i pipe:0 -f s16le -ar '+
-      '44100 -ac 1 - > /tmp/gapFakeMic'
+      `44100 -ac 1 - > ${process.env.fakeMicPath}`
     ]);
 
     fantProc.on('close', () => {
@@ -81,7 +81,7 @@ class TextToSpeech {
 
     let concatProc = spawn('sh', [
       '-c', `ffmpeg -fflags +discardcorrupt -i ${tmpAudio} `+
-      '-f s16le -ar 44100 -ac 1 - > /tmp/gapFakeMic'
+      `-f s16le -ar 44100 -ac 1 - > ${process.env.fakeMicPath}`
     ]);
 
     concatProc.on('close', () => {

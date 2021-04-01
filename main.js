@@ -15,6 +15,9 @@
     let outputFileName = './output';
     let resourcesFolder = `${__dirname}/resources`;
 
+    process.env.fakeMicName = 'gapFakeMic';
+    process.env.fakeMicPath = `${require('os').homedir()}/${process.env.fakeMicName}`;
+
     readParameters = (argv) => {
         for(let i = 2; i < argv.length; i++) {
             const key = argv[i];
