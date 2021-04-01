@@ -65,7 +65,7 @@
             if (err) throw err;
             
             function exitHandler(options, exitCode) {
-                fs.rmdirSync(tmpFolderPath, { recursive: true });
+                //fs.rmdirSync(tmpFolderPath, { recursive: true });
                 removeFakeMic();
             }
 
