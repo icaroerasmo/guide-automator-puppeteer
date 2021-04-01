@@ -15,7 +15,7 @@ class Recorder {
 
     async setupFakeMic() {
 
-      const self = process.env;
+      let self = process.env;
 
       let resolve, reject;
   
@@ -42,14 +42,14 @@ class Recorder {
       });
 
       concatProc.stdout.on('data', (data) => {
-        if(!str.match(/\d+/g)){
+        if(!data.toString().match(/\d+/g)){
           throw new Error("Error starting audio recording");
         }
-        self.stdoutNum = data;
+        self.stdoutNum = data.toString();
       });
 
       concatProc.stderr.on('data', (data) => {
-        console.log(data.toString())
+        //console.log(data.toString())
         if(data){
           throw new Error("Error starting audio recording");
         }
@@ -60,8 +60,6 @@ class Recorder {
 
     async setupFakeMicAsDefault() {
 
-      const self = process.env;
-
       let resolve, reject;
   
       const deffered = new Promise((_resolve, _reject) => {
@@ -71,9 +69,11 @@ class Recorder {
   
       let spawn = require('child_process').spawn;
   
+      console.log(process.env.stdoutNum);
+
       let concatProc = spawn('sh', [
         '-c',
-        `pactl set-default-source ${process.env.stdoutNum}`
+        `pactl set-default-source ${process.env.fakeMicName}`
       ]);
   
       concatProc.on('close', () => {
