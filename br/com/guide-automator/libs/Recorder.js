@@ -42,7 +42,53 @@ class Recorder {
       });
 
       concatProc.stdout.on('data', (data) => {
+        if(!str.match(/\d+/g)){
+          throw new Error("Error starting audio recording");
+        }
         self.stdoutNum = data;
+      });
+
+      concatProc.stderr.on('data', (data) => {
+        console.log(data.toString())
+        if(data){
+          throw new Error("Error starting audio recording");
+        }
+      });
+  
+      return deffered;
+    }
+
+    async setupFakeMicAsDefault() {
+
+      const self = process.env;
+
+      let resolve, reject;
+  
+      const deffered = new Promise((_resolve, _reject) => {
+          resolve = _resolve;
+          reject = _reject;
+      });
+  
+      let spawn = require('child_process').spawn;
+  
+      let concatProc = spawn('sh', [
+        '-c',
+        `pactl set-default-source ${process.env.stdoutNum}`
+      ]);
+  
+      concatProc.on('close', () => {
+        resolve();
+      });
+
+      concatProc.stdout.on('data', (data) => {
+        console.log(data.toString());
+      });
+
+      concatProc.stderr.on('data', (data) => {
+        console.log(data.toString());
+        if(data){
+          throw new Error("Error starting audio recording");
+        }
       });
   
       return deffered;
@@ -67,13 +113,18 @@ class Recorder {
       concatProc.on('close', () => {
         resolve();
       });
+
+      if (fs.existsSync(process.env.fakeMicPath)) {
+        fs.unlinkSync(process.env.fakeMicPath);
+      }
   
       return deffered;
     }
 
     async startAudioRecorder() {
 
-      await this.setupFakeMic()
+      await this.setupFakeMic();
+      await this.setupFakeMicAsDefault();
 
       this.audioRecorder = new AudioRecorder({
         program: `sox`,     // Which program to use, either `arecord`, `rec`, or `sox`.
