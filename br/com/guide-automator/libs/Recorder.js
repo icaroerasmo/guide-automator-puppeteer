@@ -23,6 +23,10 @@ class Recorder {
           resolve = _resolve;
           reject = _reject;
       });
+
+      if (fs.existsSync(process.env.fakeMicPath)) {
+        fs.unlinkSync(process.env.fakeMicPath);
+      }
   
       let spawn = require('child_process').spawn;
   
@@ -68,7 +72,7 @@ class Recorder {
       });
   
       let spawn = require('child_process').spawn;
-  
+
       console.log(process.env.stdoutNum);
 
       let concatProc = spawn('sh', [
@@ -128,7 +132,7 @@ class Recorder {
 
       this.audioRecorder = new AudioRecorder({
         program: `sox`,     // Which program to use, either `arecord`, `rec`, or `sox`.
-        //device: fakeMicName,       // Recording device to use, e.g. `hw:1,0`
+        //device: `Unix FIFO source ${process.env.fakeMicPath}`,       // Recording device to use, e.g. `hw:1,0`
       
         bits: 16,           // Sample size. (only for `rec` and `sox`)
         channels: 1,        // Channel count.
