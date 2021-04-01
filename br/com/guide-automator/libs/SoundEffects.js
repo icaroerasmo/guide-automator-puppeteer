@@ -24,7 +24,7 @@ class TextToSpeech {
     let spawn = require('child_process').spawn;
 
     let fantProc = spawn('sh', [
-      '-c', `ffmpeg -f lavfi -i anullsrc=channel_layout=stereo:sample_rate=44100 -t ${delay} -f s16le -ar 44100 -ac 1 - > ${process.env.fakeMicPath}`
+      '-c', `ffmpeg -f lavfi -i anullsrc=channel_layout=mono:sample_rate=44100 -t ${delay} -f s16le -ar 44100 -ac 1 - > ${process.env.fakeMicPath}`
     ]);
 
     fantProc.on('close', () => {
