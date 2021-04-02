@@ -207,13 +207,14 @@ class Recorder {
     }
 }
 
+let recorder;
+
 module.exports = {
   recorder: (setup, start) => {
-    const recorder = new Recorder(start);
+    recorder = new Recorder(start);
     return recorder.recordUsingScreencast(setup);
   },
   removeFakeMic: () => {
-    const recorder = new Recorder();
     return recorder.removeFakeMic();
   }
 }

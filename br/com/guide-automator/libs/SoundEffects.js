@@ -120,14 +120,13 @@ class TextToSpeech {
   }
 }
 
+const tts = new TextToSpeech();
 
 module.exports = {
   keyPressNoise: async (resourcesFolder) => {
-    const tts = new TextToSpeech();
     await tts.keyboard(resourcesFolder);
   },
   say: async (text) => {
-    const tts = new TextToSpeech();
     await tts.say(text);
   },
 }
