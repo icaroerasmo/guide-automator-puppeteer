@@ -155,6 +155,34 @@ class TextToSpeech {
     return deffered;
   }
 
+  playAudio(audioPath) {
+
+    let resolve, reject;
+
+    const deffered = new Promise((_resolve, _reject) => {
+        resolve = _resolve;
+        reject = _reject;
+    });
+
+    let spawn = require('child_process').spawn;
+
+    let concatProc = spawn('aplay', [audioPath]);
+
+    concatProc.on('close', () => {
+      resolve();
+    });
+
+    concatProc.stdout.on('data', (data) => {
+      console.log(data.toString());
+    });
+
+    concatProc.stderr.on('data', (data) => {
+      console.log(data.toString());
+    });
+
+    return deffered;
+  }
+
   calcDelay(currentTimestamp) {
 
     if(!lastTimestamp) {
@@ -181,7 +209,7 @@ class TextToSpeech {
 
     await this.addSilence(delay, tmpAudioFile, finalPath);
 
-    await Util.sleep(await this.checkAudioDuration(tmpAudioFile));
+    await this.playAudio(finalPath);
   }
 
   async keyboard(index, resourcesFolder, outputPath) {
@@ -199,7 +227,7 @@ class TextToSpeech {
     
     await this.addSilence(delay, keySoundFile, finalPath);
 
-    await Util.sleep(await this.checkAudioDuration(keySoundFile));
+    await this.playAudio(keySoundFile);
   }
 }
 

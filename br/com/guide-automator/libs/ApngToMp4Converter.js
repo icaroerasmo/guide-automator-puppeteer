@@ -14,8 +14,8 @@ module.exports = (fileName, tmpFolder, outputFolder) => {
     '-y',
     '-i', `${tmpFolder}/${fileName}`,
     '-i', `${tmpFolder}/final_audio.wav`,
-    '-filter:v', '"fps=60"',
     '-vf', `subtitles=${tmpFolder}/subtitles.srt`,
+    // '-filter:v', '"fps=60"',
     outputPath
   ];
 

@@ -3,7 +3,6 @@
 const fs = require('fs');
 const apng = require('node-apng');
 const { performance } = require('perf_hooks');
-const AudioRecorder = require('node-audiorecorder');
 
 class Recorder {
 
@@ -12,36 +11,11 @@ class Recorder {
     constructor() {
     }
 
-    async removeFakeMic() {
-
-      let resolve, reject;
-  
-      const deffered = new Promise((_resolve, _reject) => {
-          resolve = _resolve;
-          reject = _reject;
-      });
-  
-      let spawn = require('child_process').spawn;
-  
-      let concatProc = spawn('sh', [
-        '-c',
-        `pactl unload-module ${process.env.stdoutNum}`
-      ]);
-  
-      concatProc.on('close', () => {
-        resolve();
-      });
-
-      if (fs.existsSync(process.env.fakeMicPath)) {
-        fs.unlinkSync(process.env.fakeMicPath);
-      }
-  
-      return deffered;
-    }
-
     async recordUsingScreencast(setup) {
       
         const self = this;
+
+        let timestamp = performance.now();
       
         let buffers;
         let cuts;
@@ -75,7 +49,7 @@ class Recorder {
           buffers.shift(0);
           cuts.shift(0);
 
-          resolve(self.makeApng(buffers, cuts, process.env.startTime));
+          resolve(self.makeApng(buffers, cuts, timestamp));
         }
       
         await setup(start, stop);
