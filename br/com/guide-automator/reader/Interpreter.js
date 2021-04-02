@@ -204,7 +204,7 @@ class Interpreter extends InterpreterProxy{
 
         let effects = await this.instance.effectsTimeline;
         
-        let index = 1;
+        let index = 0;
         let buffer = '';
         let lastEff = effects.shift();
 
@@ -214,14 +214,14 @@ class Interpreter extends InterpreterProxy{
 
             if(lastEff.sub) {
 
-                let audioDuration = await checkAudioDuration(index-1, this.tmpFolder)
+                let audioDuration = await checkAudioDuration(index, this.tmpFolder)
 
                 console.log(audioDuration);
 
                 let _beginning = Util.formattedTime(lastEff.checkpoint);
                 let _end = Util.formattedTime(lastEff.checkpoint+audioDuration);
 
-                buffer += `${index}\n${_beginning} --> ${_end}\n${lastEff.sub}\n\n`;
+                buffer += `${index+1}\n${_beginning} --> ${_end}\n${lastEff.sub}\n\n`;
 
             }
             

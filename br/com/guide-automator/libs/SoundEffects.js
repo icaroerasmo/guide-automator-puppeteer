@@ -155,12 +155,14 @@ class TextToSpeech {
 
     let currentTimestamp = performance.now();
 
-    let delay = index > 0 ? this.calcDelay(currentTimestamp) : 0
+    let delay = this.calcDelay(currentTimestamp)
 
     await this.addSilence(delay,
       tmpAudioFile, this.generateAudioFilePath(outputPath, index));
 
     lastTimestamp = currentTimestamp
+
+    await Util.sleep(await this.checkAudioDuration(index, outputPath));
   }
 
   async keyboard(index, resourcesFolder, outputPath) {
@@ -169,12 +171,14 @@ class TextToSpeech {
 
     let currentTimestamp = performance.now();
 
-    let delay = index > 0 ? this.calcDelay(currentTimestamp) : 0
+    let delay = this.calcDelay(currentTimestamp)
     
     await this.addSilence(delay,
       keySoundFile, this.generateAudioFilePath(outputPath, index));
 
     lastTimestamp = currentTimestamp
+
+    //await Util.sleep(await this.checkAudioDuration(index, outputPath));
   }
 }
 
