@@ -66,7 +66,6 @@
             
             function exitHandler(options, exitCode) {
                 fs.rmdirSync(tmpFolderPath, { recursive: true });
-                removeFakeMic();
             }
 
             //do something when app is closing

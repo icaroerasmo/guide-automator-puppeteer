@@ -93,9 +93,9 @@ class Automator extends AutomatorProxy {
         let checkpoint = performance.now();
         
         // Avaliar se devo remover isso
-        await util.sleep(sub.length * 250);
+        //await util.sleep(sub.length * 250);
 
-        await say(sub);
+        await say(sub, this.tmpFolder);
 
         let finalChk = performance.now();
 

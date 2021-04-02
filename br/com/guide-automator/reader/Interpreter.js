@@ -6,6 +6,7 @@ const InterpreterProxy = require('./InterpreterProxy')
 const Automator = require('../automation/Automator');
 const Util = require('../libs/Util');
 const { recorder } = require('../libs/Recorder');
+const { generateAudio } = require('../libs/SoundEffects');
 const converter = require('../libs/ApngToMp4Converter');
 const base64Converter = require('image-to-base64');
 const codeMarker = "```"
@@ -225,6 +226,8 @@ class Interpreter extends InterpreterProxy{
             lastEff = eff;
 
         } while(lastEff != null);
+
+        generateAudio(this.tmpFolder);
 
         fs.writeFileSync(`${this.tmpFolder}/subtitles.srt`, buffer, 'utf8', () => {});
     }

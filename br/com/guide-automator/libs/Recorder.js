@@ -13,91 +13,6 @@ class Recorder {
         this.timestamp = start;
     }
 
-    async setupFakeMic() {
-
-      let self = process.env;
-
-      let resolve, reject;
-  
-      const deffered = new Promise((_resolve, _reject) => {
-          resolve = _resolve;
-          reject = _reject;
-      });
-
-      if (fs.existsSync(process.env.fakeMicPath)) {
-        fs.unlinkSync(process.env.fakeMicPath);
-      }
-  
-      let spawn = require('child_process').spawn;
-  
-      let concatProc = spawn('sh', [
-        '-c',
-        'pactl load-module ' +
-        'module-pipe-source ' +
-        `source_name=${process.env.fakeMicName} ` +
-        `file=${process.env.fakeMicPath} ` +
-        'format=s16le ' +
-        'rate=44100 ' +
-        'channels=1'
-      ]);
-  
-      concatProc.on('close', () => {
-        resolve();
-      });
-
-      concatProc.stdout.on('data', (data) => {
-        if(!data.toString().match(/\d+/g)){
-          throw new Error("Error starting audio recording");
-        }
-        self.stdoutNum = data.toString();
-      });
-
-      concatProc.stderr.on('data', (data) => {
-        //console.log(data.toString())
-        if(data){
-          throw new Error("Error starting audio recording");
-        }
-      });
-  
-      return deffered;
-    }
-
-    async setupFakeMicAsDefault() {
-
-      let resolve, reject;
-  
-      const deffered = new Promise((_resolve, _reject) => {
-          resolve = _resolve;
-          reject = _reject;
-      });
-  
-      let spawn = require('child_process').spawn;
-
-      console.log(process.env.stdoutNum);
-
-      let concatProc = spawn('sh', [
-        '-c',
-        `pactl set-default-source ${process.env.fakeMicName}`
-      ]);
-  
-      concatProc.on('close', () => {
-        resolve();
-      });
-
-      concatProc.stdout.on('data', (data) => {
-        console.log(data.toString());
-      });
-
-      concatProc.stderr.on('data', (data) => {
-        console.log(data.toString());
-        if(data){
-          throw new Error("Error starting audio recording");
-        }
-      });
-  
-      return deffered;
-    }
-
     async removeFakeMic() {
 
       let resolve, reject;
@@ -125,29 +40,6 @@ class Recorder {
       return deffered;
     }
 
-    async startAudioRecorder() {
-
-      await this.setupFakeMic();
-      await this.setupFakeMicAsDefault();
-
-      this.audioRecorder = new AudioRecorder({
-        program: `rec`,     // Which program to use, either `arecord`, `rec`, or `sox`.
-        //device: `Unix FIFO source ${process.env.fakeMicPath}`,       // Recording device to use, e.g. `hw:1,0`
-      
-        bits: 16,           // Sample size. (only for `rec` and `sox`)
-        channels: 1,        // Channel count.
-        //encoding: `signed-integer`,  // Encoding type. (only for `rec` and `sox`)
-        rate: 44100,        // Sample rate.
-        type: `wav`,        // Format type.
-      
-        // Following options only available when using `rec` or `sox`.
-        silence: 2,         // Duration of silence in seconds before it stops recording.
-        // thresholdStart: 0.5,  // Silence threshold to start recording.
-        // thresholdStop: 0.5,   // Silence threshold to stop recording.
-        keepSilence: true   // Keep the silence in the recording.
-      });
-    }
-
     async recordUsingScreencast(setup) {
       
         const self = this;
@@ -163,17 +55,12 @@ class Recorder {
           resolve = _resolve;
           reject = _reject;
         });
-
-        await this.startAudioRecorder();
       
         async function start(page, tmpFolder) {
           // Clear the buffers and cuts and reset the timestamp from the previous recording
           buffers = [];
           cuts = [];
           session = await page.target().createCDPSession();
-          
-          const fileStream = fs.createWriteStream(`${tmpFolder}/final_audio.wav`, { encoding: 'binary' });
-          await self.audioRecorder.start().stream().pipe(fileStream);
           
           await session.send('Page.startScreencast');
           session.on('Page.screencastFrame', event => {
@@ -188,8 +75,6 @@ class Recorder {
           // Drop the first frame because it always has wrong dimensions
           buffers.shift(0);
           cuts.shift(0);
-
-          self.audioRecorder.stop();
 
           resolve(self.makeApng(buffers, cuts, self.timestamp));
         }
@@ -207,14 +92,9 @@ class Recorder {
     }
 }
 
-let recorder;
-
 module.exports = {
   recorder: (setup, start) => {
-    recorder = new Recorder(start);
+    const recorder = new Recorder(start);
     return recorder.recordUsingScreencast(setup);
-  },
-  removeFakeMic: () => {
-    return recorder.removeFakeMic();
   }
 }
