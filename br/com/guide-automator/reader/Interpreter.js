@@ -6,7 +6,7 @@ const InterpreterProxy = require('./InterpreterProxy')
 const Automator = require('../automation/Automator');
 const Util = require('../libs/Util');
 const { recorder } = require('../libs/Recorder');
-const { generateAudio } = require('../libs/SoundEffects');
+const { generateAudio, checkAudioDuration } = require('../libs/SoundEffects');
 const converter = require('../libs/ApngToMp4Converter');
 const base64Converter = require('image-to-base64');
 const codeMarker = "```"
@@ -201,7 +201,13 @@ class Interpreter extends InterpreterProxy{
     }
 
     async renderEffects() {
+
+        console.log('ENTRADA')
+
+        await generateAudio(this.tmpFolder);
         
+        console.log('SAÍDA')
+
         let effects = await this.instance.effectsTimeline;
         
         let index = 1;
@@ -214,8 +220,10 @@ class Interpreter extends InterpreterProxy{
 
             if(lastEff.sub) {
 
+                let audioDuration = await checkAudioDuration(index-1, this.tmpFolder)
+
                 let _beginning = Util.formattedTime(lastEff.checkpoint);
-                let _end = Util.formattedTime(lastEff.finalChk);
+                let _end = Util.formattedTime(lastEff.checkpoint+audioDuration);
 
                 buffer += `${index}\n${_beginning} --> ${_end}\n${lastEff.sub}\n\n`;
 
@@ -226,8 +234,6 @@ class Interpreter extends InterpreterProxy{
             lastEff = eff;
 
         } while(lastEff != null);
-
-        generateAudio(this.tmpFolder);
 
         fs.writeFileSync(`${this.tmpFolder}/subtitles.srt`, buffer, 'utf8', () => {});
     }

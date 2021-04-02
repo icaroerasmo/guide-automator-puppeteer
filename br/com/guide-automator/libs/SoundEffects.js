@@ -13,7 +13,10 @@ class TextToSpeech {
 
   constructor() {}
 
-  checkAudioDuration(path) {
+  checkAudioDuration(index, outputPath) {
+
+    let path = this.generateAudioFilePath(outputPath, index);
+
     let resolve, reject;
 
     const deffered = new Promise((_resolve, _reject) => {
@@ -29,9 +32,18 @@ class TextToSpeech {
     ]);
 
     fantProc.stdout.on('data', (data) => {
+      console.log(data.toString())
       let duration = data.toString().
         match(/(?!Duration: )\d{2}:\d{2}:\d{2}\.\d{1,3}/g)[0];
       resolve(Util.unformattedTime(duration));
+    });
+
+    fantProc.stderr.on('data', (data) => {
+      console.log(data.toString())
+    });
+
+    fantProc.on('close', (data) => {
+      console.log(data.toString())
     });
 
     return deffered;
@@ -97,6 +109,14 @@ class TextToSpeech {
       resolve();
     });
 
+    // concatProc.stdout.on('data', (data) => {
+    //   console.log(data.toString());
+    // });
+
+    // concatProc.stderr.on('data', (data) => {
+    //   console.log(data.toString());
+    // });
+
     return deffered;
   }
 
@@ -136,8 +156,6 @@ class TextToSpeech {
 
     let currentTimestamp = performance.now();
 
-    console.log(this.calcDelay(currentTimestamp))
-
     await this.addSilence(this.calcDelay(currentTimestamp),
       tmpAudioFile, this.generateAudioFilePath(outputPath, index));
 
@@ -149,8 +167,6 @@ class TextToSpeech {
     let keySoundFile = `${resourcesFolder}/keysound.${AUDIO_FORMAT}`;
 
     let currentTimestamp = performance.now();
-
-    console.log(this.calcDelay(currentTimestamp))
     
     await this.addSilence(this.calcDelay(currentTimestamp),
       keySoundFile, this.generateAudioFilePath(outputPath, index));
@@ -169,7 +185,6 @@ module.exports = {
     await tts.say(text, index++, outputPath);
   },
   generateAudio: async (outputPath) => {
-
     const getPosition = (fileName) => Number(
       fileName.replace(FINAL_AUDIO_PREFIX, '').
       replace(AUDIO_FORMAT, ''));
@@ -182,5 +197,8 @@ module.exports = {
       map(f => `${outputPath}/${f}`);
     
     await tts.concatAudios(...files, `${outputPath}/final_audio.wav`);
+  },
+  checkAudioDuration: (index, outputPath) => {
+    return tts.checkAudioDuration(index, outputPath);
   }
 }

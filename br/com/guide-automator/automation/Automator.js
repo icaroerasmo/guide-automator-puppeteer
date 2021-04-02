@@ -101,8 +101,7 @@ class Automator extends AutomatorProxy {
 
         this.effectsTimeline.push({
             sub,
-            checkpoint,
-            finalChk
+            checkpoint
         });
     }
 
