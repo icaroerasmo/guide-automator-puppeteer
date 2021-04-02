@@ -7,7 +7,8 @@ const FINAL_AUDIO_PREFIX = 'audio_';
 const AUDIO_FORMAT = 'wav'
 
 let index = 0;
-let lastTimestamp = -2000;
+let lastTimestamp;
+let delay = 0;
 
 class TextToSpeech {
 
@@ -155,7 +156,12 @@ class TextToSpeech {
   }
 
   calcDelay(currentTimestamp) {
-    return currentTimestamp - (lastTimestamp || 0)
+
+    if(!lastTimestamp) {
+      return currentTimestamp - process.env.startTime;
+    }
+
+    return currentTimestamp - lastTimestamp;
   }
 
   async say(text, index, outputPath) {
@@ -166,8 +172,10 @@ class TextToSpeech {
 
     let currentTimestamp = performance.now();
 
-    let delay = this.calcDelay(currentTimestamp)
+    delay = this.calcDelay(currentTimestamp)
     lastTimestamp = currentTimestamp
+
+    console.log(delay);
 
     let finalPath = this.generateAudioFilePath(outputPath, index);
 
@@ -182,9 +190,11 @@ class TextToSpeech {
 
     let currentTimestamp = performance.now();
     
-    let delay = this.calcDelay(currentTimestamp)
+    delay = this.calcDelay(currentTimestamp)
     lastTimestamp = currentTimestamp
 
+    console.log(delay);
+    
     let finalPath = this.generateAudioFilePath(outputPath, index);
     
     await this.addSilence(delay, keySoundFile, finalPath);

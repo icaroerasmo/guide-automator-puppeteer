@@ -51,11 +51,11 @@ class Interpreter extends InterpreterProxy{
 
         const runner = async (start, stop) => {
             start(await this.instance.page, this.tmpFolder);
-            this.instance.start = performance.now();
+            process.env.startTime = performance.now();
             await this.parseFile();
             await this.makePDF();
             await this.renderEffects();
-            this.instance.end = performance.now();
+            process.env.endTime = performance.now();
             stop();
         };
         this.log('started Recording');

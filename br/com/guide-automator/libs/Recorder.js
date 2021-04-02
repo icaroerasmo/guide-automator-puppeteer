@@ -9,8 +9,7 @@ class Recorder {
 
     stdoutNum = null;
 
-    constructor(start) {
-        this.timestamp = start;
+    constructor() {
     }
 
     async removeFakeMic() {
@@ -76,7 +75,7 @@ class Recorder {
           buffers.shift(0);
           cuts.shift(0);
 
-          resolve(self.makeApng(buffers, cuts, self.timestamp));
+          resolve(self.makeApng(buffers, cuts, process.env.startTime));
         }
       
         await setup(start, stop);
@@ -93,8 +92,8 @@ class Recorder {
 }
 
 module.exports = {
-  recorder: (setup, start) => {
-    const recorder = new Recorder(start);
+  recorder: (setup) => {
+    const recorder = new Recorder();
     return recorder.recordUsingScreencast(setup);
   }
 }
