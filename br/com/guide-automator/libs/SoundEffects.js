@@ -7,15 +7,13 @@ const FINAL_AUDIO_PREFIX = 'audio_';
 const AUDIO_FORMAT = 'wav'
 
 let index = 0;
-let lastTimestamp;
+let lastTimestamp = -2000;
 
 class TextToSpeech {
 
   constructor() {}
 
-  checkAudioDuration(index, outputPath) {
-
-    let path = this.generateAudioFilePath(outputPath, index);
+  checkAudioDuration(path) {
 
     let resolve, reject;
 
@@ -34,18 +32,23 @@ class TextToSpeech {
     fantProc.stdout.on('data', (data) => {
       let duration = data.toString().
         match(/(?!Duration: )\d{2}:\d{2}:\d{2}\.\d{1,3}/g)[0];
+      console.log(Util.unformattedTime(duration));
       resolve(Util.unformattedTime(duration));
     });
 
-    // fantProc.stderr.on('data', (data) => {
-    //   console.log(data.toString())
-    // });
+    fantProc.stderr.on('data', (data) => {
+      console.log(data.toString())
+    });
 
-    // fantProc.on('close', (data) => {
-    //   console.log(data.toString())
-    // });
+    fantProc.on('close', (data) => {
+      console.log(data.toString())
+    });
 
     return deffered;
+  }
+
+  generateTmpAudioFilePath(outputPath) {
+    return `${outputPath}/${TMP_AUDIO_PREFIX}.${AUDIO_FORMAT}`;
   }
 
   generateAudioFilePath(outputPath, index) {
@@ -108,13 +111,13 @@ class TextToSpeech {
       resolve();
     });
 
-    // concatProc.stdout.on('data', (data) => {
-    //   console.log(data.toString());
-    // });
+     concatProc.stdout.on('data', (data) => {
+       console.log(data.toString());
+    });
 
-    // concatProc.stderr.on('data', (data) => {
-    //   console.log(data.toString());
-    // });
+    concatProc.stderr.on('data', (data) => {
+      console.log(data.toString());
+    });
 
     return deffered;
   }
@@ -140,6 +143,14 @@ class TextToSpeech {
       resolve();
     });
 
+    concatProc.stdout.on('data', (data) => {
+      console.log(data.toString());
+    });
+
+    concatProc.stderr.on('data', (data) => {
+      console.log(data.toString());
+    });
+
     return deffered;
   }
 
@@ -149,20 +160,20 @@ class TextToSpeech {
 
   async say(text, index, outputPath) {
 
-    let tmpAudioFile = `${outputPath}/${TMP_AUDIO_PREFIX}.${AUDIO_FORMAT}`;
+    let tmpAudioFile = this.generateTmpAudioFilePath(outputPath);
 
     await this.createVoiceFromText(text, tmpAudioFile);
 
     let currentTimestamp = performance.now();
 
     let delay = this.calcDelay(currentTimestamp)
-
-    await this.addSilence(delay,
-      tmpAudioFile, this.generateAudioFilePath(outputPath, index));
-
     lastTimestamp = currentTimestamp
 
-    await Util.sleep(await this.checkAudioDuration(index, outputPath));
+    let finalPath = this.generateAudioFilePath(outputPath, index);
+
+    await this.addSilence(delay, tmpAudioFile, finalPath);
+
+    await Util.sleep(await this.checkAudioDuration(tmpAudioFile));
   }
 
   async keyboard(index, resourcesFolder, outputPath) {
@@ -170,15 +181,15 @@ class TextToSpeech {
     let keySoundFile = `${resourcesFolder}/keysound.${AUDIO_FORMAT}`;
 
     let currentTimestamp = performance.now();
-
-    let delay = this.calcDelay(currentTimestamp)
     
-    await this.addSilence(delay,
-      keySoundFile, this.generateAudioFilePath(outputPath, index));
-
+    let delay = this.calcDelay(currentTimestamp)
     lastTimestamp = currentTimestamp
 
-    //await Util.sleep(await this.checkAudioDuration(index, outputPath));
+    let finalPath = this.generateAudioFilePath(outputPath, index);
+    
+    await this.addSilence(delay, keySoundFile, finalPath);
+
+    await Util.sleep(await this.checkAudioDuration(keySoundFile));
   }
 }
 
@@ -206,6 +217,7 @@ module.exports = {
     await tts.concatAudios(...files, `${outputPath}/final_audio.wav`);
   },
   checkAudioDuration: (index, outputPath) => {
-    return tts.checkAudioDuration(index, outputPath);
+    let finalPath = tts.generateAudioFilePath(outputPath, index);
+    return tts.checkAudioDuration(finalPath);
   }
 }
