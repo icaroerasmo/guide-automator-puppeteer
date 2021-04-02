@@ -173,8 +173,7 @@ class Interpreter extends InterpreterProxy{
 
                     break;
                 case 'fill-field':
-                    await this.instance.fillField(params[1],
-                         params[2]);
+                    await this.instance.fillField(params[1], params[2]);
                     break;
                 case 'submit-form':
                     await this.instance.submitForm(params[1]);
@@ -186,7 +185,7 @@ class Interpreter extends InterpreterProxy{
                     await this.instance.select(params[1], params[2])
                     break;
                 case 'viewport':
-                    this.viewport = {width: params[1], height: params[2]};
+                    // this.viewport = {width: params[1], height: params[2]};
                     await this.instance.viewport(params[1], params[2])
                     break;
                 case 'speak':

@@ -40,6 +40,7 @@ class Recorder {
             const buffer = Buffer.from(event.data, 'base64');
             buffers.push(buffer);
             cuts.push(performance.now());
+            session.send('Page.screencastFrameAck', { sessionId: event.sessionId }).catch(() => {});
           });
         }
       

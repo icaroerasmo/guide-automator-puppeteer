@@ -218,7 +218,7 @@ class TextToSpeech {
 
     let currentTimestamp = performance.now();
     
-    delay = this.calcDelay(currentTimestamp)
+    delay = 0
     lastTimestamp = currentTimestamp
 
     console.log(delay);
@@ -227,7 +227,7 @@ class TextToSpeech {
     
     await this.addSilence(delay, keySoundFile, finalPath);
 
-    await this.playAudio(keySoundFile);
+    await this.playAudio(finalPath);
   }
 }
 

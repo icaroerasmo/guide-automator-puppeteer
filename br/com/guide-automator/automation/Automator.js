@@ -22,7 +22,7 @@ class Automator extends AutomatorProxy {
                 '--no-sandbox',
                 '--disable-setuid-sandbox',
             ],
-            defaultViewport: null
+            //defaultViewport: null
         });
         this.page = await this.browser.newPage();
         this.page.setCacheEnabled(false);
