@@ -202,12 +202,6 @@ class Interpreter extends InterpreterProxy{
 
     async renderEffects() {
 
-        console.log('ENTRADA')
-
-        await generateAudio(this.tmpFolder);
-        
-        console.log('SAÍDA')
-
         let effects = await this.instance.effectsTimeline;
         
         let index = 1;
@@ -222,6 +216,8 @@ class Interpreter extends InterpreterProxy{
 
                 let audioDuration = await checkAudioDuration(index-1, this.tmpFolder)
 
+                console.log(audioDuration);
+
                 let _beginning = Util.formattedTime(lastEff.checkpoint);
                 let _end = Util.formattedTime(lastEff.checkpoint+audioDuration);
 
@@ -234,6 +230,8 @@ class Interpreter extends InterpreterProxy{
             lastEff = eff;
 
         } while(lastEff != null);
+
+        await generateAudio(this.tmpFolder);
 
         fs.writeFileSync(`${this.tmpFolder}/subtitles.srt`, buffer, 'utf8', () => {});
     }

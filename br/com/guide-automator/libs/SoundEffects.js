@@ -32,19 +32,18 @@ class TextToSpeech {
     ]);
 
     fantProc.stdout.on('data', (data) => {
-      console.log(data.toString())
       let duration = data.toString().
         match(/(?!Duration: )\d{2}:\d{2}:\d{2}\.\d{1,3}/g)[0];
       resolve(Util.unformattedTime(duration));
     });
 
-    fantProc.stderr.on('data', (data) => {
-      console.log(data.toString())
-    });
+    // fantProc.stderr.on('data', (data) => {
+    //   console.log(data.toString())
+    // });
 
-    fantProc.on('close', (data) => {
-      console.log(data.toString())
-    });
+    // fantProc.on('close', (data) => {
+    //   console.log(data.toString())
+    // });
 
     return deffered;
   }
@@ -156,7 +155,9 @@ class TextToSpeech {
 
     let currentTimestamp = performance.now();
 
-    await this.addSilence(this.calcDelay(currentTimestamp),
+    let delay = index > 0 ? this.calcDelay(currentTimestamp) : 0
+
+    await this.addSilence(delay,
       tmpAudioFile, this.generateAudioFilePath(outputPath, index));
 
     lastTimestamp = currentTimestamp
@@ -167,8 +168,10 @@ class TextToSpeech {
     let keySoundFile = `${resourcesFolder}/keysound.${AUDIO_FORMAT}`;
 
     let currentTimestamp = performance.now();
+
+    let delay = index > 0 ? this.calcDelay(currentTimestamp) : 0
     
-    await this.addSilence(this.calcDelay(currentTimestamp),
+    await this.addSilence(delay,
       keySoundFile, this.generateAudioFilePath(outputPath, index));
 
     lastTimestamp = currentTimestamp

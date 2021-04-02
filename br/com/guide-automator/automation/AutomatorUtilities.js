@@ -25,10 +25,6 @@ class AutomatorUtilities {
     async writeToInput(selector, text) {
         for(let i = 0; i < text.length; i++) {
             await this.page.type(selector, text[i]);
-            if(i < text.length-1) {
-                await util.sleep(util.randomNum(142, 500));
-            }
-
             await keyPressNoise(await this.instance.resourcesFolder, await this.instance.tmpFolder)
         }
     }
