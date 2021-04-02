@@ -23,9 +23,10 @@ class AutomatorUtilities {
     }
 
     async writeToInput(selector, text) {
-        for(let i = 0; i < text.length; i++) {
+        let i = 0;
+        while(i < text.length) {
             await keyPressNoise(await this.instance.resourcesFolder, await this.instance.tmpFolder)
-            await this.page.type(selector, text[i]);
+            await this.page.type(selector, text[i++]);
         }
     }
 

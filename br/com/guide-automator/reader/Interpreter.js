@@ -113,7 +113,8 @@ class Interpreter extends InterpreterProxy{
     async parseFile() {
         let stack = [];
         this.mdContent = fs.readFileSync(this.mdFile, 'utf8');
-        for(let i = 0; i < this.mdContent.length; i++){
+        let i = 0;
+        while(i < this.mdContent.length){
             const j = i + codeMarker.length;
 
             let substring = this.mdContent.substring(i, j);
@@ -132,14 +133,16 @@ class Interpreter extends InterpreterProxy{
                     i = start;
                 }
             }
+            i++;
         }
     }
 
     async viewportAdjustment(lines) {
         let index = 0;
         let arr = [];
-        for(let i = 0; i < lines.length; i++) {
-            const line = lines[i];
+        let i = 0;
+        while(i < lines.length) {
+            const line = lines[i++];
             if(line.includes('viewport')){
                 arr.splice(index++, 0, line);
             } else {
@@ -153,8 +156,9 @@ class Interpreter extends InterpreterProxy{
         let output = '';
         let lines = Util.splitCodeIntoLines(code);
         lines = await this.viewportAdjustment(lines);
-        for(let i = 0; i < lines.length; i++) {
-            const params = Util.splitCommandLine(lines[i]);
+        let i = 0;
+        while(i < lines.length) {
+            const params = Util.splitCommandLine(lines[i++]);
             switch(params[0]) {
                 case 'go-to-page':
                     await this.instance.goToPage(params[1]);
