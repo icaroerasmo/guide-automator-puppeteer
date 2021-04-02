@@ -24,20 +24,20 @@ class TextToSpeech {
     let spawn = require('child_process').spawn;
 
     let fantProc = spawn('sh', [
-      '-c', `ffmpeg -f lavfi -i anullsrc=channel_layout=mono:sample_rate=44100 -t ${delay} -f s16le -ar 44100 -ac 1 - > ${process.env.fakeMicPath}`
+      '-c', `ffmpeg -fflags +discardcorrupt -f lavfi -i anullsrc=channel_layout=mono:sample_rate=44100 -t ${delay} -f s16le -ar 44100 -ac 1 - > ${process.env.fakeMicPath}`
     ]);
 
     fantProc.on('close', () => {
       resolve();
     });
 
-    fantProc.stdout.on('data', (data) => {
-      console.log(data.toString())
-    });
+    // fantProc.stdout.on('data', (data) => {
+    //   console.log(data.toString())
+    // });
 
-    fantProc.stderr.on('data', (data) => {
-      console.log(data.toString())
-    });
+    // fantProc.stderr.on('data', (data) => {
+    //   console.log(data.toString())
+    // });
 
     lastTimestamp = currentTimestamp;
     
@@ -55,14 +55,24 @@ class TextToSpeech {
     
     let spawn = require('child_process').spawn;
 
+    console.log(process.env.fakeMicPath)
+
     let fantProc = spawn('sh', [
       '-c', `espeak -vbrazil-mbrola-4 "${text}" --stdout | `+
-      'ffmpeg -fflags +discardcorrupt -i pipe:0 -f s16le -ar '+
+      'ffmpeg -re -fflags +discardcorrupt -i pipe:0 -f s16le -ar '+
       `44100 -ac 1 - > ${process.env.fakeMicPath}`
     ]);
 
     fantProc.on('close', () => {
       resolve();
+    });
+
+    fantProc.stdout.on('data', (data) => {
+      console.log(data.toString())
+    });
+
+    fantProc.stderr.on('data', (data) => {
+      console.log(data.toString())
     });
 
     return deffered;
