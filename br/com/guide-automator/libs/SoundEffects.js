@@ -9,6 +9,7 @@ const AUDIO_FORMAT = 'wav'
 let index = 0;
 let lastTimestamp;
 let delay = 0;
+let buffer = '';
 
 class TextToSpeech {
 
@@ -98,12 +99,16 @@ class TextToSpeech {
 
     let tmpAudioFile = this.generateTmpAudioFilePath(outputPath);
 
-    await this.createVoiceFromText(text, tmpAudioFile);
-
     let currentTimestamp = performance.now();
 
     delay = this.calcDelay(currentTimestamp)
+    
     lastTimestamp = currentTimestamp
+
+    // Subtitle beggining in ms
+    let _beginning = Util.formattedTime(performance.now());
+
+    await this.createVoiceFromText(text, tmpAudioFile);
 
     let finalPath = this.generateAudioFilePath(outputPath, index);
 
@@ -112,6 +117,12 @@ class TextToSpeech {
     let audioDuration = await this.checkAudioDuration(finalPath);
 
     await Util.sleep(audioDuration);
+
+    // Subtitle end in ms
+    let _end = Util.formattedTime(performance.now());
+
+    // Adds subtitle to buffer
+    buffer += `${index+1}\n${_beginning} --> ${_end}\n${text}\n\n`;
   }
 
   async keyboard(index, resourcesFolder, outputPath) {
@@ -158,6 +169,8 @@ module.exports = {
           return getPosition(file1) - getPosition(file2);
         }).
       map(f => `${outputPath}/${f}`);
+
+    fs.writeFileSync(`${outputPath}/subtitles.srt`, buffer, 'utf8', () => {});
     
     return tts.concatAudios(...files, `${outputPath}/final_audio.wav`);
   },

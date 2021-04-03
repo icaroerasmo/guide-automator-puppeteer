@@ -54,7 +54,7 @@ class Interpreter extends InterpreterProxy{
             process.env.startTime = performance.now();
             await this.parseFile();
             await this.makePDF();
-            await this.renderEffects();
+            await generateAudio(this.tmpFolder);
             process.env.endTime = performance.now();
             stop();
         };
@@ -202,39 +202,39 @@ class Interpreter extends InterpreterProxy{
         return output;
     }
 
-    async renderEffects() {
+    // async renderEffects() {
 
-        let effects = await this.instance.effectsTimeline;
+    //     let effects = await this.instance.effectsTimeline;
         
-        let index = 0;
-        let buffer = '';
-        let lastEff = effects.shift();
+    //     let index = 0;
+    //     let buffer = '';
+    //     let lastEff = effects.shift();
 
-        do {
+    //     do {
 
-            let eff = effects.shift();
+    //         let eff = effects.shift();
 
-            if(lastEff.sub) {
+    //         if(lastEff.sub) {
 
-                let audioDuration = await checkAudioDuration(index, this.tmpFolder)
+    //             let audioDuration = await checkAudioDuration(index, this.tmpFolder)
 
-                let _beginning = Util.formattedTime(lastEff.checkpoint);
-                let _end = Util.formattedTime(lastEff.checkpoint+audioDuration);
+    //             let _beginning = Util.formattedTime(lastEff.checkpoint);
+    //             let _end = Util.formattedTime(lastEff.checkpoint+audioDuration);
 
-                buffer += `${index+1}\n${_beginning} --> ${_end}\n${lastEff.sub}\n\n`;
+    //             buffer += `${index+1}\n${_beginning} --> ${_end}\n${lastEff.sub}\n\n`;
 
-            }
+    //         }
             
-            ++index;
+    //         ++index;
 
-            lastEff = eff;
+    //         lastEff = eff;
 
-        } while(lastEff != null);
+    //     } while(lastEff != null);
 
-        await generateAudio(this.tmpFolder);
+    //     await generateAudio(this.tmpFolder);
 
-        fs.writeFileSync(`${this.tmpFolder}/subtitles.srt`, buffer, 'utf8', () => {});
-    }
+    //     fs.writeFileSync(`${this.tmpFolder}/subtitles.srt`, buffer, 'utf8', () => {});
+    // }
 
     makePDF() {
 

@@ -68,7 +68,7 @@
                 // if (options.cleanup) fs.rmdirSync(tmpFolderPath, { recursive: true });
                 // if (exitCode || exitCode === 0) console.log(exitCode);
                 // if (options.exit) fs.rmdirSync(tmpFolderPath, { recursive: true });
-                fs.rmdirSync(tmpFolderPath, { recursive: true });
+                // fs.rmdirSync(tmpFolderPath, { recursive: true });
             }
 
             //do something when app is closing
