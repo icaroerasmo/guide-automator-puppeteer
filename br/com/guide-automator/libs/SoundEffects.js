@@ -15,94 +15,36 @@ class TextToSpeech {
   constructor() {}
 
   checkAudioDuration(path) {
+    return Util.externalCall({
+      exec: 'sh',
+      onStdout: (data) => {
 
-    let resolve, reject;
+        if(process.env.integrationDebug) {
+          console.log(data.toString());
+        }
 
-    const deffered = new Promise((_resolve, _reject) => {
-        resolve = _resolve;
-        reject = _reject;
+        let duration = data.toString().
+          match(/(?!Duration: )\d{2}:\d{2}:\d{2}\.\d{1,3}/g)[0];
+        resolve(Util.unformattedTime(duration));
+      },
+      params: [
+        '-c', `ffmpeg -i ${path} 2>&1 `+
+        "| sed 's/Duration: \\(.*\\), start/\\1/gp'"
+      ],
     });
-    
-    let spawn = require('child_process').spawn;
-
-    let fantProc = spawn('sh', [
-      '-c', `ffmpeg -i ${path} 2>&1 `+
-      "| sed 's/Duration: \\(.*\\), start/\\1/gp'"
-    ]);
-
-    fantProc.stdout.on('data', (data) => {
-      let duration = data.toString().
-        match(/(?!Duration: )\d{2}:\d{2}:\d{2}\.\d{1,3}/g)[0];
-      resolve(Util.unformattedTime(duration));
-
-      if(process.env.integrationDebug) {
-        console.log(data.toString());
-      }
-    });
-
-    fantProc.on('close', (data) => {
-      resolve();
-    });
-
-    if(process.env.integrationDebug){
-      fantProc.stderr.on('data', (data) => {
-        console.log(data.toString())
-      });
-    }
-
-    return deffered;
-  }
-
-  generateTmpAudioFilePath(outputPath) {
-    return `${outputPath}/${TMP_AUDIO_PREFIX}.${AUDIO_FORMAT}`;
-  }
-
-  generateAudioFilePath(outputPath, index) {
-    return `${outputPath}/${FINAL_AUDIO_PREFIX}${index}.${AUDIO_FORMAT}`;
   }
 
   createVoiceFromText(text, outputPath) {
-
-    let resolve, reject;
-
-    const deffered = new Promise((_resolve, _reject) => {
-        resolve = _resolve;
-        reject = _reject;
+    return Util.externalCall({
+      exec: 'sh',
+      params: [
+        '-c', `espeak -vbrazil-mbrola-4 "${text}" `+
+        `-s 130 --stdout > ${outputPath}`
+      ]
     });
-    
-    let spawn = require('child_process').spawn;
-
-    let fantProc = spawn('sh', [
-      '-c', `espeak -vbrazil-mbrola-4 "${text}" -s 130 --stdout > ${outputPath}`
-    ]);
-
-    fantProc.on('close', () => {
-      resolve();
-    });
-
-    if(process.env.integrationDebug){
-      fantProc.stdout.on('data', (data) => {
-        console.log(data.toString());
-      });
-
-      fantProc.stderr.on('data', (data) => {
-        console.log(data.toString());
-      });
-    }
-
-    return deffered;
   }
 
   concatAudios() {
-
-    let resolve, reject;
-
-    const deffered = new Promise((_resolve, _reject) => {
-        resolve = _resolve;
-        reject = _reject;
-    });
-
-    let spawn = require('child_process').spawn;
 
     const filterPreffix = 'concat=n='
     const filterSuffix = ':v=0:a=1[out]'
@@ -121,87 +63,28 @@ class TextToSpeech {
     args.push('[out]');
     args.push(arguments[arguments.length-1]);
 
-    let concatProc = spawn('ffmpeg', args);
-
-    concatProc.on('close', () => {
-      resolve();
+    return Util.externalCall({
+      exec: 'ffmpeg',
+      params: args,
     });
-
-    if(process.env.integrationDebug){
-      concatProc.stdout.on('data', (data) => {
-        console.log(data.toString());
-      });
-
-      concatProc.stderr.on('data', (data) => {
-        console.log(data.toString());
-      });
-    }
-
-    return deffered;
   }
 
   addSilence(silenceDuration, tmpAudio, finalAudio) {
-
-    let resolve, reject;
-
-    const deffered = new Promise((_resolve, _reject) => {
-        resolve = _resolve;
-        reject = _reject;
+    return Util.externalCall({
+      exec: 'ffmpeg',
+      params: [
+        '-i', tmpAudio, '-af',
+        `adelay=${silenceDuration}|0`,
+        finalAudio
+      ]
     });
-
-    let spawn = require('child_process').spawn;
-
-    let concatProc = spawn('ffmpeg', [
-      '-i', tmpAudio, '-af',
-      `adelay=${silenceDuration}|0`,
-      finalAudio
-    ]);
-
-    concatProc.on('close', () => {
-      resolve();
-    });
-
-    if(process.env.integrationDebug){
-      concatProc.stdout.on('data', (data) => {
-        console.log(data.toString());
-      });
-
-      concatProc.stderr.on('data', (data) => {
-        console.log(data.toString());
-      });
-    }
-
-    return deffered;
   }
 
   playAudio(audioPath) {
-
-    let resolve, reject;
-
-    const deffered = new Promise((_resolve, _reject) => {
-        resolve = _resolve;
-        reject = _reject;
+    return Util.externalCall({
+      exec: 'aplay',
+      params: [audioPath]
     });
-
-    let spawn = require('child_process').spawn;
-
-    let concatProc = spawn('aplay', [audioPath]);
-
-    concatProc.on('close', () => {
-      resolve();
-    });
-
-    if(process.env.integrationDebug){
-      concatProc.stdout.on('data', (data) => {
-        console.log(data.toString());
-      });
-
-      concatProc.stderr.on('data', (data) => {
-        console.log(data.toString());
-      });
-    }
-
-    return deffered;
   }
 
   calcDelay(currentTimestamp) {
@@ -242,6 +125,14 @@ class TextToSpeech {
     await this.addSilence(0, keySoundFile, finalPath);
 
     await this.playAudio(finalPath);
+  }
+
+  generateTmpAudioFilePath(outputPath) {
+    return `${outputPath}/${TMP_AUDIO_PREFIX}.${AUDIO_FORMAT}`;
+  }
+
+  generateAudioFilePath(outputPath, index) {
+    return `${outputPath}/${FINAL_AUDIO_PREFIX}${index}.${AUDIO_FORMAT}`;
   }
 }
 
