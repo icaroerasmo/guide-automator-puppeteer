@@ -49,6 +49,9 @@
             case '-d':
                 isDebugEnabled = true;
                 return;
+            case '-id':
+                process.env.integrationDebug = true;
+                return;
             default:
                 throw new Error(`Parameter \'${key}\' wasn\'t recognized`);
         }

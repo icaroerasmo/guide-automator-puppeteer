@@ -26,13 +26,14 @@ module.exports = (fileName, tmpFolder, outputFolder) => {
       resolve(outputPath);
   });
 
-  proc.stdout.on('data', (data) => {
-    console.log(data.toString());
-  });
-
-  proc.stderr.on('data', (data) => {
-    console.log(data.toString());
-  });
+  if(process.env.integrationDebug){
+    proc.stdout.on('data', (data) => {
+      console.log(data.toString());
+    });
+    proc.stderr.on('data', (data) => {
+      console.log(data.toString());
+    });
+  }
 
   return deffered;
 }

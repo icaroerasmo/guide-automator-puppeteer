@@ -33,17 +33,22 @@ class TextToSpeech {
     fantProc.stdout.on('data', (data) => {
       let duration = data.toString().
         match(/(?!Duration: )\d{2}:\d{2}:\d{2}\.\d{1,3}/g)[0];
-      console.log(Util.unformattedTime(duration));
       resolve(Util.unformattedTime(duration));
-    });
 
-    fantProc.stderr.on('data', (data) => {
-      console.log(data.toString())
+      if(process.env.integrationDebug) {
+        console.log(data.toString());
+      }
     });
 
     fantProc.on('close', (data) => {
-      console.log(data.toString())
+      resolve();
     });
+
+    if(process.env.integrationDebug){
+      fantProc.stderr.on('data', (data) => {
+        console.log(data.toString())
+      });
+    }
 
     return deffered;
   }
@@ -74,6 +79,16 @@ class TextToSpeech {
     fantProc.on('close', () => {
       resolve();
     });
+
+    if(process.env.integrationDebug){
+      fantProc.stdout.on('data', (data) => {
+        console.log(data.toString());
+      });
+
+      fantProc.stderr.on('data', (data) => {
+        console.log(data.toString());
+      });
+    }
 
     return deffered;
   }
@@ -112,13 +127,15 @@ class TextToSpeech {
       resolve();
     });
 
-     concatProc.stdout.on('data', (data) => {
-       console.log(data.toString());
-    });
+    if(process.env.integrationDebug){
+      concatProc.stdout.on('data', (data) => {
+        console.log(data.toString());
+      });
 
-    concatProc.stderr.on('data', (data) => {
-      console.log(data.toString());
-    });
+      concatProc.stderr.on('data', (data) => {
+        console.log(data.toString());
+      });
+    }
 
     return deffered;
   }
@@ -144,13 +161,15 @@ class TextToSpeech {
       resolve();
     });
 
-    concatProc.stdout.on('data', (data) => {
-      console.log(data.toString());
-    });
+    if(process.env.integrationDebug){
+      concatProc.stdout.on('data', (data) => {
+        console.log(data.toString());
+      });
 
-    concatProc.stderr.on('data', (data) => {
-      console.log(data.toString());
-    });
+      concatProc.stderr.on('data', (data) => {
+        console.log(data.toString());
+      });
+    }
 
     return deffered;
   }
@@ -172,13 +191,15 @@ class TextToSpeech {
       resolve();
     });
 
-    concatProc.stdout.on('data', (data) => {
-      console.log(data.toString());
-    });
+    if(process.env.integrationDebug){
+      concatProc.stdout.on('data', (data) => {
+        console.log(data.toString());
+      });
 
-    concatProc.stderr.on('data', (data) => {
-      console.log(data.toString());
-    });
+      concatProc.stderr.on('data', (data) => {
+        console.log(data.toString());
+      });
+    }
 
     return deffered;
   }
@@ -203,8 +224,6 @@ class TextToSpeech {
     delay = this.calcDelay(currentTimestamp)
     lastTimestamp = currentTimestamp
 
-    console.log(delay);
-
     let finalPath = this.generateAudioFilePath(outputPath, index);
 
     await this.addSilence(delay, tmpAudioFile, finalPath);
@@ -216,16 +235,11 @@ class TextToSpeech {
 
     let keySoundFile = `${resourcesFolder}/keysound.${AUDIO_FORMAT}`;
 
-    let currentTimestamp = performance.now();
-    
-    delay = 0
-    lastTimestamp = currentTimestamp
-
-    console.log(delay);
+    lastTimestamp = performance.now()
     
     let finalPath = this.generateAudioFilePath(outputPath, index);
     
-    await this.addSilence(delay, keySoundFile, finalPath);
+    await this.addSilence(0, keySoundFile, finalPath);
 
     await this.playAudio(finalPath);
   }

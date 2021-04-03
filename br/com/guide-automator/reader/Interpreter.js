@@ -189,7 +189,6 @@ class Interpreter extends InterpreterProxy{
                     await this.instance.select(params[1], params[2])
                     break;
                 case 'viewport':
-                    // this.viewport = {width: params[1], height: params[2]};
                     await this.instance.viewport(params[1], params[2])
                     break;
                 case 'speak':
@@ -218,8 +217,6 @@ class Interpreter extends InterpreterProxy{
             if(lastEff.sub) {
 
                 let audioDuration = await checkAudioDuration(index, this.tmpFolder)
-
-                console.log(audioDuration);
 
                 let _beginning = Util.formattedTime(lastEff.checkpoint);
                 let _end = Util.formattedTime(lastEff.checkpoint+audioDuration);
