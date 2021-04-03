@@ -6,7 +6,7 @@ const InterpreterProxy = require('./InterpreterProxy')
 const Automator = require('../automation/Automator');
 const Util = require('../libs/Util');
 const { recorder } = require('../libs/Recorder');
-const { generateAudio, checkAudioDuration } = require('../libs/SoundEffects');
+const { generateAudio } = require('../libs/SoundEffects');
 const converter = require('../libs/ApngToMp4Converter');
 const base64Converter = require('image-to-base64');
 const codeMarker = "```"
@@ -201,40 +201,6 @@ class Interpreter extends InterpreterProxy{
 
         return output;
     }
-
-    // async renderEffects() {
-
-    //     let effects = await this.instance.effectsTimeline;
-        
-    //     let index = 0;
-    //     let buffer = '';
-    //     let lastEff = effects.shift();
-
-    //     do {
-
-    //         let eff = effects.shift();
-
-    //         if(lastEff.sub) {
-
-    //             let audioDuration = await checkAudioDuration(index, this.tmpFolder)
-
-    //             let _beginning = Util.formattedTime(lastEff.checkpoint);
-    //             let _end = Util.formattedTime(lastEff.checkpoint+audioDuration);
-
-    //             buffer += `${index+1}\n${_beginning} --> ${_end}\n${lastEff.sub}\n\n`;
-
-    //         }
-            
-    //         ++index;
-
-    //         lastEff = eff;
-
-    //     } while(lastEff != null);
-
-    //     await generateAudio(this.tmpFolder);
-
-    //     fs.writeFileSync(`${this.tmpFolder}/subtitles.srt`, buffer, 'utf8', () => {});
-    // }
 
     makePDF() {
 
