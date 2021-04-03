@@ -94,29 +94,29 @@ module.exports = {
 
         let proc = spawn(exec, params);
 
-        proc.on('close', async (data) => {
+        proc.on('close', (data) => {
             if (onClose){
-                await onClose(data);
+                onClose(data);
             }
             resolve();
         });
 
         
-        proc.stdout.on('data', async (data) => {
+        proc.stdout.on('data', (data) => {
             if(process.env.integrationDebug){
                 console.log(data.toString());
             }
             if(onStdout) {
-                await onStdout(data);
+                onStdout(data);
             }
         });
 
-        proc.stderr.on('data', async (data) => {
+        proc.stderr.on('data', (data) => {
             if(process.env.integrationDebug){
                 console.log(data.toString());
             } 
             if(onError){
-                await onError(data);
+                onError(data);
             }
         });
 
