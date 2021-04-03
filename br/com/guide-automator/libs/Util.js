@@ -101,16 +101,24 @@ module.exports = {
             resolve();
         });
 
-        if(process.env.integrationDebug){
-            if(onStdout){
-                proc.stdout.on('data', onStdout);
+        
+        proc.stdout.on('data', async (data) => {
+            if(process.env.integrationDebug){
+                console.log(data.toString());
             }
-            proc.stderr.on('data', async (data) => { 
-                if(onError){
-                    await onError(data);
-                }
-            });
-        }
+            if(onStdout) {
+                await onStdout(data);
+            }
+        });
+
+        proc.stderr.on('data', async (data) => {
+            if(process.env.integrationDebug){
+                console.log(data.toString());
+            } 
+            if(onError){
+                await onError(data);
+            }
+        });
 
         return deffered;
     }

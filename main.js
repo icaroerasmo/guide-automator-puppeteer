@@ -63,23 +63,6 @@
         async (err, tmpFolderPath) => {
             
             if (err) throw err;
-            
-            function exitHandler(options, exitCode) {
-                fs.rmdirSync(tmpFolderPath, { recursive: true });
-            }
-
-            //do something when app is closing
-            process.on('exit', exitHandler.bind(null));
-
-            //catches ctrl+c event
-            process.on('SIGINT', exitHandler.bind(null));
-
-            // catches "kill pid" (for example: nodemon restart)
-            process.on('SIGUSR1', exitHandler.bind(null));
-            process.on('SIGUSR2', exitHandler.bind(null));
-
-            //catches uncaught exceptions
-            process.on('uncaughtException', exitHandler.bind(null, {exit:true}));
 
             await new Interpreter(
                 mdFile,
@@ -91,6 +74,25 @@
                 isDebugEnabled,
                 isVerboseEnabled
             ).run();
+
+            function exitHandler(options, exitCode) {
+                // if (options.cleanup) fs.rmdirSync(tmpFolderPath, { recursive: true });
+                // if (exitCode || exitCode === 0) console.log(exitCode);
+                // if (options.exit) fs.rmdirSync(tmpFolderPath, { recursive: true });
+            }
+
+            //do something when app is closing
+            process.on('exit', exitHandler.bind(null,{cleanup:true}));
+
+            //catches ctrl+c event
+            process.on('SIGINT', exitHandler.bind(null, {exit:true}));
+
+            // catches "kill pid" (for example: nodemon restart)
+            process.on('SIGUSR1', exitHandler.bind(null, {exit:true}));
+            process.on('SIGUSR2', exitHandler.bind(null, {exit:true}));
+
+            //catches uncaught exceptions
+            process.on('uncaughtException', exitHandler.bind(null, {exit:true}));
         }
     );
 

@@ -14,8 +14,9 @@ class TextToSpeech {
 
   constructor() {}
 
-  checkAudioDuration(path) {
-    return Util.externalCall({
+  async checkAudioDuration(path) {
+    let audioDuration;
+    await Util.externalCall({
       exec: 'sh',
       onStdout: (data) => {
 
@@ -25,13 +26,18 @@ class TextToSpeech {
 
         let duration = data.toString().
           match(/(?!Duration: )\d{2}:\d{2}:\d{2}\.\d{1,3}/g)[0];
-        resolve(Util.unformattedTime(duration));
+
+        audioDuration = Util.unformattedTime(duration);
+        
+        console.log(audioDuration);
       },
       params: [
         '-c', `ffmpeg -i ${path} 2>&1 `+
         "| sed 's/Duration: \\(.*\\), start/\\1/gp'"
       ],
     });
+
+    return audioDuration;
   }
 
   createVoiceFromText(text, outputPath) {
@@ -62,6 +68,8 @@ class TextToSpeech {
     args.push('-map');
     args.push('[out]');
     args.push(arguments[arguments.length-1]);
+
+    console.log(args);
 
     return Util.externalCall({
       exec: 'ffmpeg',
@@ -157,7 +165,7 @@ module.exports = {
         }).
       map(f => `${outputPath}/${f}`);
     
-    await tts.concatAudios(...files, `${outputPath}/final_audio.wav`);
+    return tts.concatAudios(...files, `${outputPath}/final_audio.wav`);
   },
   checkAudioDuration: (index, outputPath) => {
     let finalPath = tts.generateAudioFilePath(outputPath, index);
