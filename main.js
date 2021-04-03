@@ -64,21 +64,11 @@
             
             if (err) throw err;
 
-            await new Interpreter(
-                mdFile,
-                coverPath,
-                outputFolder,
-                outputFileName,
-                resourcesFolder,
-                tmpFolderPath,
-                isDebugEnabled,
-                isVerboseEnabled
-            ).run();
-
             function exitHandler(options, exitCode) {
                 // if (options.cleanup) fs.rmdirSync(tmpFolderPath, { recursive: true });
                 // if (exitCode || exitCode === 0) console.log(exitCode);
                 // if (options.exit) fs.rmdirSync(tmpFolderPath, { recursive: true });
+                fs.rmdirSync(tmpFolderPath, { recursive: true });
             }
 
             //do something when app is closing
@@ -93,6 +83,17 @@
 
             //catches uncaught exceptions
             process.on('uncaughtException', exitHandler.bind(null, {exit:true}));
+
+            await new Interpreter(
+                mdFile,
+                coverPath,
+                outputFolder,
+                outputFileName,
+                resourcesFolder,
+                tmpFolderPath,
+                isDebugEnabled,
+                isVerboseEnabled
+            ).run();
         }
     );
 
