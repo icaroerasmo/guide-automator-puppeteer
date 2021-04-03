@@ -109,7 +109,9 @@ class TextToSpeech {
 
     await this.addSilence(delay, tmpAudioFile, finalPath);
 
-    await this.playAudio(finalPath);
+    let audioDuration = await this.checkAudioDuration(finalPath);
+
+    await Util.sleep(audioDuration);
   }
 
   async keyboard(index, resourcesFolder, outputPath) {
@@ -122,7 +124,9 @@ class TextToSpeech {
     
     await this.addSilence(0, keySoundFile, finalPath);
 
-    await this.playAudio(finalPath);
+    let audioDuration = await this.checkAudioDuration(finalPath);
+
+    await Util.sleep(audioDuration);
   }
 
   generateTmpAudioFilePath(outputPath) {
