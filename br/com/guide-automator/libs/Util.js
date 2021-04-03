@@ -76,5 +76,42 @@ module.exports = {
     },
     randomNum(min, max) {
         return Math.floor(Math.random() * (max - min) ) + min
+    },
+    async externalCall({exec, params, onError, onClose, onStdout}) {
+        
+        let resolve, reject;
+
+        if(!exec || !params) {
+            reject(new Error('Async template is missing mandatory parameters. Check if exec or params are null.'));
+        }
+
+        const deffered = new Promise((_resolve, _reject) => {
+            resolve = _resolve;
+            reject = _reject;
+        });
+        
+        let spawn = require('child_process').spawn;
+
+        let proc = spawn(exec, params);
+
+        proc.on('close', async (data) => {
+            if (onClose){
+                await onClose(data);
+            }
+            resolve();
+        });
+
+        if(process.env.integrationDebug){
+            if(onStdout){
+                proc.stdout.on('data', onStdout);
+            }
+            proc.stderr.on('data', async (data) => { 
+                if(onError){
+                    await onError(data);
+                }
+            });
+        }
+
+        return deffered;
     }
 };

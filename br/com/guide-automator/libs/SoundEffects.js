@@ -1,74 +1,50 @@
 const fs = require('fs');
 const Util = require('./Util');
+const { performance } = require('perf_hooks');
 
 const TMP_AUDIO_PREFIX = 'tmp_audio_file';
 const FINAL_AUDIO_PREFIX = 'audio_';
 const AUDIO_FORMAT = 'wav'
+
+let index = 0;
+let lastTimestamp;
+let delay = 0;
 
 class TextToSpeech {
 
   constructor() {}
 
   checkAudioDuration(path) {
-    let resolve, reject;
+    return Util.externalCall({
+      exec: 'sh',
+      onStdout: (data) => {
 
-    const deffered = new Promise((_resolve, _reject) => {
-        resolve = _resolve;
-        reject = _reject;
+        if(process.env.integrationDebug) {
+          console.log(data.toString());
+        }
+
+        let duration = data.toString().
+          match(/(?!Duration: )\d{2}:\d{2}:\d{2}\.\d{1,3}/g)[0];
+        resolve(Util.unformattedTime(duration));
+      },
+      params: [
+        '-c', `ffmpeg -i ${path} 2>&1 `+
+        "| sed 's/Duration: \\(.*\\), start/\\1/gp'"
+      ],
     });
-    
-    let spawn = require('child_process').spawn;
-
-    let fantProc = spawn('sh', [
-      '-c', `ffmpeg -i ${path} 2>&1 `+
-      "| sed 's/Duration: \\(.*\\), start/\\1/gp'"
-    ]);
-
-    fantProc.stdout.on('data', (data) => {
-      let duration = data.toString().
-        match(/(?!Duration: )\d{2}:\d{2}:\d{2}\.\d{1,3}/g)[0];
-      resolve(Util.unformattedTime(duration));
-    });
-
-    return deffered;
-  }
-
-  generateAudioFilePath(outputPath, index) {
-    return `${outputPath}/${FINAL_AUDIO_PREFIX}${index}.${AUDIO_FORMAT}`;
   }
 
   createVoiceFromText(text, outputPath) {
-
-    let resolve, reject;
-
-    const deffered = new Promise((_resolve, _reject) => {
-        resolve = _resolve;
-        reject = _reject;
+    return Util.externalCall({
+      exec: 'sh',
+      params: [
+        '-c', `espeak -vbrazil-mbrola-4 "${text}" `+
+        `-s 130 --stdout > ${outputPath}`
+      ]
     });
-    
-    let spawn = require('child_process').spawn;
-
-    let fantProc = spawn('sh', [
-      '-c', `espeak -vbrazil-mbrola-4 "${text}" -s 130 --stdout > ${outputPath}`
-    ]);
-
-    fantProc.on('close', () => {
-      resolve();
-    });
-
-    return deffered;
   }
 
   concatAudios() {
-
-    let resolve, reject;
-
-    const deffered = new Promise((_resolve, _reject) => {
-        resolve = _resolve;
-        reject = _reject;
-    });
-
-    let spawn = require('child_process').spawn;
 
     const filterPreffix = 'concat=n='
     const filterSuffix = ':v=0:a=1[out]'
@@ -87,74 +63,89 @@ class TextToSpeech {
     args.push('[out]');
     args.push(arguments[arguments.length-1]);
 
-    let concatProc = spawn('ffmpeg', args);
-
-    concatProc.on('close', () => {
-      resolve();
+    return Util.externalCall({
+      exec: 'ffmpeg',
+      params: args,
     });
-
-    return deffered;
   }
 
   addSilence(silenceDuration, tmpAudio, finalAudio) {
-
-    let resolve, reject;
-
-    const deffered = new Promise((_resolve, _reject) => {
-        resolve = _resolve;
-        reject = _reject;
+    return Util.externalCall({
+      exec: 'ffmpeg',
+      params: [
+        '-i', tmpAudio, '-af',
+        `adelay=${silenceDuration}|0`,
+        finalAudio
+      ]
     });
-
-    let spawn = require('child_process').spawn;
-
-    let concatProc = spawn('ffmpeg', [
-      '-i', tmpAudio, '-af',
-      `adelay=${silenceDuration}|0`,
-      finalAudio
-    ]);
-
-    concatProc.on('close', () => {
-      resolve();
-    });
-
-    return deffered;
   }
 
-  async say(text, index, silenceDuration, outputPath) {
+  playAudio(audioPath) {
+    return Util.externalCall({
+      exec: 'aplay',
+      params: [audioPath]
+    });
+  }
 
-    let tmpAudioFile = `${outputPath}/${TMP_AUDIO_PREFIX}.${AUDIO_FORMAT}`;
+  calcDelay(currentTimestamp) {
+
+    if(!lastTimestamp) {
+      return currentTimestamp - process.env.startTime;
+    }
+
+    return currentTimestamp - lastTimestamp;
+  }
+
+  async say(text, index, outputPath) {
+
+    let tmpAudioFile = this.generateTmpAudioFilePath(outputPath);
 
     await this.createVoiceFromText(text, tmpAudioFile);
-    
-    let effectDelay = await this.checkAudioDuration(tmpAudioFile);
 
-    await this.addSilence(silenceDuration+effectDelay,
-      tmpAudioFile, this.generateAudioFilePath(outputPath, index));
+    let currentTimestamp = performance.now();
+
+    delay = this.calcDelay(currentTimestamp)
+    lastTimestamp = currentTimestamp
+
+    let finalPath = this.generateAudioFilePath(outputPath, index);
+
+    await this.addSilence(delay, tmpAudioFile, finalPath);
+
+    await this.playAudio(finalPath);
   }
 
-  async keyboard(index, silenceDuration, resourcesFolder, outputPath) {
+  async keyboard(index, resourcesFolder, outputPath) {
 
     let keySoundFile = `${resourcesFolder}/keysound.${AUDIO_FORMAT}`;
 
-    let effectDelay = await this.checkAudioDuration(keySoundFile);
+    lastTimestamp = performance.now()
     
-    await this.addSilence(silenceDuration+effectDelay,
-      keySoundFile, this.generateAudioFilePath(outputPath, index));
+    let finalPath = this.generateAudioFilePath(outputPath, index);
+    
+    await this.addSilence(0, keySoundFile, finalPath);
+
+    await this.playAudio(finalPath);
+  }
+
+  generateTmpAudioFilePath(outputPath) {
+    return `${outputPath}/${TMP_AUDIO_PREFIX}.${AUDIO_FORMAT}`;
+  }
+
+  generateAudioFilePath(outputPath, index) {
+    return `${outputPath}/${FINAL_AUDIO_PREFIX}${index}.${AUDIO_FORMAT}`;
   }
 }
 
+const tts = new TextToSpeech();
 
 module.exports = {
-  keyPressNoise: async (index, silenceDuration, resourcesFolder, outputPath) => {
-    const tts = new TextToSpeech();
-    await tts.keyboard(index, silenceDuration, resourcesFolder, outputPath);
+  keyPressNoise: async (resourcesFolder, outputPath) => {
+    await tts.keyboard(index++, resourcesFolder, outputPath);
   },
-  say: async (text, index, silenceDuration, outputPath) => {
-    const tts = new TextToSpeech();
-    await tts.say(text, index, silenceDuration, outputPath);
+  say: async (text, outputPath) => {
+    await tts.say(text, index++, outputPath);
   },
   generateAudio: async (outputPath) => {
-
     const getPosition = (fileName) => Number(
       fileName.replace(FINAL_AUDIO_PREFIX, '').
       replace(AUDIO_FORMAT, ''));
@@ -166,7 +157,10 @@ module.exports = {
         }).
       map(f => `${outputPath}/${f}`);
     
-    const tts = new TextToSpeech();
     await tts.concatAudios(...files, `${outputPath}/final_audio.wav`);
+  },
+  checkAudioDuration: (index, outputPath) => {
+    let finalPath = tts.generateAudioFilePath(outputPath, index);
+    return tts.checkAudioDuration(finalPath);
   }
 }

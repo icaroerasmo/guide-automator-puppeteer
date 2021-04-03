@@ -2,14 +2,17 @@ const { performance } = require('perf_hooks');
 const AutomatorProxy = require('./AutomatorProxy');
 const AutomatorUtilities = require('./AutomatorUtilities');
 const puppeteer = require('puppeteer');
+const { say } = require('../libs/SoundEffects');
 const util = require('../libs/Util');
 
 class Automator extends AutomatorProxy {
 
     effectsTimeline = [];
 
-    constructor(isDebugEnabled, isVerboseEnabled) {
+    constructor(isDebugEnabled, isVerboseEnabled, resourcesFolder, tmpFolder) {
         super(isDebugEnabled, isVerboseEnabled)
+        this.resourcesFolder = resourcesFolder;
+        this.tmpFolder = tmpFolder;
     }
 
     async init() {
@@ -19,7 +22,7 @@ class Automator extends AutomatorProxy {
                 '--no-sandbox',
                 '--disable-setuid-sandbox',
             ],
-            defaultViewport: null
+            defaultViewport: {width: 1024, height: 768}
         });
         this.page = await this.browser.newPage();
         this.page.setCacheEnabled(false);
@@ -86,18 +89,15 @@ class Automator extends AutomatorProxy {
 
     async speak(sub) {
         this.log(`speaking: '${sub}'`)
-        
-        let checkpoint = performance.now();
 
-        await util.sleep(sub.length * 250);
-
-        let finalChk = performance.now();
+        const checkpoint = performance.now()
 
         this.effectsTimeline.push({
             sub,
-            checkpoint,
-            finalChk
+            checkpoint
         });
+
+        await say(sub, this.tmpFolder);
     }
 
     async close() {
@@ -107,7 +107,11 @@ class Automator extends AutomatorProxy {
 }
 
 module.exports = {
-    instance(isDebugEnabled, isVerboseEnabled) {
-        return new Automator(isDebugEnabled, isVerboseEnabled).init();
+    instance(isDebugEnabled, isVerboseEnabled, resourcesFolder, tmpFolder) {
+        return new Automator(
+            isDebugEnabled,
+            isVerboseEnabled,
+            resourcesFolder,
+            tmpFolder).init();
     }
 }

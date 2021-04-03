@@ -5,9 +5,9 @@ const wkhtmltopdf = require('wkhtmltopdf');
 const InterpreterProxy = require('./InterpreterProxy')
 const Automator = require('../automation/Automator');
 const Util = require('../libs/Util');
-const recorder = require('../libs/Recorder');
+const { recorder } = require('../libs/Recorder');
+const { generateAudio, checkAudioDuration } = require('../libs/SoundEffects');
 const converter = require('../libs/ApngToMp4Converter');
-const { say, keyPressNoise, generateAudio } = require('../libs/SoundEffects');
 const base64Converter = require('image-to-base64');
 const codeMarker = "```"
 
@@ -43,20 +43,24 @@ class Interpreter extends InterpreterProxy{
         }
 
         this.instance = await Automator.instance(
-            this.isDebugEnabled, this.isVerboseEnabled);
+            this.isDebugEnabled,
+            this.isVerboseEnabled,
+            this.resourcesFolder,
+            this.tmpFolder
+            );
 
         const runner = async (start, stop) => {
-            start(await this.instance.page);
-            this.instance.start = performance.now();
+            start(await this.instance.page, this.tmpFolder);
+            process.env.startTime = performance.now();
             await this.parseFile();
             await this.makePDF();
             await this.renderEffects();
-            this.instance.end = performance.now();
-            stop(this.instance.end);
+            process.env.endTime = performance.now();
+            stop();
         };
         this.log('started Recording');
         const videoPngBuffer = await recorder(runner);
-        const fileName = 'video.png';
+        let fileName = 'video.png';
         fs.writeFileSync(`${this.tmpFolder}/${fileName}`, videoPngBuffer, () => {});
         await converter(fileName, this.tmpFolder, this.outputFolder);
         this.log('finished Recording');
@@ -109,7 +113,8 @@ class Interpreter extends InterpreterProxy{
     async parseFile() {
         let stack = [];
         this.mdContent = fs.readFileSync(this.mdFile, 'utf8');
-        for(let i = 0; i < this.mdContent.length; i++){
+        let i = 0;
+        while(i < this.mdContent.length){
             const j = i + codeMarker.length;
 
             let substring = this.mdContent.substring(i, j);
@@ -128,14 +133,16 @@ class Interpreter extends InterpreterProxy{
                     i = start;
                 }
             }
+            i++;
         }
     }
 
     async viewportAdjustment(lines) {
         let index = 0;
         let arr = [];
-        for(let i = 0; i < lines.length; i++) {
-            const line = lines[i];
+        let i = 0;
+        while(i < lines.length) {
+            const line = lines[i++];
             if(line.includes('viewport')){
                 arr.splice(index++, 0, line);
             } else {
@@ -149,8 +156,9 @@ class Interpreter extends InterpreterProxy{
         let output = '';
         let lines = Util.splitCodeIntoLines(code);
         lines = await this.viewportAdjustment(lines);
-        for(let i = 0; i < lines.length; i++) {
-            const params = Util.splitCommandLine(lines[i]);
+        let i = 0;
+        while(i < lines.length) {
+            const params = Util.splitCommandLine(lines[i++]);
             switch(params[0]) {
                 case 'go-to-page':
                     await this.instance.goToPage(params[1]);
@@ -169,8 +177,7 @@ class Interpreter extends InterpreterProxy{
 
                     break;
                 case 'fill-field':
-                    await this.instance.fillField(params[1],
-                         params[2]);
+                    await this.instance.fillField(params[1], params[2]);
                     break;
                 case 'submit-form':
                     await this.instance.submitForm(params[1]);
@@ -182,7 +189,6 @@ class Interpreter extends InterpreterProxy{
                     await this.instance.select(params[1], params[2])
                     break;
                 case 'viewport':
-                    this.viewport = {width: params[1], height: params[2]};
                     await this.instance.viewport(params[1], params[2])
                     break;
                 case 'speak':
@@ -197,36 +203,33 @@ class Interpreter extends InterpreterProxy{
     }
 
     async renderEffects() {
-        let subIndex = 0;
+
         let effects = await this.instance.effectsTimeline;
+        
+        let index = 0;
         let buffer = '';
-        for(let i = 0; i < effects.length; i++) {
-            let s = effects[i];
-            let _beginning = Util.formattedTime(s.checkpoint);
-            let _end = Util.formattedTime(s.finalChk);
+        let lastEff = effects.shift();
 
-            let delay;
+        do {
 
-            if(i == 0){
-                delay = effects[i].checkpoint - this.instance.start;
-            } else {
-                delay = effects[i].checkpoint - effects[i - 1].finalChk
+            let eff = effects.shift();
+
+            if(lastEff.sub) {
+
+                let audioDuration = await checkAudioDuration(index, this.tmpFolder)
+
+                let _beginning = Util.formattedTime(lastEff.checkpoint);
+                let _end = Util.formattedTime(lastEff.checkpoint+audioDuration);
+
+                buffer += `${index+1}\n${_beginning} --> ${_end}\n${lastEff.sub}\n\n`;
+
             }
+            
+            ++index;
 
-            if(s.sub) {
+            lastEff = eff;
 
-                buffer += `${++subIndex}\n${_beginning} --> ${_end}\n${s.sub}`;
-
-                if(i < effects.length - 1) {
-                    buffer += '\n\n';
-                }
-
-                await say(s.sub, i, delay, this.tmpFolder);
-            } else {
-
-                await keyPressNoise(i, delay, this.resourcesFolder, this.tmpFolder);
-            }
-        }
+        } while(lastEff != null);
 
         await generateAudio(this.tmpFolder);
 

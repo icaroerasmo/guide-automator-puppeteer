@@ -4,6 +4,7 @@
     const os = require('os');
     const fs = require('fs');
     const path = require('path');
+    const { removeFakeMic } = require('./br/com/guide-automator/libs/Recorder');
     const Interpreter = require('./br/com/guide-automator/reader/Interpreter');
 
     let mdFile = null;
@@ -47,6 +48,9 @@
                 return;
             case '-d':
                 isDebugEnabled = true;
+                return;
+            case '-id':
+                process.env.integrationDebug = true;
                 return;
             default:
                 throw new Error(`Parameter \'${key}\' wasn\'t recognized`);

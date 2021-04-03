@@ -59,8 +59,11 @@ const MouseHelper = async (page) => {
         updateButtons(event.buttons);
       }, true);
       const updateButtons = (buttons) => {
-        for (let i = 0; i < 5; i++)
+        let i = 0;
+        while (i < 5){
           box.classList.toggle('button-' + i, buttons & (1 << i));
+          i++;
+        }
       }
     }, false);
   });

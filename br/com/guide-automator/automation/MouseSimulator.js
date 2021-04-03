@@ -1,10 +1,13 @@
 const cursorImg = require('../libs/CursorImage');
 const query = 'puppeteer-mouse-pointer';
+const mouseHelper = require('../libs/MouseHelper');
 
 class MouseSimulator{
 
-    constructor(page) {
-        this.page = page;
+    constructor(instance) {
+        this.instance = instance;
+        this.page = instance.page;
+        mouseHelper(this.page);
     }
 
     async initializeCursorStyle() {

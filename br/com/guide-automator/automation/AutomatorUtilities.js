@@ -1,6 +1,6 @@
 const { performance } = require('perf_hooks');
 const MouseSimulator = require('./MouseSimulator');
-const mouseHelper = require('../libs/MouseHelper');
+const { keyPressNoise } = require('../libs/SoundEffects');
 const util = require('../libs/Util');
 
 class AutomatorUtilities {
@@ -8,8 +8,7 @@ class AutomatorUtilities {
     constructor (instance) {
         this.instance = instance;
         this.page = this.instance.page;
-        this.mouseSimulator = new MouseSimulator(this.page);
-        mouseHelper(this.page);
+        this.mouseSimulator = new MouseSimulator(this.instance);
     }
 
     async screenshotImpl(path) {
@@ -24,17 +23,10 @@ class AutomatorUtilities {
     }
 
     async writeToInput(selector, text) {
-        for(let i = 0; i < text.length; i++) {
-            await this.page.type(selector, text[i]);
-            let checkpoint = performance.now();
-            if(i < text.length-1) {
-                await util.sleep(util.randomNum(142, 500));
-            }
-            let finalChk = performance.now();
-            await this.instance.effectsTimeline.push({
-                checkpoint,
-                finalChk,
-            });
+        let i = 0;
+        while(i < text.length) {
+            await keyPressNoise(await this.instance.resourcesFolder, await this.instance.tmpFolder)
+            await this.page.type(selector, text[i++]);
         }
     }
 
