@@ -19,17 +19,9 @@ class TextToSpeech {
     await Util.externalCall({
       exec: 'sh',
       onStdout: (data) => {
-
-        if(process.env.integrationDebug) {
-          console.log(data.toString());
-        }
-
         let duration = data.toString().
           match(/(?!Duration: )\d{2}:\d{2}:\d{2}\.\d{1,3}/g)[0];
-
         audioDuration = Util.unformattedTime(duration);
-        
-        console.log(audioDuration);
       },
       params: [
         '-c', `ffmpeg -i ${path} 2>&1 `+
@@ -68,8 +60,6 @@ class TextToSpeech {
     args.push('-map');
     args.push('[out]');
     args.push(arguments[arguments.length-1]);
-
-    console.log(args);
 
     return Util.externalCall({
       exec: 'ffmpeg',
