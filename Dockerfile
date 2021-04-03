@@ -47,7 +47,8 @@ RUN apt install -y \
     libxtst6 \
     lsb-release \
     wget \
-    xdg-utils
+    xdg-utils \
+    alsa-utils
 
 RUN export WKHTML_LATEST_VERSION=$(\
     wget -O - "https://api.github.com/repos/wkhtmltopdf/wkhtmltopdf/releases/latest" | \
