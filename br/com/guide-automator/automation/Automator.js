@@ -3,8 +3,6 @@ const AutomatorProxy = require('./AutomatorProxy');
 const AutomatorUtilities = require('./AutomatorUtilities');
 const puppeteer = require('puppeteer');
 const { say } = require('../libs/SoundEffects');
-const util = require('../libs/Util');
-
 class Automator extends AutomatorProxy {
 
     effectsTimeline = [];
@@ -89,14 +87,6 @@ class Automator extends AutomatorProxy {
 
     async speak(sub) {
         this.log(`speaking: '${sub}'`)
-
-        const checkpoint = performance.now()
-
-        this.effectsTimeline.push({
-            sub,
-            checkpoint
-        });
-
         await say(sub, this.tmpFolder);
     }
 
