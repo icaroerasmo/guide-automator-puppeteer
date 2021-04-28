@@ -79,13 +79,6 @@ class TextToSpeech {
     });
   }
 
-  playAudio(audioPath) {
-    return Util.externalCall({
-      exec: 'aplay',
-      params: [audioPath]
-    });
-  }
-
   calcDelay(currentTimestamp) {
 
     if(!lastTimestamp) {
