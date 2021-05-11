@@ -3,9 +3,8 @@ const AutomatorProxy = require('./AutomatorProxy');
 const AutomatorUtilities = require('./AutomatorUtilities');
 const puppeteer = require('puppeteer');
 const { say } = require('../libs/SoundEffects');
-class Automator extends AutomatorProxy {
 
-    effectsTimeline = [];
+class Automator extends AutomatorProxy {
 
     constructor(isDebugEnabled, isVerboseEnabled, resourcesFolder, tmpFolder) {
         super(isDebugEnabled, isVerboseEnabled)
