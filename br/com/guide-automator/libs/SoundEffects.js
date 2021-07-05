@@ -1,10 +1,14 @@
 const fs = require('fs');
 const Util = require('./Util');
 const { performance } = require('perf_hooks');
-
-const TMP_AUDIO_PREFIX = 'tmp_audio_file';
-const FINAL_AUDIO_PREFIX = 'audio_';
-const AUDIO_FORMAT = 'wav'
+const {
+  KEY_SOUND_NAME,
+  TMP_AUDIO_PREFIX,
+  FINAL_AUDIO_PREFIX,
+  SUBTITLES_NAME,
+  AUDIO_FORMAT, 
+  FINAL_AUDIO_NAME, 
+  FINAL_AUDIO_FORMAT} = require('./Constants');
 
 let index = 0;
 let lastTimestamp;
@@ -120,7 +124,7 @@ class TextToSpeech {
 
   async keyboard(index, resourcesFolder, outputPath) {
 
-    let keySoundFile = `${resourcesFolder}/keysound.${AUDIO_FORMAT}`;
+    let keySoundFile = `${resourcesFolder}/${KEY_SOUND_NAME}.${AUDIO_FORMAT}`;
 
     lastTimestamp = performance.now()
     
@@ -163,9 +167,9 @@ module.exports = {
         }).
       map(f => `${outputPath}/${f}`);
 
-    fs.writeFileSync(`${outputPath}/subtitles.srt`, buffer, 'utf8', () => {});
+    fs.writeFileSync(`${outputPath}/${SUBTITLES_NAME}`, buffer, 'utf8', () => {});
     
-    return tts.concatAudios(...files, `${outputPath}/final_audio.wav`);
+    return tts.concatAudios(...files, `${outputPath}/${FINAL_AUDIO_NAME}.${FINAL_AUDIO_FORMAT}`);
   },
   checkAudioDuration: (index, outputPath) => {
     let finalPath = tts.generateAudioFilePath(outputPath, index);

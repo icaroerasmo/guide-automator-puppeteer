@@ -9,6 +9,7 @@ const { recorder } = require('../libs/Recorder');
 const { generateAudio } = require('../libs/SoundEffects');
 const converter = require('../libs/ApngToMp4Converter');
 const base64Converter = require('image-to-base64');
+const { FINAL_VIDEO_NAME, FINAL_VIDEO_FORMAT } = require('../libs/Constants');
 const codeMarker = "```"
 
 class Interpreter extends InterpreterProxy{
@@ -60,7 +61,7 @@ class Interpreter extends InterpreterProxy{
         };
         this.log('started Recording');
         const videoPngBuffer = await recorder(runner);
-        let fileName = 'video.png';
+        let fileName = `${FINAL_VIDEO_NAME}.${FINAL_VIDEO_FORMAT}`;
         fs.writeFileSync(`${this.tmpFolder}/${fileName}`, videoPngBuffer, () => {});
         await converter(fileName, this.tmpFolder, this.outputFolder);
         this.log('finished Recording');

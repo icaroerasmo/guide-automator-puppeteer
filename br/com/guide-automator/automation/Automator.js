@@ -1,4 +1,3 @@
-const { performance } = require('perf_hooks');
 const AutomatorProxy = require('./AutomatorProxy');
 const AutomatorUtilities = require('./AutomatorUtilities');
 const puppeteer = require('puppeteer');

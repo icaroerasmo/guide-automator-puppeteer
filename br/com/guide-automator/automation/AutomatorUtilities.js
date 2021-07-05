@@ -1,4 +1,3 @@
-const { performance } = require('perf_hooks');
 const MouseSimulator = require('./MouseSimulator');
 const { keyPressNoise } = require('../libs/SoundEffects');
 const util = require('../libs/Util');

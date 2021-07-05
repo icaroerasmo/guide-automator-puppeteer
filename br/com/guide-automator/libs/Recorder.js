@@ -1,6 +1,5 @@
 // Took it from node-puppeteer apng to modify
 // https://github.com/TomasHubelbauer/node-puppeteer-apng
-const fs = require('fs');
 const apng = require('node-apng');
 const { performance } = require('perf_hooks');
 
