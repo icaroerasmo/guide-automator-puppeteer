@@ -25,10 +25,15 @@ module.exports = (tmpVideoName, tmpFolder, outputFolder) => {
 
   params = params.concat([
     '-vsync', '2',
-    '-filter:v', '"fps=60"',
-    '-vf', `subtitles=${subtitlesPath}`,
-    outputPath
+    '-filter:v', 'fps=60',
   ]);
+
+
+  if(fs.existsSync(subtitlesPath)){
+    params = params.concat(['-vf', `subtitles=${subtitlesPath}`]);
+  }
+
+  params.push(outputPath);
 
   return Util.externalCall({
     exec: 'ffmpeg',

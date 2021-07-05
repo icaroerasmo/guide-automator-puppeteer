@@ -167,7 +167,9 @@ module.exports = {
         }).
       map(f => `${outputPath}/${f}`);
 
-    fs.writeFileSync(`${outputPath}/${SUBTITLES_NAME}`, buffer, 'utf8', () => {});
+    if(buffer.length > 0){
+      fs.writeFileSync(`${outputPath}/${SUBTITLES_NAME}`, buffer, 'utf8', () => {});
+    }
     
     return tts.concatAudios(...files, `${outputPath}/${FINAL_AUDIO_NAME}.${FINAL_AUDIO_FORMAT}`);
   },
